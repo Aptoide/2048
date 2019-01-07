@@ -1,0 +1,22 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 27
+        versionCode 27
+        versionName "1.1.11"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:27.1.1'
+}
