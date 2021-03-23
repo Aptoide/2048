@@ -1,10 +1,13 @@
 package com.tpcstld.twozerogame;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import com.tpcstld.twozerogame.factory.RoomApiFactory;
+import com.tpcstld.twozerogame.repository.RoomRepository;
+import com.tpcstld.twozerogame.usecase.SetScoreUseCase;
+import com.tpcstld.twozerogame.vm.MainGameViewModel;
+import com.tpcstld.twozerogame.vm.MainGameViewModelData;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,9 +25,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        view = new MainView(this);
+        view = new MainView(this, new MainGameViewModel(new SetScoreUseCase(new RoomRepository(
+            RoomApiFactory.buildRoomApi())), buildViewModelData()));
 
         setContentView(view);
+    }
+
+    private MainGameViewModelData buildViewModelData() {
+        String roomId = getIntent().getStringExtra(LaunchActivity.ROOM_ID);
+        String userId = getIntent().getStringExtra(LaunchActivity.USER_ID);
+        String walletAddress = getIntent().getStringExtra(LaunchActivity.WALLET_ADDRESS);
+        String jwt = getIntent().getStringExtra(LaunchActivity.JWT);
+
+        return new MainGameViewModelData(roomId, userId, walletAddress, jwt);
+    }
+
+    @Override protected void onDestroy() {
+        view.onDestroy();
+        super.onDestroy();
     }
 
     @Override

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.tpcstld.twozerogame.vm.MainGameViewModel;
+import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +40,8 @@ public class MainGame {
     final int numSquaresY = 4;
     private final Context mContext;
     private final MainView mView;
+    private final MainGameViewModel viewModel;
+    private final CompositeDisposable disposable;
     public Grid grid = null;
     public AnimationGrid aGrid;
     public boolean canUndo;
@@ -46,10 +50,12 @@ public class MainGame {
     public long lastScore = 0;
     private long bufferScore = 0;
 
-    public MainGame(Context context, MainView view) {
+    public MainGame(Context context, MainView view, MainGameViewModel viewModel) {
         mContext = context;
         mView = view;
         endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
+        this.viewModel = viewModel;
+        this.disposable = new CompositeDisposable();
     }
 
     public void newGame() {
@@ -256,6 +262,8 @@ public class MainGame {
             highScore = score;
             recordHighScore();
         }
+        disposable.add(viewModel.setScore(10)
+            .subscribe());
     }
 
     private Cell getVector(int direction) {
@@ -355,5 +363,9 @@ public class MainGame {
 
     public boolean canContinue() {
         return !(gameState == GAME_ENDLESS || gameState == GAME_ENDLESS_WON);
+    }
+
+    public void stop() {
+        disposable.clear();
     }
 }

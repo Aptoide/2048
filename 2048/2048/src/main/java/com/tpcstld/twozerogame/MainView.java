@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 
+import com.tpcstld.twozerogame.vm.MainGameViewModel;
 import java.util.ArrayList;
 
 @SuppressWarnings("deprecation")
@@ -71,12 +72,12 @@ public class MainView extends View {
     private int titleWidthHighScore;
     private int titleWidthScore;
 
-    public MainView(Context context) {
+    public MainView(Context context, MainGameViewModel viewModel) {
         super(context);
 
         Resources resources = context.getResources();
         //Loading resources
-        game = new MainGame(context, this);
+        game = new MainGame(context, this, viewModel);
         try {
             //Getting assets
             backgroundRectangle = resources.getDrawable(R.drawable.background_rectangle);
@@ -565,4 +566,7 @@ public class MainView extends View {
         return (int) ((paint.descent() + paint.ascent()) / 2);
     }
 
+    public void onDestroy() {
+        game.stop();
+    }
 }

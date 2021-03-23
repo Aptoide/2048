@@ -4,24 +4,30 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import org.jetbrains.annotations.NotNull;
 
 public class LaunchActivity extends AppCompatActivity {
 
   private static final int REQUEST_CODE = 123;
   private static final int RESULT_OK = 1;
 
-  private static final String USER_ID = "USER_ID";
+  public static final String USER_ID = "USER_ID";
+  public static final String ROOM_ID = "ROOM_ID";
+  public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
+  public static final String JWT = "JWT";
+
+  private final String userId = "string_user_id";
 
   @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    Intent i = buildIntent();
+    Intent i = buildWalletIntent();
     startActivityForResult(i, REQUEST_CODE);
   }
 
-  private Intent buildIntent() {
+  private Intent buildWalletIntent() {
     Intent i = new Intent();
-    i.putExtra(USER_ID, "string_user_id");
+    i.putExtra(USER_ID, userId);
     i.setClassName("com.appcoins.wallet.dev", "cm.aptoide.skills.SkillsActivity");
     return i;
   }
@@ -30,8 +36,19 @@ public class LaunchActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-      startActivity(new Intent(this, MainActivity.class));
+      startActivity(buildMainActivityIntent(data));
       finish();
     }
+  }
+
+  @NotNull private Intent buildMainActivityIntent(Intent data) {
+    Intent intent = new Intent(this, MainActivity.class);
+
+    intent.putExtra(ROOM_ID, data.getStringExtra(ROOM_ID));
+    intent.putExtra(USER_ID, userId);
+    intent.putExtra(WALLET_ADDRESS, data.getStringExtra(WALLET_ADDRESS));
+    intent.putExtra(JWT, data.getStringExtra(JWT));
+
+    return intent;
   }
 }
