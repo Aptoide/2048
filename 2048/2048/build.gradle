@@ -3,6 +3,10 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
 
+    viewBinding {
+        enabled = true
+    }
+
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
