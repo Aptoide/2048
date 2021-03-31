@@ -3,7 +3,7 @@ package com.tpcstld.twozerogame.repository;
 import com.tpcstld.twozerogame.api.RoomApi;
 import com.tpcstld.twozerogame.model.PatchRoomRequest;
 import com.tpcstld.twozerogame.model.RoomResponse;
-import com.tpcstld.twozerogame.model.RoomStatus;
+import com.tpcstld.twozerogame.model.UserStatus;
 import io.reactivex.Single;
 
 public class RoomRepository {
@@ -15,7 +15,7 @@ public class RoomRepository {
   }
 
   public Single<RoomResponse> patch(String roomId, String walletAddress, long score,
-      RoomStatus status) {
+      UserStatus status) {
     PatchRoomRequest patchRoomRequest = new PatchRoomRequest();
 
     patchRoomRequest.setScore(score);

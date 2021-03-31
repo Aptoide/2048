@@ -8,8 +8,9 @@ import lombok.ToString;
 public class RoomResponse {
 
   @SerializedName("room_id") private String roomId;
-  @SerializedName("users") private List<User> users;
   @SerializedName("package_name") private String packageName;
+  @SerializedName("status") private RoomStatus status;
+  @SerializedName("users") private List<User> users;
   @SerializedName("room_stake") private RoomStake roomStake;
 
   public String getRoomId() {
@@ -20,20 +21,20 @@ public class RoomResponse {
     this.roomId = roomId;
   }
 
-  public List<User> getUsers() {
-    return users;
-  }
-
-  public void setUsers(List<User> users) {
-    this.users = users;
-  }
-
   public String getPackageName() {
     return packageName;
   }
 
   public void setPackageName(String packageName) {
     this.packageName = packageName;
+  }
+
+  public List<User> getUsers() {
+    return users;
+  }
+
+  public void setUsers(List<User> users) {
+    this.users = users;
   }
 
   public RoomStake getRoomStake() {

@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class PatchRoomRequest {
 
   @SerializedName("score") private long score;
-  @SerializedName("status") private RoomStatus status;
+  @SerializedName("status") private UserStatus status;
 
   public long getScore() {
     return score;
@@ -15,11 +15,11 @@ public class PatchRoomRequest {
     this.score = score;
   }
 
-  public RoomStatus getStatus() {
+  public UserStatus getStatus() {
     return status;
   }
 
-  public void setStatus(RoomStatus status) {
+  public void setStatus(UserStatus status) {
     this.status = status;
   }
 }

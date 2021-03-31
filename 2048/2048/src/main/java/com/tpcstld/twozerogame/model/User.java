@@ -7,7 +7,9 @@ public class User {
 
   @SerializedName("wallet_address") private String walletAddress;
   @SerializedName("user_id") private String userId;
+  @SerializedName("ticket_id") private String ticketId;
   @SerializedName("room_metadata") private Map<String, String> roomMetadata;
+  @SerializedName("status") private UserStatus status;
   @SerializedName("score") private int score;
 
   public String getWalletAddress() {
