@@ -160,6 +160,8 @@ public class MainGame {
             aGrid.cancelAnimations();
             grid.revertTiles();
             score = lastScore;
+            viewModel.setScore(score)
+                .subscribe();
             gameState = lastGameState;
             mView.refreshLastTime = true;
             mView.invalidate();
@@ -220,6 +222,8 @@ public class MainGame {
 
                         // Update the score
                         score = score + merged.getValue();
+                        viewModel.setScore(score)
+                            .subscribe();
                         highScore = Math.max(score, highScore);
 
                         // The mighty 2048 tile
