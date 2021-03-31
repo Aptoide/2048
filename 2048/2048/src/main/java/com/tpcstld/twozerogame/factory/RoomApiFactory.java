@@ -10,8 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RoomApiFactory {
 
-  public static final String ENDPOINT =
-      "https://9c512579-41fa-420a-bba9-67e9d231681e.mock.pstmn.io";
+  public static final String ENDPOINT = "https://api.eskills.dev.catappult.io";
 
   public static final RoomApi buildRoomApi() {
     return new Retrofit.Builder().baseUrl(ENDPOINT)

@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import com.tpcstld.twozerogame.factory.RoomApiFactory;
 import com.tpcstld.twozerogame.repository.RoomRepository;
-import com.tpcstld.twozerogame.usecase.SetScoreUseCase;
+import com.tpcstld.twozerogame.usecase.SetFinalScoreUseCase;
 import com.tpcstld.twozerogame.vm.MainGameViewModel;
 import com.tpcstld.twozerogame.vm.MainGameViewModelData;
 
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        view = new MainView(this, new MainGameViewModel(new SetScoreUseCase(new RoomRepository(
+        view = new MainView(this, new MainGameViewModel(new SetFinalScoreUseCase(new RoomRepository(
             RoomApiFactory.buildRoomApi())), buildViewModelData()));
 
         setContentView(view);

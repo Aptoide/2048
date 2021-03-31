@@ -262,7 +262,7 @@ public class MainGame {
             highScore = score;
             recordHighScore();
         }
-        disposable.add(viewModel.setScore(10)
+        disposable.add(viewModel.setFinalScore(score)
             .subscribe());
     }
 

@@ -1,8 +1,9 @@
 package com.tpcstld.twozerogame.repository;
 
 import com.tpcstld.twozerogame.api.RoomApi;
-import com.tpcstld.twozerogame.model.RoomRequest;
+import com.tpcstld.twozerogame.model.PatchRoomRequest;
 import com.tpcstld.twozerogame.model.RoomResponse;
+import com.tpcstld.twozerogame.model.RoomStatus;
 import io.reactivex.Single;
 
 public class RoomRepository {
@@ -13,15 +14,13 @@ public class RoomRepository {
     this.roomApi = roomApi;
   }
 
-  public Single<RoomResponse> patch(String roomId, String userId, String walletAddress, String jwt,
-      int score) {
-    RoomRequest roomRequest = new RoomRequest();
+  public Single<RoomResponse> patch(String roomId, String walletAddress, long score,
+      RoomStatus status) {
+    PatchRoomRequest patchRoomRequest = new PatchRoomRequest();
 
-    roomRequest.setUserId(userId);
-    roomRequest.setWalletAddress(walletAddress);
-    roomRequest.setJwt(jwt);
-    roomRequest.setScore(score);
+    patchRoomRequest.setScore(score);
+    patchRoomRequest.setStatus(status);
 
-    return roomApi.patchRoom(roomId, roomRequest);
+    return roomApi.patchRoom(roomId, walletAddress, patchRoomRequest);
   }
 }

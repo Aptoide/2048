@@ -1,21 +1,21 @@
 package com.tpcstld.twozerogame.vm;
 
 import com.tpcstld.twozerogame.model.RoomResponse;
-import com.tpcstld.twozerogame.usecase.SetScoreUseCase;
+import com.tpcstld.twozerogame.usecase.SetFinalScoreUseCase;
 import io.reactivex.Single;
 
 public class MainGameViewModel {
 
-  private final SetScoreUseCase setScoreUseCase;
+  private final SetFinalScoreUseCase setFinalScoreUseCase;
   private final MainGameViewModelData data;
 
-  public MainGameViewModel(SetScoreUseCase setScoreUseCase,
+  public MainGameViewModel(SetFinalScoreUseCase setFinalScoreUseCase,
       MainGameViewModelData data) {
-    this.setScoreUseCase = setScoreUseCase;
+    this.setFinalScoreUseCase = setFinalScoreUseCase;
     this.data = data;
   }
 
-  public Single<RoomResponse> setScore(int score) {
-    return setScoreUseCase.setScore(data.getRoomId(), data.getUserId(), data.getWalletAddress(), data.getJwt(), score);
+  public Single<RoomResponse> setFinalScore(long score) {
+    return setFinalScoreUseCase.setFinalScore(data.getRoomId(), data.getWalletAddress(), score);
   }
 }
