@@ -1,8 +1,8 @@
 package com.tpcstld.twozerogame;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import androidx.appcompat.app.AppCompatActivity;
 import com.tpcstld.twozerogame.factory.RoomApiFactory;
 import com.tpcstld.twozerogame.repository.RoomRepository;
 import com.tpcstld.twozerogame.usecase.SetFinalScoreUseCase;
