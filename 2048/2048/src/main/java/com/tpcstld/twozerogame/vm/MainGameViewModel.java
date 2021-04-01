@@ -25,4 +25,12 @@ public class MainGameViewModel {
   public Single<RoomResponse> setScore(long score) {
     return setScoreUseCase.setScore(data.getRoomId(), data.getWalletAddress(), score);
   }
+
+  public String getRoomId() {
+    return data.getRoomId();
+  }
+
+  public String getWalletAddress() {
+    return data.getWalletAddress();
+  }
 }

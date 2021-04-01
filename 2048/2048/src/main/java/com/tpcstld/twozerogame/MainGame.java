@@ -3,7 +3,7 @@ package com.tpcstld.twozerogame;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-
+import com.tpcstld.twozerogame.activity.FinishGameActivity;
 import com.tpcstld.twozerogame.vm.MainGameViewModel;
 import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
@@ -261,13 +261,17 @@ public class MainGame {
     }
 
     private void endGame() {
-        aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME, NOTIFICATION_DELAY_TIME, null);
+        aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
+            NOTIFICATION_DELAY_TIME, null);
         if (score >= highScore) {
             highScore = score;
             recordHighScore();
         }
         disposable.add(viewModel.setFinalScore(score)
             .subscribe());
+
+        mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getRoomId(),
+            viewModel.getWalletAddress()));
     }
 
     private Cell getVector(int direction) {

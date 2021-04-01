@@ -28,12 +28,28 @@ public class User {
     this.userId = userId;
   }
 
+  public String getTicketId() {
+    return ticketId;
+  }
+
+  public void setTicketId(String ticketId) {
+    this.ticketId = ticketId;
+  }
+
   public Map<String, String> getRoomMetadata() {
     return roomMetadata;
   }
 
   public void setRoomMetadata(Map<String, String> roomMetadata) {
     this.roomMetadata = roomMetadata;
+  }
+
+  public UserStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(UserStatus status) {
+    this.status = status;
   }
 
   public int getScore() {

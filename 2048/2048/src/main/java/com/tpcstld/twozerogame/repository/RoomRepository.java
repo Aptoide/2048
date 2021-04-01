@@ -23,4 +23,8 @@ public class RoomRepository {
 
     return roomApi.patchRoom(roomId, walletAddress, patchRoomRequest);
   }
+
+  public Single<RoomResponse> getRoom(String roomId) {
+    return roomApi.getRoom(roomId);
+  }
 }
