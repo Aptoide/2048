@@ -14,7 +14,7 @@ public class LaunchActivity extends AppCompatActivity {
   public static final String USER_ID = "USER_ID";
   public static final String ROOM_ID = "ROOM_ID";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
-  public static final String JWT = "JWT";
+  public static final String SESSION = "SESSION";
 
   private final String userId = "string_user_id";
 
@@ -47,7 +47,7 @@ public class LaunchActivity extends AppCompatActivity {
     intent.putExtra(ROOM_ID, data.getStringExtra(ROOM_ID));
     intent.putExtra(USER_ID, userId);
     intent.putExtra(WALLET_ADDRESS, data.getStringExtra(WALLET_ADDRESS));
-    intent.putExtra(JWT, data.getStringExtra(JWT));
+    intent.putExtra(SESSION, data.getStringExtra(SESSION));
 
     return intent;
   }

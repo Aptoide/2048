@@ -8,12 +8,12 @@ public class MainGameViewModelData {
   private final String roomId;
   private final String userId;
   private final String walletAddress;
-  private final String jwt;
+  private final String session;
 
-  public MainGameViewModelData(String roomId, String userId, String walletAddress, String jwt) {
+  public MainGameViewModelData(String roomId, String userId, String walletAddress, String session) {
     this.roomId = roomId;
     this.userId = userId;
     this.walletAddress = walletAddress;
-    this.jwt = jwt;
+    this.session = session;
   }
 }

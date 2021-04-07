@@ -37,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
         String roomId = getIntent().getStringExtra(LaunchActivity.ROOM_ID);
         String userId = getIntent().getStringExtra(LaunchActivity.USER_ID);
         String walletAddress = getIntent().getStringExtra(LaunchActivity.WALLET_ADDRESS);
-        String jwt = getIntent().getStringExtra(LaunchActivity.JWT);
+        String session = getIntent().getStringExtra(LaunchActivity.SESSION);
 
-        return new MainGameViewModelData(roomId, userId, walletAddress, jwt);
+        return new MainGameViewModelData(roomId, userId, walletAddress, session);
     }
 
     @Override protected void onDestroy() {
