@@ -19,11 +19,11 @@ public class MainGameViewModel {
   }
 
   public Single<RoomResponse> setFinalScore(long score) {
-    return setFinalScoreUseCase.setFinalScore(data.getRoomId(), data.getWalletAddress(), score);
+    return setFinalScoreUseCase.setFinalScore(data.getSession(), score);
   }
 
   public Single<RoomResponse> setScore(long score) {
-    return setScoreUseCase.setScore(data.getRoomId(), data.getWalletAddress(), score);
+    return setScoreUseCase.setScore(data.getSession(), score);
   }
 
   public String getRoomId() {

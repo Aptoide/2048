@@ -14,8 +14,8 @@ public class SetScoreUseCase {
     this.roomRepository = roomRepository;
   }
 
-  public Single<RoomResponse> setScore(String roomId, String walletAddress, long score) {
-    return roomRepository.patch(roomId, walletAddress, score, UserStatus.PLAYING)
+  public Single<RoomResponse> setScore(String session, long score) {
+    return roomRepository.patch(session, score, UserStatus.PLAYING)
         .subscribeOn(Schedulers.io());
   }
 }

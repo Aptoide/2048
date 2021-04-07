@@ -14,8 +14,8 @@ public class SetFinalScoreUseCase {
     this.roomRepository = roomRepository;
   }
 
-  public Single<RoomResponse> setFinalScore(String roomId, String walletAddress, long score) {
-    return roomRepository.patch(roomId, walletAddress, score, UserStatus.COMPLETED)
+  public Single<RoomResponse> setFinalScore(String session, long score) {
+    return roomRepository.patch(session, score, UserStatus.COMPLETED)
         .subscribeOn(Schedulers.io());
   }
 }

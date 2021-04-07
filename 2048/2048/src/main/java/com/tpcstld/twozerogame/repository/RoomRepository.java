@@ -8,20 +8,21 @@ import io.reactivex.Single;
 
 public class RoomRepository {
 
+  public static final String BEARER_ = "Bearer ";
+
   private final RoomApi roomApi;
 
   public RoomRepository(RoomApi roomApi) {
     this.roomApi = roomApi;
   }
 
-  public Single<RoomResponse> patch(String roomId, String walletAddress, long score,
-      UserStatus status) {
+  public Single<RoomResponse> patch(String session, long score, UserStatus status) {
     PatchRoomRequest patchRoomRequest = new PatchRoomRequest();
 
     patchRoomRequest.setScore(score);
     patchRoomRequest.setStatus(status);
 
-    return roomApi.patchRoom(roomId, walletAddress, patchRoomRequest);
+    return roomApi.patchRoom(BEARER_ + session, patchRoomRequest);
   }
 
   public Single<RoomResponse> getRoom(String roomId) {
