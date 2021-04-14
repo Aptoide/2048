@@ -270,7 +270,7 @@ public class MainGame {
         disposable.add(viewModel.setFinalScore(score)
             .subscribe());
 
-        mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getRoomId(),
+        mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
             viewModel.getWalletAddress()));
     }
 

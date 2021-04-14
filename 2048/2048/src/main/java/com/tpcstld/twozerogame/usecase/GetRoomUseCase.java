@@ -13,8 +13,8 @@ public class GetRoomUseCase {
     this.roomRepository = roomRepository;
   }
 
-  public Single<RoomResponse> getRoom(String roomId) {
-    return roomRepository.getRoom(roomId)
+  public Single<RoomResponse> getRoom(String session) {
+    return roomRepository.getRoom(session)
         .subscribeOn(Schedulers.io());
   }
 }

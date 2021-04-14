@@ -25,7 +25,7 @@ public class RoomRepository {
     return roomApi.patchRoom(BEARER_ + session, patchRoomRequest);
   }
 
-  public Single<RoomResponse> getRoom(String roomId) {
-    return roomApi.getRoom(roomId);
+  public Single<RoomResponse> getRoom(String session) {
+    return roomApi.getRoom(BEARER_ + session);
   }
 }

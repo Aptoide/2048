@@ -16,15 +16,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class FinishGameActivity extends AppCompatActivity {
 
-  public static final String ROOM_ID = "ROOM_ID";
+  public static final String SESSION = "SESSION";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
 
   private ActivityFinishGameBinding binding;
   private FinishGameActivityViewModel viewModel;
 
-  public static final Intent buildIntent(Context context, String roomId, String walletAddress) {
+  public static final Intent buildIntent(Context context, String session, String walletAddress) {
     Intent intent = new Intent(context, FinishGameActivity.class);
-    intent.putExtra(ROOM_ID, roomId);
+    intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
     return intent;
   }
@@ -34,10 +34,10 @@ public class FinishGameActivity extends AppCompatActivity {
     binding = ActivityFinishGameBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
 
-    String roomId = getIntent().getStringExtra(ROOM_ID);
+    String session = getIntent().getStringExtra(SESSION);
     String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
     viewModel = new FinishGameActivityViewModel(
-        new GetRoomUseCase(new RoomRepository(RoomApiFactory.buildRoomApi())), roomId,
+        new GetRoomUseCase(new RoomRepository(RoomApiFactory.buildRoomApi())), session,
         walletAddress);
 
     viewModel.isWinner()

@@ -26,11 +26,11 @@ public class MainGameViewModel {
     return setScoreUseCase.setScore(data.getSession(), score);
   }
 
-  public String getRoomId() {
-    return data.getRoomId();
-  }
-
   public String getWalletAddress() {
     return data.getWalletAddress();
+  }
+
+  public String getSession() {
+    return data.getSession();
   }
 }

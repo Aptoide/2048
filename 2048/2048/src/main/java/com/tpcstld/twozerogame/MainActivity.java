@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         String walletAddress = getIntent().getStringExtra(LaunchActivity.WALLET_ADDRESS);
         String session = getIntent().getStringExtra(LaunchActivity.SESSION);
 
-        return new MainGameViewModelData(roomId, userId, walletAddress, session);
+        return new MainGameViewModelData(userId, walletAddress, session);
     }
 
     @Override protected void onDestroy() {

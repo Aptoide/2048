@@ -11,18 +11,18 @@ import java.util.concurrent.TimeUnit;
 public class FinishGameActivityViewModel {
 
   private final GetRoomUseCase getRoomUseCase;
-  private final String roomId;
+  private final String session;
   private final String walletAddress;
 
-  public FinishGameActivityViewModel(GetRoomUseCase getRoomUseCase, String roomId,
+  public FinishGameActivityViewModel(GetRoomUseCase getRoomUseCase, String session,
       String walletAddress) {
     this.getRoomUseCase = getRoomUseCase;
-    this.roomId = roomId;
+    this.session = session;
     this.walletAddress = walletAddress;
   }
 
   public Single<Boolean> isWinner() {
-    return getRoomUseCase.getRoom(roomId)
+    return getRoomUseCase.getRoom(session)
         .toObservable()
         .repeatWhen(objectFlowable -> objectFlowable.delay(3, TimeUnit.SECONDS))
         .skipWhile(this::isInProgress)
