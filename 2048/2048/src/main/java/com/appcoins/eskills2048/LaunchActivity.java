@@ -12,6 +12,7 @@ public class LaunchActivity extends AppCompatActivity {
   private static final int RESULT_OK = 1;
 
   public static final String USER_ID = "USER_ID";
+  public static final String PACKAGE_NAME = "PACKAGE_NAME";
   public static final String ROOM_ID = "ROOM_ID";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String SESSION = "SESSION";
@@ -28,6 +29,7 @@ public class LaunchActivity extends AppCompatActivity {
   private Intent buildWalletIntent() {
     Intent i = new Intent();
     i.putExtra(USER_ID, userId);
+    i.putExtra(PACKAGE_NAME, getApplicationContext().getPackageName());
     i.setClassName("com.appcoins.wallet.dev", "cm.aptoide.skills.SkillsActivity");
     return i;
   }
