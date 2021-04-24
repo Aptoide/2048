@@ -53,7 +53,6 @@ public class MainGame {
     public boolean canUndo;
     public long score = 0;
     public long highScore = 0;
-    public long opponentScore = 0;
     public long lastScore = 0;
     private long bufferScore = 0;
 
