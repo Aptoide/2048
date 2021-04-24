@@ -2,9 +2,12 @@ package com.appcoins.eskills2048;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.repository.RoomRepository;
+import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import com.appcoins.eskills2048.usecase.SetScoreUseCase;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
@@ -28,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         RoomRepository roomRepository = new RoomRepository(RoomApiFactory.buildRoomApi());
         view = new MainView(this, new MainGameViewModel(new SetScoreUseCase(roomRepository),
-            new SetFinalScoreUseCase(roomRepository), buildViewModelData()));
+                new SetFinalScoreUseCase(roomRepository), buildViewModelData(),
+                new GetRoomUseCase(roomRepository)));
 
         setContentView(view);
     }
@@ -42,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         return new MainGameViewModelData(userId, walletAddress, session);
     }
 
-    @Override protected void onDestroy() {
+    @Override
+    protected void onDestroy() {
         view.onDestroy();
         super.onDestroy();
     }

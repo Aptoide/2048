@@ -10,7 +10,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
+
 import com.appcoins.eskills2048.vm.MainGameViewModel;
+
 import java.util.ArrayList;
 
 @SuppressWarnings("deprecation")
@@ -36,6 +38,7 @@ public class MainView extends View {
     public int sYIcons;
     public int sXNewGame;
     public int sXUndo;
+    public int sXLeaderBoard;
     public int iconSize;
     //Misc
     boolean refreshLastTime = true;
@@ -185,7 +188,6 @@ public class MainView extends View {
         paint.setColor(getResources().getColor(R.color.text_white));
         canvas.drawText(String.valueOf(game.highScore), sXHighScore + textMiddleHighScore, bodyStartYAll, paint);
 
-
         //Outputting scores box
         backgroundRectangle.setBounds(sXScore, sYAll, eXScore, eYAll);
         backgroundRectangle.draw(canvas);
@@ -239,6 +241,23 @@ public class MainView extends View {
                 sXUndo + iconPaddingSize,
                 sYIcons + iconPaddingSize,
                 sXUndo + iconSize - iconPaddingSize,
+                sYIcons + iconSize - iconPaddingSize
+        );
+    }
+
+    private void drawSeeLeaderBoard(Canvas canvas) {
+        drawDrawable(canvas,
+                backgroundRectangle,
+                sXLeaderBoard,
+                sYIcons, sXLeaderBoard + iconSize,
+                sYIcons + iconSize
+        );
+
+        drawDrawable(canvas,
+                getResources().getDrawable(R.drawable.ic_leaderboard),
+                sXLeaderBoard + iconPaddingSize,
+                sYIcons + iconPaddingSize,
+                sXLeaderBoard + iconSize - iconPaddingSize,
                 sYIcons + iconSize - iconPaddingSize
         );
     }
@@ -427,6 +446,7 @@ public class MainView extends View {
         drawHeader(canvas);
         drawNewGameButton(canvas, false);
         drawUndoButton(canvas);
+        drawSeeLeaderBoard(canvas);
         drawBackground(canvas);
         drawBackgroundGrid(canvas);
         if (showHelp) drawInstructions(canvas);
@@ -522,15 +542,15 @@ public class MainView extends View {
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(1000);
         instructionsTextSize = Math.min(
-            1000f * (widthWithPadding / (paint.measureText(getResources().getString(R.string.instructions)))),
-            textSize / 1.5f
+                1000f * (widthWithPadding / (paint.measureText(getResources().getString(R.string.instructions)))),
+                textSize / 1.5f
         );
         gameOverTextSize = Math.min(
-            Math.min(
-                1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(getResources().getString(R.string.game_over)))),
-                textSize * 2
-            ),
-            1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(getResources().getString(R.string.you_win))))
+                Math.min(
+                        1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(getResources().getString(R.string.game_over)))),
+                        textSize * 2
+                ),
+                1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(getResources().getString(R.string.you_win))))
         );
 
         paint.setTextSize(cellSize);
@@ -558,6 +578,7 @@ public class MainView extends View {
         sYIcons = (startingY + eYAll) / 2 - iconSize / 2;
         sXNewGame = (endingX - iconSize);
         sXUndo = sXNewGame - iconSize * 3 / 2 - iconPaddingSize;
+        sXLeaderBoard = sXUndo - iconSize * 3 / 2 - iconPaddingSize;
         resyncTime();
     }
 

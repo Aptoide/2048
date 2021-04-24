@@ -3,9 +3,15 @@ package com.appcoins.eskills2048;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
 import com.appcoins.eskills2048.activity.FinishGameActivity;
+import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
+
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +53,7 @@ public class MainGame {
     public boolean canUndo;
     public long score = 0;
     public long highScore = 0;
+    public long opponentScore = 0;
     public long lastScore = 0;
     private long bufferScore = 0;
 
@@ -161,11 +168,15 @@ public class MainGame {
             grid.revertTiles();
             score = lastScore;
             viewModel.setScore(score)
-                .subscribe();
+                    .subscribe();
             gameState = lastGameState;
             mView.refreshLastTime = true;
             mView.invalidate();
         }
+    }
+
+    public Single<String> getLeaderBoard() {
+        return viewModel.getLeaderBoard();
     }
 
     public boolean gameWon() {
@@ -262,16 +273,16 @@ public class MainGame {
 
     private void endGame() {
         aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
-            NOTIFICATION_DELAY_TIME, null);
+                NOTIFICATION_DELAY_TIME, null);
         if (score >= highScore) {
             highScore = score;
             recordHighScore();
         }
         disposable.add(viewModel.setFinalScore(score)
-            .subscribe());
+                .subscribe());
 
         mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-            viewModel.getWalletAddress()));
+                viewModel.getWalletAddress()));
     }
 
     private Cell getVector(int direction) {

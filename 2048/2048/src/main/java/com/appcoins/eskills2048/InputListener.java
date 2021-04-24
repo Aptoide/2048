@@ -5,6 +5,10 @@ import android.content.DialogInterface;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.appcoins.eskills2048.model.RoomResponse;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+
 class InputListener implements View.OnTouchListener {
 
     private static final int SWIPE_MIN_DISTANCE = 0;
@@ -47,7 +51,7 @@ class InputListener implements View.OnTouchListener {
                 lastDy = 0;
                 hasMoved = false;
                 beganOnIcon = iconPressed(mView.sXNewGame, mView.sYIcons)
-                              || iconPressed(mView.sXUndo, mView.sYIcons);
+                        || iconPressed(mView.sXUndo, mView.sYIcons);
                 return true;
             case MotionEvent.ACTION_MOVE:
                 x = event.getX();
@@ -137,6 +141,11 @@ class InputListener implements View.OnTouchListener {
 
                     } else if (iconPressed(mView.sXUndo, mView.sYIcons)) {
                         mView.game.revertUndoState();
+                    } else if (iconPressed(mView.sXLeaderBoard, mView.sYIcons)) {
+                        mView.game.getLeaderBoard()
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .doOnSuccess(this::createLeaderBoardDialog)
+                                .subscribe();
                     } else if (isTap(2) && inRange(mView.startingX, x, mView.endingX)
                             && inRange(mView.startingY, x, mView.endingY) && mView.continueButtonEnabled) {
                         mView.game.setEndlessMode();
@@ -144,6 +153,14 @@ class InputListener implements View.OnTouchListener {
                 }
         }
         return true;
+    }
+
+    private void createLeaderBoardDialog(String leaderBoard) {
+        new AlertDialog.Builder(mView.getContext())
+                .setTitle(R.string.leader_board)
+                .setMessage(leaderBoard)
+                .setNegativeButton(R.string.continue_game, null)
+                .show();
     }
 
     private float pathMoved() {
