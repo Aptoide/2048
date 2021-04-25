@@ -17,4 +17,6 @@
   <string name="waiting_for_opponents_to_finish">Waiting for opponents to finish game.</string>
   <string name="you_won">You Won</string>
   <string name="you_lost">You Lost</string>
+  <string name="opponent">OPPONENT</string>
+  <string name="opponent_score">SCORE</string>
 </resources>
