@@ -38,7 +38,6 @@ public class MainView extends View {
     public int endingY;
     //Icon variables
     public int sYIcons;
-    public int sXNewGame;
     public int sXUndo;
     public int iconSize;
     //Misc
@@ -120,13 +119,7 @@ public class MainView extends View {
         //Reset the transparency of the screen
 
         canvas.drawBitmap(background, 0, 0, paint);
-
         drawScoreText(canvas);
-
-        if (!game.isActive() && !game.aGrid.isAnimationActive()) {
-            drawNewGameButton(canvas, true);
-        }
-
         drawCells(canvas);
 
         if (!game.isActive()) {
@@ -265,40 +258,13 @@ public class MainView extends View {
                 paint);
     }
 
-    private void drawNewGameButton(Canvas canvas, boolean lightUp) {
-
-        if (lightUp) {
-            drawDrawable(canvas,
-                    lightUpRectangle,
-                    sXNewGame,
-                    sYIcons,
-                    sXNewGame + iconSize,
-                    sYIcons + iconSize
-            );
-        } else {
-            drawDrawable(canvas,
-                    backgroundRectangle,
-                    sXNewGame,
-                    sYIcons, sXNewGame + iconSize,
-                    sYIcons + iconSize
-            );
-        }
-
-        drawDrawable(canvas,
-                getResources().getDrawable(R.drawable.ic_action_refresh),
-                sXNewGame + iconPaddingSize,
-                sYIcons + iconPaddingSize,
-                sXNewGame + iconSize - iconPaddingSize,
-                sYIcons + iconSize - iconPaddingSize
-        );
-    }
-
     private void drawUndoButton(Canvas canvas) {
 
         drawDrawable(canvas,
                 backgroundRectangle,
                 sXUndo,
-                sYIcons, sXUndo + iconSize,
+                sYIcons,
+                sXUndo + iconSize,
                 sYIcons + iconSize
         );
 
@@ -493,7 +459,6 @@ public class MainView extends View {
         background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(background);
         drawHeader(canvas);
-        drawNewGameButton(canvas, false);
         drawUndoButton(canvas);
         drawBackground(canvas);
         drawBackgroundGrid(canvas);
@@ -626,8 +591,7 @@ public class MainView extends View {
         eYAll = (int) (bodyStartYAll + textShiftYAll + bodyTextSize / 2 + textPaddingSize);
 
         sYIcons = (startingY + eYAll) / 2 - iconSize / 2;
-        sXNewGame = (endingX - iconSize);
-        sXUndo = sXNewGame - iconSize * 3 / 2 - iconPaddingSize;
+        sXUndo = endingX - iconSize;
         resyncTime();
     }
 

@@ -8,7 +8,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 27
         versionName "1.1.11"
@@ -46,4 +46,5 @@ dependencies {
     implementation "com.google.code.gson:gson:2.8.6"
 
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+    implementation "com.airbnb.android:lottie:3.7.0"
 }

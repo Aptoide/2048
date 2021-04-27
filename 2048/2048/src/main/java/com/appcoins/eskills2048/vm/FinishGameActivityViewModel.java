@@ -5,6 +5,8 @@ import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +21,15 @@ public class FinishGameActivityViewModel {
     this.getRoomUseCase = getRoomUseCase;
     this.session = session;
     this.walletAddress = walletAddress;
+  }
+
+  public Single<User> getOpponent() {
+    return getRoomUseCase.getRoom(session)
+        .map(roomResponse -> {
+            List<User> roomUsers = roomResponse.getOpponents(walletAddress);
+            return roomUsers.get(0);
+        })
+        .subscribeOn(Schedulers.io());
   }
 
   public Single<Boolean> isWinner() {
