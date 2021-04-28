@@ -60,6 +60,7 @@ public class MainGame {
     public long opponentScore = 0;
     public String opponentName = "loading...";
     private long bufferScore = 0;
+    private static final int MAX_CHAR_DISPLAY_USERNAME = 11;
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
 
@@ -102,7 +103,7 @@ public class MainGame {
         List<User> roomUsers = roomResponse.getOpponents(viewModel.getWalletAddress());
         User opponent = roomUsers.get(0);
         opponentScore = opponent.getScore();
-        opponentName = truncate(opponent.getUserName(), 12);
+        opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
 
     }
 

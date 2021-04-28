@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +20,7 @@ import com.appcoins.eskills2048.repository.RoomRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.vm.FinishGameActivityViewModel;
 
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class FinishGameActivity extends AppCompatActivity {
@@ -45,10 +47,8 @@ public class FinishGameActivity extends AppCompatActivity {
     setContentView(binding.getRoot());
 
     String session = getIntent().getStringExtra(SESSION);
-    String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
     viewModel = new FinishGameActivityViewModel(
-        new GetRoomUseCase(new RoomRepository(RoomApiFactory.buildRoomApi())), session,
-        walletAddress);
+        new GetRoomUseCase(new RoomRepository(RoomApiFactory.buildRoomApi())), session);
 
     binding.restartButton.setOnClickListener(view -> {
       Intent intent = new Intent(this, LaunchActivity.class);

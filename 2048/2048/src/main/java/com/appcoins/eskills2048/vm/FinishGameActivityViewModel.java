@@ -1,6 +1,7 @@
 package com.appcoins.eskills2048.vm;
 
 import com.appcoins.eskills2048.model.RoomResponse;
+import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
@@ -14,13 +15,10 @@ public class FinishGameActivityViewModel {
 
   private final GetRoomUseCase getRoomUseCase;
   private final String session;
-  private final String walletAddress;
 
-  public FinishGameActivityViewModel(GetRoomUseCase getRoomUseCase, String session,
-      String walletAddress) {
+  public FinishGameActivityViewModel(GetRoomUseCase getRoomUseCase, String session) {
     this.getRoomUseCase = getRoomUseCase;
     this.session = session;
-    this.walletAddress = walletAddress;
   }
 
   public Single<User> getOpponent() {
@@ -43,25 +41,26 @@ public class FinishGameActivityViewModel {
   }
 
   private boolean isWinner(RoomResponse roomResponse) {
-    List<User> users = roomResponse.getUsers();
-    User winner;
-    if (users.get(0)
-        .getScore() > users.get(1)
-        .getScore()) {
-      winner = users.get(0);
-    } else {
-      winner = users.get(1);
-    }
+    String winnerWalletAddress = roomResponse.getWinner()
+        .getWalletAddress();
 
-    return winner.getWalletAddress()
-        .equalsIgnoreCase(walletAddress);
+    String currentUserWalletAddress = roomResponse.getCurrentUser()
+        .getWalletAddress();
+
+    return winnerWalletAddress.equalsIgnoreCase(currentUserWalletAddress);
   }
 
   private boolean isInProgress(RoomResponse roomResponse) {
+    boolean completed = roomResponse.getStatus() == RoomStatus.COMPLETED;
+
     List<User> users = roomResponse.getUsers();
-    return users.get(0)
+    if (completed && (users.get(0)
         .getStatus() == UserStatus.PLAYING
         || users.get(1)
-        .getStatus() == UserStatus.PLAYING;
+        .getStatus() == UserStatus.PLAYING)) {
+      throw new IllegalStateException("Match Completed but some players are still playing!");
+    }
+
+    return !completed;
   }
 }
