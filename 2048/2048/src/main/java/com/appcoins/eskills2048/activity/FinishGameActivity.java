@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +16,7 @@ import com.appcoins.eskills2048.LaunchActivity;
 import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.databinding.ActivityFinishGameBinding;
 import com.appcoins.eskills2048.factory.RoomApiFactory;
+import com.appcoins.eskills2048.model.RoomResult;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.repository.RoomRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
@@ -22,6 +24,7 @@ import com.appcoins.eskills2048.vm.FinishGameActivityViewModel;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class FinishGameActivity extends AppCompatActivity {
 
@@ -47,8 +50,9 @@ public class FinishGameActivity extends AppCompatActivity {
     setContentView(binding.getRoot());
 
     String session = getIntent().getStringExtra(SESSION);
+    String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
     viewModel = new FinishGameActivityViewModel(
-        new GetRoomUseCase(new RoomRepository(RoomApiFactory.buildRoomApi())), session);
+        new GetRoomUseCase(new RoomRepository(RoomApiFactory.buildRoomApi())), session, walletAddress);
 
     binding.restartButton.setOnClickListener(view -> {
       Intent intent = new Intent(this, LaunchActivity.class);
@@ -56,39 +60,47 @@ public class FinishGameActivity extends AppCompatActivity {
       startActivity(intent);
     });
 
-    viewModel.isWinner()
-        .doOnSuccess(isWinner -> viewModel.getOpponent()
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess(opponentInfo -> setWinner(isWinner, opponentInfo))
-            .subscribe())
+    viewModel.getRoomResult()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnSuccess(this::setRoomResultDetails)
         .doOnError(this::showErrorMessage)
         .subscribe();
   }
 
-  private void setWinner(Boolean winner, User opponentInfo) {
+  private void setRoomResultDetails(RoomResult roomResult) {
     binding.lottieAnimation.setAnimation(R.raw.transact_credits_successful);
     binding.lottieAnimation.playAnimation();
 
-    setDescriptionText(winner);
+    if (viewModel.isWinner(roomResult)) {
+      handleRoomWinnerBehaviour(roomResult);
+    } else {
+      handleRoomLoserBehaviour(roomResult);
+    }
     increaseCardSize();
-
-    String opponentDetails = getResources().getString(
-        R.string.opponent_details, opponentInfo.getUserName(), opponentInfo.getScore());
-    binding.opponentDetailsText.setText(opponentDetails);
-    binding.opponentDetailsText.setVisibility(View.VISIBLE);
     binding.restartButton.setEnabled(true);
   }
 
-  private void setDescriptionText(Boolean winner) {
-    if (winner) {
-      String partyEmoji = EmojiUtils.getEmojiByUnicode(PARTY_POPPER_EMOJI_UNICODE);
-      String descriptionText = getResources().getString(R.string.you_won, partyEmoji);
-      binding.animationDescriptionText.setText(descriptionText);
-    } else {
-      String sadEmoji = EmojiUtils.getEmojiByUnicode(PENSIVE_FACE_EMOJI_UNICODE);
-      String descriptionText = getResources().getString(R.string.you_lost, sadEmoji);
-      binding.animationDescriptionText.setText(descriptionText);
-    }
+  private void handleRoomWinnerBehaviour(RoomResult roomResult) {
+    String partyEmoji = EmojiUtils.getEmojiByUnicode(PARTY_POPPER_EMOJI_UNICODE);
+    String descriptionText = getResources().getString(R.string.you_won, partyEmoji);
+    binding.animationDescriptionText.setText(descriptionText);
+
+    String opponentDetails = getResources().getString(
+        R.string.amount_won_details, roomResult.getWinnerAmount());
+    binding.secondaryMessage.setText(opponentDetails);
+    binding.secondaryMessage.setVisibility(View.VISIBLE);
+  }
+
+  private void handleRoomLoserBehaviour(RoomResult roomResult) {
+    String sadEmoji = EmojiUtils.getEmojiByUnicode(PENSIVE_FACE_EMOJI_UNICODE);
+    String descriptionText = getResources().getString(R.string.you_lost, sadEmoji);
+    binding.animationDescriptionText.setText(descriptionText);
+
+    String opponentDetails = getResources().getString(
+        R.string.opponent_details, roomResult.getWinner().getUserName(), roomResult.getWinner().getScore());
+    binding.secondaryMessage.setText(opponentDetails);
+    binding.secondaryMessage.setVisibility(View.VISIBLE);
   }
 
   private void increaseCardSize() {
