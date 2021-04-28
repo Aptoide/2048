@@ -3,12 +3,22 @@ package com.appcoins.eskills2048;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
 import com.appcoins.eskills2048.activity.FinishGameActivity;
+import com.appcoins.eskills2048.model.RoomResponse;
+import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
-import io.reactivex.disposables.CompositeDisposable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class MainGame {
 
@@ -48,7 +58,11 @@ public class MainGame {
     public long score = 0;
     public long highScore = 0;
     public long lastScore = 0;
+    public long opponentScore = 0;
+    public String opponentName = "loading...";
     private long bufferScore = 0;
+    private static final int MAX_CHAR_DISPLAY_USERNAME = 11;
+
 
     public MainGame(Context context, MainView view, MainGameViewModel viewModel) {
         mContext = context;
@@ -61,6 +75,11 @@ public class MainGame {
     public void newGame() {
         if (grid == null) {
             grid = new Grid(numSquaresX, numSquaresY);
+            disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
+                .flatMapSingle(aLong -> viewModel.getRoom()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSuccess(MainGame.this::updateOpponentInfo))
+                .subscribe());
         } else {
             prepareUndoState();
             saveUndoState();
@@ -79,6 +98,22 @@ public class MainGame {
         mView.refreshLastTime = true;
         mView.resyncTime();
         mView.invalidate();
+    }
+
+    private void updateOpponentInfo(RoomResponse roomResponse) {
+        List<User> roomUsers = roomResponse.getOpponents(viewModel.getWalletAddress());
+        User opponent = roomUsers.get(0);
+        opponentScore = opponent.getScore();
+        opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
+        mView.invalidate();
+    }
+
+    public String truncate(String str, int len) {
+        if (str.length() > len) {
+            return str.substring(0, len) + "...";
+        } else {
+            return str;
+        }
     }
 
     private void addStartTiles() {
@@ -161,7 +196,7 @@ public class MainGame {
             grid.revertTiles();
             score = lastScore;
             viewModel.setScore(score)
-                .subscribe();
+                    .subscribe();
             gameState = lastGameState;
             mView.refreshLastTime = true;
             mView.invalidate();
@@ -223,7 +258,7 @@ public class MainGame {
                         // Update the score
                         score = score + merged.getValue();
                         viewModel.setScore(score)
-                            .subscribe();
+                                .subscribe();
                         highScore = Math.max(score, highScore);
 
                         // The mighty 2048 tile
@@ -262,16 +297,16 @@ public class MainGame {
 
     private void endGame() {
         aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
-            NOTIFICATION_DELAY_TIME, null);
+                NOTIFICATION_DELAY_TIME, null);
         if (score >= highScore) {
             highScore = score;
             recordHighScore();
         }
         disposable.add(viewModel.setFinalScore(score)
-            .subscribe());
+                .subscribe());
 
         mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-            viewModel.getWalletAddress()));
+                viewModel.getWalletAddress()));
     }
 
     private Cell getVector(int direction) {

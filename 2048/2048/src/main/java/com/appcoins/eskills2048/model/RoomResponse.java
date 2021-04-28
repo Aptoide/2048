@@ -1,6 +1,8 @@
 package com.appcoins.eskills2048.model;
 
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 import lombok.ToString;
@@ -14,4 +16,14 @@ import lombok.ToString;
   @SerializedName("status") private RoomStatus status;
   @SerializedName("room_stake") private RoomStake roomStake;
   @SerializedName("users") private List<User> users;
+
+  public List<User> getOpponents(String walletAddress) {
+    List<User> opponents = new ArrayList<>();
+    for (User user: users) {
+      if (!user.getWalletAddress().equalsIgnoreCase(walletAddress)) {
+        opponents.add(user);
+      }
+    }
+    return opponents;
+  }
 }
