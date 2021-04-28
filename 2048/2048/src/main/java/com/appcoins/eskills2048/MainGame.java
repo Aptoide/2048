@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -61,7 +62,6 @@ public class MainGame {
     public String opponentName = "loading...";
     private long bufferScore = 0;
     private static final int MAX_CHAR_DISPLAY_USERNAME = 11;
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
 
     public MainGame(Context context, MainView view, MainGameViewModel viewModel) {
@@ -75,10 +75,11 @@ public class MainGame {
     public void newGame() {
         if (grid == null) {
             grid = new Grid(numSquaresX, numSquaresY);
-            executorService.scheduleAtFixedRate(() -> viewModel.getRoom()
+            disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
+                .flatMapSingle(aLong -> viewModel.getRoom()
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSuccess(MainGame.this::updateOpponentInfo)
-                    .subscribe(), 0L, 3L, TimeUnit.SECONDS);
+                    .doOnSuccess(MainGame.this::updateOpponentInfo))
+                .subscribe());
         } else {
             prepareUndoState();
             saveUndoState();
@@ -104,7 +105,7 @@ public class MainGame {
         User opponent = roomUsers.get(0);
         opponentScore = opponent.getScore();
         opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
-
+        mView.invalidate();
     }
 
     public String truncate(String str, int len) {
@@ -295,7 +296,6 @@ public class MainGame {
     }
 
     private void endGame() {
-        executorService.shutdownNow();
         aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
                 NOTIFICATION_DELAY_TIME, null);
         if (score >= highScore) {

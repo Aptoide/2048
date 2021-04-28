@@ -79,7 +79,6 @@ public class MainView extends View {
 
     public MainView(Context context, MainGameViewModel viewModel) {
         super(context);
-        startUpdateViewSchedule();
 
         Resources resources = context.getResources();
         //Loading resources
@@ -99,15 +98,6 @@ public class MainView extends View {
         setOnTouchListener(new InputListener(this));
         game.newGame();
 
-    }
-
-    private void startUpdateViewSchedule() {
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                postInvalidate();
-            }
-        }, 0, 1000L);
     }
 
     private static int log2(int n) {
