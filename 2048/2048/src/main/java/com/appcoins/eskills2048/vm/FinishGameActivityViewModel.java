@@ -1,11 +1,14 @@
 package com.appcoins.eskills2048.vm;
 
 import com.appcoins.eskills2048.model.RoomResponse;
+import com.appcoins.eskills2048.model.RoomResult;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -13,43 +16,39 @@ public class FinishGameActivityViewModel {
 
   private final GetRoomUseCase getRoomUseCase;
   private final String session;
+  private final String walletAddress;
 
-  public FinishGameActivityViewModel(GetRoomUseCase getRoomUseCase, String session) {
+  public FinishGameActivityViewModel(GetRoomUseCase getRoomUseCase, String session, String walletAddress) {
     this.getRoomUseCase = getRoomUseCase;
     this.session = session;
+    this.walletAddress = walletAddress;
   }
 
-  public Single<Boolean> isWinner() {
+  public Single<RoomResult> getRoomResult() {
     return getRoomUseCase.getRoom(session)
         .toObservable()
         .repeatWhen(objectFlowable -> objectFlowable.delay(3, TimeUnit.SECONDS))
         .skipWhile(this::isInProgress)
-        .map(this::isWinner)
+        .map(RoomResponse::getRoomResult)
         .take(1)
         .singleOrError();
   }
 
-  private boolean isWinner(RoomResponse roomResponse) {
-    String winnerWalletAddress = roomResponse.getWinner()
-        .getWalletAddress();
-
-    String currentUserWalletAddress = roomResponse.getCurrentUser()
-        .getWalletAddress();
-
-    return winnerWalletAddress.equalsIgnoreCase(currentUserWalletAddress);
+  public boolean isWinner(RoomResult roomResult) {
+    return roomResult.getWinner().getWalletAddress()
+        .equalsIgnoreCase(walletAddress);
   }
+
 
   private boolean isInProgress(RoomResponse roomResponse) {
     boolean completed = roomResponse.getStatus() == RoomStatus.COMPLETED;
 
     List<User> users = roomResponse.getUsers();
-    if (completed && (users.get(0)
-        .getStatus() == UserStatus.PLAYING
-        || users.get(1)
-        .getStatus() == UserStatus.PLAYING)) {
-      throw new IllegalStateException("Match Completed but some players are still playing!");
+    for (User user: roomResponse.getUsers()) {
+      if (user.getStatus() == UserStatus.PLAYING && completed) {
+        throw new IllegalStateException("Match Completed but some players are still playing!");
+      }
     }
-
     return !completed;
   }
 }

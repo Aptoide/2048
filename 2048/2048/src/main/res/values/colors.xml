@@ -7,4 +7,12 @@
     <color name="icon_background">#e8ba2e</color>
 
     <color name="status_background">#bbada0</color>
+
+    <!-- AppCoins Wallet colors -->
+    <color name="white">#FFFFFFFF</color>
+    <color name="btn_disable_color">#00000000</color>
+    <color name="btn_start_gradient_color">#fc9d48</color>
+    <color name="btn_end_gradient_color">#ff578c</color>
+    <color name="btn_text_disable_color">#42000000</color>
+    <color name="btn_text_enable_color">#ffffff</color>
 </resources>

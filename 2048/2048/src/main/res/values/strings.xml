@@ -15,8 +15,12 @@
   <string name="reset_dialog_title">Reset game?</string>
   <string name="reset_dialog_message">Are you sure you wish to reset the game?</string>
   <string name="waiting_for_opponents_to_finish">Waiting for opponents to finish game.</string>
-  <string name="you_won">You Won</string>
-  <string name="you_lost">You Lost</string>
+  <string name="opponent_details">(%1$s did %2$d points)</string>
+  <string name="amount_won_details">(your wallet is now %1$.2fd$ heavier)</string>
+  <string name="you_won">You Won! %1$s</string>
+  <string name="you_lost">You Lost! %1$s</string>
+  <string name="unknown_error">An error has occurred.</string>
   <string name="opponent">OPPONENT</string>
   <string name="opponent_score">SCORE</string>
+  <string name="restart">RESTART</string>
 </resources>

@@ -20,14 +20,15 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            ></activity>
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".activity.FinishGameActivity"
+        <activity
+            android:name=".activity.FinishGameActivity"
             android:screenOrientation="portrait"
-            ></activity>
+            android:theme="@style/Theme.AppCompat.Transparent.FitAppWindow" />
     </application>
 
 </manifest>

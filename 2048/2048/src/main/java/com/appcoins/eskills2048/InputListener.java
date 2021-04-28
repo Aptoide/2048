@@ -46,8 +46,7 @@ class InputListener implements View.OnTouchListener {
                 lastDx = 0;
                 lastDy = 0;
                 hasMoved = false;
-                beganOnIcon = iconPressed(mView.sXNewGame, mView.sYIcons)
-                              || iconPressed(mView.sXUndo, mView.sYIcons);
+                beganOnIcon = iconPressed(mView.sXUndo, mView.sYIcons);
                 return true;
             case MotionEvent.ACTION_MOVE:
                 x = event.getX();
@@ -118,24 +117,7 @@ class InputListener implements View.OnTouchListener {
                 veryLastDirection = 1;
                 //"Menu" inputs
                 if (!hasMoved) {
-                    if (iconPressed(mView.sXNewGame, mView.sYIcons)) {
-                        if (!mView.game.gameLost()) {
-                            new AlertDialog.Builder(mView.getContext())
-                                    .setPositiveButton(R.string.reset, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            mView.game.newGame();
-                                        }
-                                    })
-                                    .setNegativeButton(R.string.continue_game, null)
-                                    .setTitle(R.string.reset_dialog_title)
-                                    .setMessage(R.string.reset_dialog_message)
-                                    .show();
-                        } else {
-                            mView.game.newGame();
-                        }
-
-                    } else if (iconPressed(mView.sXUndo, mView.sYIcons)) {
+                    if (iconPressed(mView.sXUndo, mView.sYIcons)) {
                         mView.game.revertUndoState();
                     } else if (isTap(2) && inRange(mView.startingX, x, mView.endingX)
                             && inRange(mView.startingY, x, mView.endingY) && mView.continueButtonEnabled) {
