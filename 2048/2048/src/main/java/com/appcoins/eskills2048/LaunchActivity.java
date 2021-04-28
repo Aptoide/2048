@@ -30,7 +30,7 @@ public class LaunchActivity extends AppCompatActivity {
     Intent i = new Intent();
     i.putExtra(USER_ID, userId);
     i.putExtra(PACKAGE_NAME, getApplicationContext().getPackageName());
-    i.setClassName("com.appcoins.wallet.dev", "cm.aptoide.skills.SkillsActivity");
+    i.setClassName(BuildConfig.WALLET_PACKAGE_NAME, "cm.aptoide.skills.SkillsActivity");
     return i;
   }
 

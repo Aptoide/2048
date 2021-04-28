@@ -1,5 +1,6 @@
 package com.appcoins.eskills2048.factory;
 
+import com.appcoins.eskills2048.BuildConfig;
 import com.appcoins.eskills2048.api.RoomApi;
 import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
@@ -10,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RoomApiFactory {
 
-  public static final String ENDPOINT = "https://api.eskills.dev.catappult.io";
+  public static final String ENDPOINT = BuildConfig.BASE_HOST_SKILLS;
 
   public static final RoomApi buildRoomApi() {
     return new Retrofit.Builder().baseUrl(ENDPOINT)
