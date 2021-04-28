@@ -1,25 +1,11 @@
 package com.appcoins.eskills2048.model;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Data;
 
+@Data
 public class RoomStake {
 
   @SerializedName("appc") private double appc;
   @SerializedName("usd") private int usd;
-
-  public double getAppc() {
-    return appc;
-  }
-
-  public void setAppc(double appc) {
-    this.appc = appc;
-  }
-
-  public int getUsd() {
-    return usd;
-  }
-
-  public void setUsd(int usd) {
-    this.usd = usd;
-  }
 }

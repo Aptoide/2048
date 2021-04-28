@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.R;
@@ -12,6 +13,7 @@ import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.repository.RoomRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.vm.FinishGameActivityViewModel;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class FinishGameActivity extends AppCompatActivity {
@@ -35,13 +37,14 @@ public class FinishGameActivity extends AppCompatActivity {
     setContentView(binding.getRoot());
 
     String session = getIntent().getStringExtra(SESSION);
-    String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
     viewModel = new FinishGameActivityViewModel(
-        new GetRoomUseCase(new RoomRepository(RoomApiFactory.buildRoomApi())), session,
-        walletAddress);
+        new GetRoomUseCase(new RoomRepository(RoomApiFactory.buildRoomApi())), session);
 
     viewModel.isWinner()
         .observeOn(AndroidSchedulers.mainThread())
+        // TODO: 21-04-2021 remove this two lines
+        .doOnError(throwable -> Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG))
+        .onErrorResumeNext(Single.just(true))
         .doOnSuccess(this::setWinner)
         .subscribe();
   }
