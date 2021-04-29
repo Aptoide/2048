@@ -189,7 +189,6 @@ public class MainView extends View {
         int sXOpponentScore = eXOpponentName + textPaddingSize;
         int eXOpponentScore = sXOpponentScore + textWidthOpponentScore;
         int sYOpponentScore = sYIcons;
-        int eYOpponentScore = sYIcons + iconSize;
 
         //Outputting high-scores box
         backgroundRectangle.setBounds(sXHighScore, sYAll, eXHighScore, eYAll);
@@ -212,7 +211,7 @@ public class MainView extends View {
         canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, bodyStartYAll, paint);
 
         //Outputting opponent box
-        backgroundRectangle.setBounds(sXOpponentName, sYOpponentName, eXOpponentName, eYOpponentName);
+        backgroundRectangle.setBounds(sXOpponentName, sYOpponentName, eXOpponentScore, eYOpponentName);
         backgroundRectangle.draw(canvas);
         paint.setTextSize(titleTextSize);
         paint.setColor(getResources().getColor(R.color.text_brown));
@@ -230,8 +229,6 @@ public class MainView extends View {
                 paint);
 
         //Outputting opponent score box
-        backgroundRectangle.setBounds(sXOpponentScore, sYOpponentScore, eXOpponentScore, eYOpponentScore);
-        backgroundRectangle.draw(canvas);
         paint.setTextSize(titleTextSize);
         paint.setColor(getResources().getColor(R.color.text_brown));
         canvas.drawText(
