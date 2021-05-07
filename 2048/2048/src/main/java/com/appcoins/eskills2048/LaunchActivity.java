@@ -5,18 +5,18 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class LaunchActivity extends AppCompatActivity {
 
+  private static final int REQUEST_CODE = 123;
   private static final int RESULT_OK = 1;
-  private static final int RC_ESKILLS = 10003;
 
   public static final String USER_ID = "USER_ID";
   public static final String ROOM_ID = "ROOM_ID";
@@ -32,11 +32,9 @@ public class LaunchActivity extends AppCompatActivity {
         + "value=1&currency=USD&product=antifreeze&product_label=Become a champion (1v1)"
         + "&user_id=" + userId + "&domain=" + getPackageName() + "&sandbox=LIVE";
 
-    Log.d("LaunchActivity", url);
-
     Intent intent = buildTargetIntent(url);
     try {
-      startActivityForResult(intent, RC_ESKILLS);
+      startActivityForResult(intent, REQUEST_CODE);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -76,7 +74,7 @@ public class LaunchActivity extends AppCompatActivity {
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if (requestCode == RC_ESKILLS && resultCode == RESULT_OK) {
+    if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
       startActivity(buildMainActivityIntent(data));
       finish();
     }
