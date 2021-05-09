@@ -102,11 +102,14 @@ public class MainGame {
     }
 
     private void updateOpponentInfo(RoomResponse roomResponse) {
-        List<User> roomUsers = roomResponse.getOpponents(viewModel.getWalletAddress());
-        User opponent = roomUsers.get(0);
-        opponentScore = opponent.getScore();
-        opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
-        mView.invalidate();
+        List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
+        // if match environment is set to sandbox, the number of opponents can be 0
+        if (opponents.size() > 0) {
+            User opponent = opponents.get(0);
+            opponentScore = opponent.getScore();
+            opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
+            mView.invalidate();
+        }
     }
 
     public String truncate(String str, int len) {
