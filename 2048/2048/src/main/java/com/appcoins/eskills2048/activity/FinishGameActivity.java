@@ -17,6 +17,7 @@ import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.model.RoomResult;
 import com.appcoins.eskills2048.repository.RoomRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
+import com.appcoins.eskills2048.util.DeviceScreenManager;
 import com.appcoins.eskills2048.vm.FinishGameActivityViewModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -44,6 +45,7 @@ public class FinishGameActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     binding = ActivityFinishGameBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
+    DeviceScreenManager.keepAwake(getWindow());
 
     String session = getIntent().getStringExtra(SESSION);
     String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
@@ -51,6 +53,7 @@ public class FinishGameActivity extends AppCompatActivity {
         new GetRoomUseCase(new RoomRepository(RoomApiFactory.buildRoomApi())), session, walletAddress);
 
     binding.restartButton.setOnClickListener(view -> {
+      DeviceScreenManager.stopKeepAwake(getWindow());
       Intent intent = new Intent(this, LaunchActivity.class);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
       startActivity(intent);
