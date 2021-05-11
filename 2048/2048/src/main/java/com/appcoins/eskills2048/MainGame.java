@@ -79,6 +79,7 @@ public class MainGame {
                 .flatMapSingle(aLong -> viewModel.getRoom()
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSuccess(MainGame.this::updateOpponentInfo))
+                    .doOnError(Throwable::printStackTrace)
                 .subscribe());
         } else {
             prepareUndoState();
