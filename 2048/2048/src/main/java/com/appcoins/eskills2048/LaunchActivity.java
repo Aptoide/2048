@@ -5,11 +5,15 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
+import com.appcoins.eskills2048.util.DeviceScreenManager;
+import com.appcoins.eskills2048.util.KeyboardUtils;
+import com.appcoins.eskills2048.util.UserDataStorage;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +23,8 @@ public class LaunchActivity extends AppCompatActivity {
 
   private static final int REQUEST_CODE = 123;
   private static final int RESULT_OK = 1;
+  private static final String SHARED_PREFERENCES_NAME = "SKILL_SHARED_PREFERENCES";
+  private static final String PREFERENCES_USER_NAME = "PREFERENCES_USER_NAME";
 
   public static final String USER_ID = "USER_ID";
   public static final String ROOM_ID = "ROOM_ID";
@@ -28,6 +34,7 @@ public class LaunchActivity extends AppCompatActivity {
   private final String userId = "string_user_id";
 
   private ActivityLaunchBinding binding;
+  private UserDataStorage userDataStorage;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,14 +42,33 @@ public class LaunchActivity extends AppCompatActivity {
     binding = ActivityLaunchBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
 
-    binding.newGameButton.setOnClickListener(view -> launchEskillsFlow(MatchEnvironment.LIVE));
-    binding.sandboxGameButton.setOnClickListener(view -> launchEskillsFlow(MatchEnvironment.SANDBOX));
+    userDataStorage = new UserDataStorage(this, SHARED_PREFERENCES_NAME);
+    binding.startNewGameLayout.newGameButton.setOnClickListener(
+        view -> showCreateTicket(MatchEnvironment.LIVE));
+    binding.startNewGameLayout.sandboxGameButton.setOnClickListener(
+        view -> showCreateTicket(MatchEnvironment.SANDBOX));
   }
 
-  private void launchEskillsFlow(MatchEnvironment environment) {
+  private void showCreateTicket(MatchEnvironment environment) {
+    binding.startNewGameLayout.startNewGameCard.setVisibility(View.GONE);
+    binding.createTicketLayout.createTicketCard.setVisibility(View.VISIBLE);
+    binding.createTicketLayout.userName.setText(userDataStorage.get(PREFERENCES_USER_NAME));
+
+    binding.createTicketLayout.findRoomButton.setOnClickListener(view -> {
+      String userName = binding.createTicketLayout.userName.getText().toString();
+      userDataStorage.put(PREFERENCES_USER_NAME, userName);
+      KeyboardUtils.hideKeyboard(view);
+      DeviceScreenManager.keepAwake(getWindow());
+
+      launchEskillsFlow(environment, userName);
+    });
+  }
+
+
+  private void launchEskillsFlow(MatchEnvironment environment, String userName) {
     String url = BuildConfig.BASE_HOST_PAYMENT + "/transaction/eskills?"
         + "value=1&currency=USD&product=antifreeze&product_label=Become a champion (1v1)"
-        + "&user_id=" + userId + "&domain=" + getPackageName()
+        + "&user_id=" + userId + "&user_name=" + userName + "&domain=" + getPackageName()
         + "&environment=" + environment.name();
 
     Intent intent = buildTargetIntent(url);

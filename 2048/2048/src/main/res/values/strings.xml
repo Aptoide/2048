@@ -26,4 +26,7 @@
   <string name="restart">RESTART</string>
   <string name="new_game">New Game</string>
   <string name="sandbox_game">Sandbox Game</string>
+
+  <string name="user_name">Username</string>
+  <string name="find_room">Find a Room</string>
 </resources>
