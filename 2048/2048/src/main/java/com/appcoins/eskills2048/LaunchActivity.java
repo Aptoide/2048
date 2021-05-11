@@ -73,9 +73,8 @@ public class LaunchActivity extends AppCompatActivity {
 
   private void launchEskillsFlow(MatchEnvironment environment, String userName) {
     String url = BuildConfig.BASE_HOST_PAYMENT + "/transaction/eskills?"
-        + "value=1&currency=USD&product=antifreeze&product_label=Become a champion (1v1)"
-        + "&user_id=" + userId + "&user_name=" + userName + "&domain=" + getPackageName()
-        + "&environment=" + environment.name();
+        + "value=1&currency=USD&product=antifreeze" + "&user_id=" + userId + "&user_name="
+        + userName + "&domain=" + getPackageName() + "&environment=" + environment.name();
 
     Intent intent = buildTargetIntent(url);
     try {
