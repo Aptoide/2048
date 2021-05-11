@@ -49,6 +49,12 @@ public class LaunchActivity extends AppCompatActivity {
         view -> showCreateTicket(MatchEnvironment.SANDBOX));
   }
 
+  @Override
+  public void onBackPressed() {
+    binding.startNewGameLayout.startNewGameCard.setVisibility(View.VISIBLE);
+    binding.createTicketLayout.createTicketCard.setVisibility(View.GONE);
+  }
+
   private void showCreateTicket(MatchEnvironment environment) {
     binding.startNewGameLayout.startNewGameCard.setVisibility(View.GONE);
     binding.createTicketLayout.createTicketCard.setVisibility(View.VISIBLE);

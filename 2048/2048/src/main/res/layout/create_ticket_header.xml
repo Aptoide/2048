@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     >
@@ -30,12 +29,12 @@
         android:maxLines="1"
         android:textColor="@color/black_87_alpha"
         android:textSize="16sp"
+        android:text="@string/app_name"
         app:layout_constraintBottom_toTopOf="@id/app_sku_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/app_icon"
         app:layout_constraintTop_toTopOf="@id/app_icon"
-        tools:text="@string/app_name"
         />
 
     <TextView
@@ -48,10 +47,10 @@
         android:maxLines="1"
         android:textColor="@color/grey_alpha_active_54"
         android:textSize="12sp"
+        android:text="Gas"
         app:layout_constraintBottom_toBottomOf="@id/app_icon"
         app:layout_constraintStart_toStartOf="@id/app_name"
         app:layout_constraintTop_toBottomOf="@id/app_name"
-        tools:text="Gas"
         />
 
     <TextView
@@ -61,11 +60,11 @@
         android:fontFamily="sans-serif-medium"
         android:textColor="@color/dialog_buy_fiat_value"
         android:textSize="15sp"
+        android:text="1 USD"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/app_icon"
-        tools:text="1 USD"
         />
 
 
