@@ -14,8 +14,6 @@ import android.view.View;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 @SuppressWarnings("deprecation")
 public class MainView extends View {
