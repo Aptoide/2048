@@ -125,7 +125,7 @@ public class LaunchActivity extends AppCompatActivity {
         // url
         intent.setPackage(app.activityInfo.packageName);
         break;
-      } else if (app.activityInfo.packageName.equals("com.appcoins.wallet")) {
+      } else if (app.activityInfo.packageName.equals(BuildConfig.WALLET_PACKAGE_NAME)) {
         // If Aptoide is not installed and wallet is installed then choose Wallet
         // as default to open url
         intent.setPackage(app.activityInfo.packageName);
