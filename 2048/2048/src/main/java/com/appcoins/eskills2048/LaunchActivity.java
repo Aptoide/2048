@@ -37,6 +37,9 @@ public class LaunchActivity extends AppCompatActivity {
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String SESSION = "SESSION";
 
+  private static final String ENTRY_PRICE_DUEL = "1 USD";
+  private static final String ENTRY_PRICE_MULTIPLAYER = "3 USD";
+
   private final String userId = "string_user_id";
 
   private ActivityLaunchBinding binding;
@@ -78,12 +81,11 @@ public class LaunchActivity extends AppCompatActivity {
   }
 
   private void setGamePrice() {
-    // TODO check with an Androider how to do this properly
     binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
       if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
-        binding.createTicketLayout.createTicketHeader.fiatPrice.setText("1 USD");
+        binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_DUEL);
       } else if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
-        binding.createTicketLayout.createTicketHeader.fiatPrice.setText("3 USD");
+        binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_MULTIPLAYER);
       }
     });
   }
