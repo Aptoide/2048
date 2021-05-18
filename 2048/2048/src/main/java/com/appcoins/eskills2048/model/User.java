@@ -14,5 +14,6 @@ public class User {
   @SerializedName("room_metadata") private Map<String, String> roomMetadata;
   @SerializedName("status") private UserStatus status;
   @SerializedName("score") private int score;
+  @SerializedName("rank") private int rank;
 
 }

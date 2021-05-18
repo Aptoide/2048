@@ -6,22 +6,29 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
+import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
 import com.appcoins.eskills2048.util.KeyboardUtils;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.google.gson.Gson;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public class LaunchActivity extends AppCompatActivity {
 
   private static final int REQUEST_CODE = 123;
-  private static final int RESULT_OK = 1;
+  private static final int RESULT_OK = 0;
+  private static final int RESULT_USER_CANCELED = 1;
+  private static final int RESULT_ERROR = 6;
   private static final String SHARED_PREFERENCES_NAME = "SKILL_SHARED_PREFERENCES";
   private static final String PREFERENCES_USER_NAME = "PREFERENCES_USER_NAME";
 
@@ -29,6 +36,9 @@ public class LaunchActivity extends AppCompatActivity {
   public static final String ROOM_ID = "ROOM_ID";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String SESSION = "SESSION";
+
+  private static final String ENTRY_PRICE_DUEL = "1 USD";
+  private static final String ENTRY_PRICE_MULTIPLAYER = "3 USD";
 
   private final String userId = "string_user_id";
 
@@ -43,9 +53,9 @@ public class LaunchActivity extends AppCompatActivity {
 
     userDataStorage = new UserDataStorage(this, SHARED_PREFERENCES_NAME);
     binding.startNewGameLayout.newGameButton.setOnClickListener(
-        view -> showCreateTicket(MatchEnvironment.LIVE));
+        view -> showCreateTicket(MatchDetails.Environment.LIVE));
     binding.startNewGameLayout.sandboxGameButton.setOnClickListener(
-        view -> showCreateTicket(MatchEnvironment.SANDBOX));
+        view -> showCreateTicket(MatchDetails.Environment.SANDBOX));
   }
 
   @Override
@@ -54,10 +64,11 @@ public class LaunchActivity extends AppCompatActivity {
     binding.createTicketLayout.createTicketCard.setVisibility(View.GONE);
   }
 
-  private void showCreateTicket(MatchEnvironment environment) {
+  private void showCreateTicket(MatchDetails.Environment environment) {
     binding.startNewGameLayout.startNewGameCard.setVisibility(View.GONE);
     binding.createTicketLayout.createTicketCard.setVisibility(View.VISIBLE);
     binding.createTicketLayout.userName.setText(userDataStorage.get(PREFERENCES_USER_NAME));
+    setGamePrice();
 
     binding.createTicketLayout.findRoomButton.setOnClickListener(view -> {
       String userName = binding.createTicketLayout.userName.getText().toString();
@@ -65,15 +76,39 @@ public class LaunchActivity extends AppCompatActivity {
       KeyboardUtils.hideKeyboard(view);
       DeviceScreenManager.keepAwake(getWindow());
 
-      launchEskillsFlow(environment, userName);
+      launchEskillsFlow(userName, getMatchDetails(environment));
     });
   }
 
+  private void setGamePrice() {
+    binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+      if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
+        binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_DUEL);
+      } else if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
+        binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_MULTIPLAYER);
+      }
+    });
+  }
 
-  private void launchEskillsFlow(MatchEnvironment environment, String userName) {
+  private MatchDetails getMatchDetails(MatchDetails.Environment environment) {
+    int checkedId = binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId();
+    if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
+      return new MatchDetails("1v1", 1f, "USD", environment, 2);
+    } else if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
+      return new MatchDetails("multiplayer", 3f, "USD", environment, 3);
+    }
+    return null;
+  }
+
+  private void launchEskillsFlow(String userName, MatchDetails matchDetails) {
     String url = BuildConfig.BASE_HOST_PAYMENT
         + "/transaction/eskills?"
-        + "value=1&currency=USD&product=antifreeze"
+        + "value="
+        + matchDetails.getValue()
+        + "&currency="
+        + matchDetails.getCurrency()
+        + "&product="
+        + matchDetails.getProduct()
         + "&user_id="
         + userId
         + "&user_name="
@@ -81,9 +116,11 @@ public class LaunchActivity extends AppCompatActivity {
         + "&domain="
         + getPackageName()
         + "&environment="
-        + environment.name()
+        + matchDetails.getEnvironment().name()
         + "&metadata="
-        + buildMetaData();
+        + buildMetaData()
+        + "&number_of_users="
+        + matchDetails.getNumberOfUsers();
 
     Intent intent = buildTargetIntent(url);
     try {
@@ -96,9 +133,7 @@ public class LaunchActivity extends AppCompatActivity {
   private String buildMetaData() {
     Gson gson = new Gson();
     Map<String, String> metadata = new HashMap<>();
-
     metadata.put("metaKey", "metaValue");
-
     return gson.toJson(metadata);
   }
 
@@ -107,7 +142,6 @@ public class LaunchActivity extends AppCompatActivity {
    * AppCoins Wallet.
    *
    * @param url The url that generated by following the One Step payment rules
-   *
    * @return The intent used to call the wallet
    */
   private Intent buildTargetIntent(String url) {
@@ -138,9 +172,17 @@ public class LaunchActivity extends AppCompatActivity {
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-      startActivity(buildMainActivityIntent(data));
-      finish();
+    if (requestCode == REQUEST_CODE) {
+      switch (resultCode) {
+        case RESULT_OK:
+          startActivity(buildMainActivityIntent(data));
+          finish();
+          break;
+        case RESULT_USER_CANCELED:
+        case RESULT_ERROR:
+          showCancelDialog();
+          break;
+      }
     }
   }
 
@@ -156,7 +198,12 @@ public class LaunchActivity extends AppCompatActivity {
     return intent;
   }
 
-  private enum MatchEnvironment {
-    SANDBOX, LIVE
+  private void showCancelDialog() {
+    binding.createTicketLayout.createTicketCard.setVisibility(View.GONE);
+    binding.canceledTicketLayout.canceledCard.setVisibility(View.VISIBLE);
+    binding.canceledTicketLayout.closeButton.setOnClickListener(view -> {
+      binding.canceledTicketLayout.canceledCard.setVisibility(View.GONE);
+      binding.createTicketLayout.createTicketCard.setVisibility(View.VISIBLE);
+    });
   }
 }

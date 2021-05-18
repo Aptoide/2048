@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 
+import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
 
 import java.util.ArrayList;
@@ -71,15 +72,16 @@ public class MainView extends View {
     private int eYAll;
     private int titleWidthHighScore;
     private int titleWidthScore;
+    private int titleWidthOpponentRank;
     private int titleWidthOpponentName;
     private int titleWidthOpponentScore;
 
-    public MainView(Context context, MainGameViewModel viewModel) {
+    public MainView(Context context, MainGameViewModel viewModel, UserDetailsHelper userDetailsHelper) {
         super(context);
 
         Resources resources = context.getResources();
         //Loading resources
-        game = new MainGame(context, this, viewModel);
+        game = new MainGame(context, this, viewModel, userDetailsHelper);
         try {
             //Getting assets
             backgroundRectangle = resources.getDrawable(R.drawable.background_rectangle);
@@ -160,16 +162,19 @@ public class MainView extends View {
 
         int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
         int bodyWidthScore = (int) (paint.measureText("" + game.score));
+        int bodyWidthOpponentRank = (int) (paint.measureText("" + game.opponentRank));
         int bodyWidthOpponentName = (int) (paint.measureText("" + game.opponentName));
         int bodyWidthOpponentScore = (int) (paint.measureText("" + game.opponentScore));
 
         int textWidthHighScore = Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
         int textWidthScore = Math.max(titleWidthScore, bodyWidthScore) + textPaddingSize * 2;
+        int textWidthOpponentRank = Math.max(titleWidthOpponentRank, bodyWidthOpponentRank) + textPaddingSize * 2;
         int textWidthOpponentName = Math.max(titleWidthOpponentName, bodyWidthOpponentName) + textPaddingSize * 2;
         int textWidthOpponentScore = Math.max(titleWidthOpponentScore, bodyWidthOpponentScore) + textPaddingSize * 2;
 
         int textMiddleHighScore = textWidthHighScore / 2;
         int textMiddleScore = textWidthScore / 2;
+        int textMiddleOpponentRank = textWidthOpponentRank / 2;
         int textMiddleOpponentName = textWidthOpponentName / 2;
         int textMiddleOpponentScore = textWidthOpponentScore / 2;
 
@@ -179,14 +184,17 @@ public class MainView extends View {
         int eXScore = sXHighScore - textPaddingSize;
         int sXScore = eXScore - textWidthScore;
 
-        int sXOpponentName = startingX;
+        int sYOpponentDetails = sYIcons;
+        int eYOpponentDetails = sYIcons + iconSize;
+
+        int sXOpponentRank = startingX;
+        int eXOpponentRank = sXOpponentRank + textWidthOpponentRank;
+
+        int sXOpponentName = eXOpponentRank + textPaddingSize;
         int eXOpponentName = sXOpponentName + textWidthOpponentName;
-        int sYOpponentName = sYIcons;
-        int eYOpponentName = sYIcons + iconSize;
 
         int sXOpponentScore = eXOpponentName + textPaddingSize;
         int eXOpponentScore = sXOpponentScore + textWidthOpponentScore;
-        int sYOpponentScore = sYIcons;
 
         //Outputting high-scores box
         backgroundRectangle.setBounds(sXHighScore, sYAll, eXHighScore, eYAll);
@@ -208,22 +216,39 @@ public class MainView extends View {
         paint.setColor(getResources().getColor(R.color.text_white));
         canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, bodyStartYAll, paint);
 
-        //Outputting opponent box
-        backgroundRectangle.setBounds(sXOpponentName, sYOpponentName, eXOpponentScore, eYOpponentName);
+        //Outputting opponent rank box
+        backgroundRectangle.setBounds(sXOpponentRank, sYOpponentDetails, eXOpponentScore, eYOpponentDetails);
         backgroundRectangle.draw(canvas);
+
+        paint.setTextSize(titleTextSize);
+        paint.setColor(getResources().getColor(R.color.text_brown));
+        canvas.drawText(
+                getResources().getString(R.string.rank),
+                sXOpponentRank + textMiddleOpponentRank,
+                sYOpponentDetails + iconPaddingSize * 2,
+                paint);
+        paint.setTextSize(bodyTextSize);
+        paint.setColor(getResources().getColor(R.color.text_white));
+        canvas.drawText(
+                String.valueOf(game.opponentRank),
+                sXOpponentRank + textMiddleOpponentRank,
+                sYOpponentDetails + iconPaddingSize * 5,
+                paint);
+
+        //Outputting opponent name box
         paint.setTextSize(titleTextSize);
         paint.setColor(getResources().getColor(R.color.text_brown));
         canvas.drawText(
                 getResources().getString(R.string.opponent),
                 sXOpponentName + textMiddleOpponentName,
-                sYOpponentName + iconPaddingSize * 2,
+                sYOpponentDetails + iconPaddingSize * 2,
                 paint);
         paint.setTextSize(bodyTextSize);
         paint.setColor(getResources().getColor(R.color.text_white));
         canvas.drawText(
                 String.valueOf(game.opponentName),
                 sXOpponentName + textMiddleOpponentName,
-                sYOpponentName + iconPaddingSize * 5,
+                sYOpponentDetails + iconPaddingSize * 5,
                 paint);
 
         //Outputting opponent score box
@@ -232,14 +257,14 @@ public class MainView extends View {
         canvas.drawText(
                 getResources().getString(R.string.opponent_score),
                 sXOpponentScore + textMiddleOpponentScore,
-                sYOpponentScore + iconPaddingSize * 2,
+                sYOpponentDetails + iconPaddingSize * 2,
                 paint);
         paint.setTextSize(bodyTextSize);
         paint.setColor(getResources().getColor(R.color.text_white));
         canvas.drawText(
                 String.valueOf(game.opponentScore),
                 sXOpponentScore + textMiddleOpponentScore,
-                sYOpponentScore + iconPaddingSize * 5,
+                sYOpponentDetails + iconPaddingSize * 5,
                 paint);
     }
 
@@ -569,6 +594,7 @@ public class MainView extends View {
 
         titleWidthHighScore = (int) (paint.measureText(getResources().getString(R.string.high_score)));
         titleWidthScore = (int) (paint.measureText(getResources().getString(R.string.score)));
+        titleWidthOpponentRank = (int) (paint.measureText(getResources().getString(R.string.rank)));
         titleWidthOpponentName = (int) (paint.measureText(getResources().getString(R.string.opponent)));
         titleWidthOpponentScore = (int) (paint.measureText(getResources().getString(R.string.opponent_score)));
         paint.setTextSize(bodyTextSize);

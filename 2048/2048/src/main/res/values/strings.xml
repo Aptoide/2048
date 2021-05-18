@@ -17,10 +17,11 @@
 
   <string name="waiting_for_opponents_to_finish">Waiting for opponents to finish game.</string>
   <string name="opponent_details">(%1$s did %2$d points)</string>
-  <string name="amount_won_details">(your wallet is now %1$.2fd$ heavier)</string>
+  <string name="amount_won_details">(your wallet is now %1$.2f$ heavier)</string>
   <string name="you_won">You Won! %1$s</string>
   <string name="you_lost">You Lost! %1$s</string>
   <string name="unknown_error">An error has occurred.</string>
+  <string name="rank">RANK</string>
   <string name="opponent">OPPONENT</string>
   <string name="opponent_score">SCORE</string>
   <string name="restart">RESTART</string>
@@ -29,4 +30,10 @@
 
   <string name="user_name">Username</string>
   <string name="find_room">Find a Room</string>
+  <string name="challenge_your_friends">Challenge your friends!</string>
+  <string name="game_type_duel">Duel (1 on 1)\nYou can win 1.5$</string>
+  <string name="game_type_multiplayer">Multiplayer (3 players)\nYou can win 6.75$</string>
+  <string name="canceled_ticket_title">We\'re sorry to see you go</string>
+  <string name="canceled_ticket_message">But don\'t worry, \nno funds were taken from your wallet.</string>
+  <string name="close">Close</string>
 </resources>
