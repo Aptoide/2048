@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.User;
+import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
 
 import java.util.ArrayList;
@@ -58,18 +59,22 @@ public class MainGame {
     public long score = 0;
     public long highScore = 0;
     public long lastScore = 0;
+    public int opponentRank = 1;
     public long opponentScore = 0;
     public String opponentName = "loading...";
     private long bufferScore = 0;
     private static final int MAX_CHAR_DISPLAY_USERNAME = 11;
+    private final UserDetailsHelper userDetailsHelper;
 
 
-    public MainGame(Context context, MainView view, MainGameViewModel viewModel) {
+    public MainGame(Context context, MainView view, MainGameViewModel viewModel,
+                    UserDetailsHelper userDetailsHelper) {
         mContext = context;
         mView = view;
         endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
         this.viewModel = viewModel;
         this.disposable = new CompositeDisposable();
+        this.userDetailsHelper = userDetailsHelper;
     }
 
     public void newGame() {
@@ -104,12 +109,16 @@ public class MainGame {
     private void updateOpponentInfo(RoomResponse roomResponse) {
         List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
         // if match environment is set to sandbox, the number of opponents can be 0
-        if (opponents.size() > 0) {
-            User opponent = opponents.get(0);
+        try {
+            User opponent = userDetailsHelper.getNextOpponent(opponents);
+            opponentRank = opponent.getRank();
             opponentScore = opponent.getScore();
             opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
             mView.invalidate();
+        } catch (Exception e){
+            e.printStackTrace();
         }
+
     }
 
     public String truncate(String str, int len) {

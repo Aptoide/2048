@@ -6,6 +6,7 @@ import android.view.KeyEvent;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.appcoins.eskills2048.factory.RoomApiFactory;
+import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.repository.RoomRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         RoomRepository roomRepository = new RoomRepository(RoomApiFactory.buildRoomApi());
         view = new MainView(this, new MainGameViewModel(new SetScoreUseCase(roomRepository),
                 new SetFinalScoreUseCase(roomRepository), buildViewModelData(),
-                new GetRoomUseCase(roomRepository)));
+                new GetRoomUseCase(roomRepository)), new UserDetailsHelper());
 
         setContentView(view);
     }

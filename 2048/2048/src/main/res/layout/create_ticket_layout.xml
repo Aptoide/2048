@@ -8,9 +8,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/create_ticket_card"
         android:layout_width="340dp"
-        android:layout_height="246dp"
+        android:layout_height="360dp"
         android:background="@drawable/background_card"
-        android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +31,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/content_main"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="210dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/create_ticket_header">
@@ -47,14 +46,28 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <include
+                android:id="@+id/game_type_layout"
+                layout="@layout/game_type_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/user_name_input"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="32dp"
+                app:hintTextColor="@color/colorAccent"
+                android:textColorHint="@color/colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/game_type_layout">
 
                 <EditText
                     android:id="@+id/user_name"
@@ -65,9 +78,9 @@
                     android:inputType="text"
                     android:maxLines="1"
                     android:paddingEnd="64dp"
-                    android:paddingRight="64dp" />
+                    android:paddingStart="4dp"
+                    android:autofillHints="" />
             </com.google.android.material.textfield.TextInputLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button

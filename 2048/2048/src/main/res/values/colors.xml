@@ -18,4 +18,5 @@
     <color name="black_87_alpha">#de000000</color>
     <color name="grey_alpha_active_54">#8a000000</color>
     <color name="dialog_buy_fiat_value">#000000</color>
+    <color name="colorAccent">#e44b46</color>
 </resources>
