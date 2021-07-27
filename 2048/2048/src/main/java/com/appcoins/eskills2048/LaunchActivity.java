@@ -89,9 +89,9 @@ public class LaunchActivity extends AppCompatActivity {
   private MatchDetails getMatchDetails(MatchDetails.Environment environment) {
     int checkedId = binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId();
     if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
-      return new MatchDetails("1v1", 1f, "USD", environment, 2, 86400);
+      return new MatchDetails("1v1", 1f, "USD", environment, 2, 3600);
     } else if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
-      return new MatchDetails("multiplayer", 3f, "USD", environment, 3, 86400);
+      return new MatchDetails("multiplayer", 3f, "USD", environment, 3, 3600);
     }
     return null;
   }
