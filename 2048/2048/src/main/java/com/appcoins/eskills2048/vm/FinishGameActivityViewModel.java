@@ -6,11 +6,10 @@ import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Single;
 
 public class FinishGameActivityViewModel {
 
@@ -42,8 +41,6 @@ public class FinishGameActivityViewModel {
 
   private boolean isInProgress(RoomResponse roomResponse) {
     boolean completed = roomResponse.getStatus() == RoomStatus.COMPLETED;
-
-    List<User> users = roomResponse.getUsers();
     for (User user: roomResponse.getUsers()) {
       if (user.getStatus() == UserStatus.PLAYING && completed) {
         throw new IllegalStateException("Match Completed but some players are still playing!");
