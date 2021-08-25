@@ -6,6 +6,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,6 +52,15 @@ public class LaunchActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     binding = ActivityLaunchBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
+
+    //<-----[DEBUG]
+    Button goToPlayerStats;
+    goToPlayerStats = findViewById(R.id.goToPlayerStats);
+    goToPlayerStats.setOnClickListener(view -> {
+      Intent intent = new Intent(LaunchActivity.this, RankingsActivity.class);
+      startActivity(intent);
+    });
+    //----->[DEBUG]
 
     userDataStorage = new UserDataStorage(this, SHARED_PREFERENCES_NAME);
     binding.startNewGameLayout.newGameButton.setOnClickListener(

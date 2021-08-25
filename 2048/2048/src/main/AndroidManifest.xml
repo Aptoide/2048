@@ -10,6 +10,9 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".RankingsActivity"
+            android:exported="true" />
+        <activity
             android:name=".LaunchActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
@@ -19,12 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activity.FinishGameActivity"
             android:screenOrientation="portrait"
