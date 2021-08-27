@@ -3,15 +3,18 @@ package com.appcoins.eskills2048;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,12 +81,13 @@ public class MainGame {
         if (grid == null) {
             grid = new Grid(numSquaresX, numSquaresY);
             disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
-                .flatMapSingle(aLong -> viewModel.getRoom()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSuccess(MainGame.this::updateOpponentInfo))
-                .doOnError(Throwable::printStackTrace)
-                .takeWhile(roomResponse -> playing)
-                .subscribe());
+                    .flatMapSingle(aLong -> viewModel.getRoom()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnSuccess(MainGame.this::updateOpponentInfo)
+                            .doOnError(Throwable::printStackTrace)
+                            .onErrorReturnItem(new RoomResponse()))
+                    .takeWhile(roomResponse -> playing)
+                    .subscribe());
         } else {
             prepareUndoState();
             saveUndoState();
@@ -108,10 +112,9 @@ public class MainGame {
         if (roomResponse.getStatus() == RoomStatus.COMPLETED) {
             endGame(false);
         }
-
-        List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
         // if match environment is set to sandbox, the number of opponents can be 0
         try {
+            List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
             User opponent = userDetailsHelper.getNextOpponent(opponents);
             opponentRank = opponent.getRank();
             opponentScore = opponent.getScore();
@@ -210,8 +213,9 @@ public class MainGame {
             aGrid.cancelAnimations();
             grid.revertTiles();
             score = lastScore;
-            viewModel.setScore(score)
-                    .subscribe();
+            disposable.add(viewModel.setScore(score)
+                    .subscribe(roomResponse -> {
+                    }, Throwable::printStackTrace));
             gameState = lastGameState;
             mView.refreshLastTime = true;
             mView.invalidate();
@@ -272,8 +276,9 @@ public class MainGame {
 
                         // Update the score
                         score = score + merged.getValue();
-                        viewModel.setScore(score)
-                                .subscribe();
+                        disposable.add(viewModel.setScore(score)
+                                .subscribe(roomResponse -> {
+                                }, Throwable::printStackTrace));
                         highScore = Math.max(score, highScore);
 
                         // The mighty 2048 tile
@@ -317,18 +322,19 @@ public class MainGame {
     private void endGame(boolean setFinalScore) {
         playing = false;
         aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
-            NOTIFICATION_DELAY_TIME, null);
+                NOTIFICATION_DELAY_TIME, null);
         if (score >= highScore) {
             highScore = score;
             recordHighScore();
         }
         if (setFinalScore) {
             disposable.add(viewModel.setFinalScore(score)
-                .subscribe());
+                    .subscribe(roomResponse -> {
+                    }, Throwable::printStackTrace));
         }
 
         mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-            viewModel.getWalletAddress()));
+                viewModel.getWalletAddress()));
     }
 
     private Cell getVector(int direction) {

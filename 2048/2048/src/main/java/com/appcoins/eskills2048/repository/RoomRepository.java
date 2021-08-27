@@ -4,6 +4,7 @@ import com.appcoins.eskills2048.api.RoomApi;
 import com.appcoins.eskills2048.model.PatchRoomRequest;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.UserStatus;
+
 import io.reactivex.Single;
 
 public class RoomRepository {
@@ -18,10 +19,8 @@ public class RoomRepository {
 
   public Single<RoomResponse> patch(String session, long score, UserStatus status) {
     PatchRoomRequest patchRoomRequest = new PatchRoomRequest();
-
     patchRoomRequest.setScore(score);
     patchRoomRequest.setStatus(status);
-
     return roomApi.patchRoom(BEARER_ + session, patchRoomRequest);
   }
 
