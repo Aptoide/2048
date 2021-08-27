@@ -5,6 +5,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class GeneralPlayerStatsResponse {
 
+    @SerializedName("player")
+    @Expose
+    private UserRankings player;
+
     @SerializedName("top_3")
     @Expose
     private UserRankings[] top3;
@@ -35,5 +39,9 @@ public class GeneralPlayerStatsResponse {
 
     public UserRankings[] getBelowUser() {
         return belowUser;
+    }
+
+    public UserRankings getPlayer() {
+        return player;
     }
 }

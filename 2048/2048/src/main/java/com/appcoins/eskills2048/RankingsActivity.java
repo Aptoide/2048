@@ -24,8 +24,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RankingsActivity extends AppCompatActivity {
 
     private final String TAG = "RankingsActivity";
-    RecyclerView recyclerView;
-    List<UserRankings> userRankingsList;
+    RecyclerView topScoresRecyclerView;
+    RecyclerView playerPositionRecyclerView;
+    List<UserRankings> topScoresList;
+    List<UserRankings> playerRankList;
     private String hardCodedWalletAddress = "0xb114e6753c66547be9ece10b447fbaa9ec06e523";
 
     @Override
@@ -33,8 +35,9 @@ public class RankingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rankings);
 
-        recyclerView = findViewById(R.id.topScoresRecyclerView);
-        userRankingsList = new ArrayList<>();
+        topScoresRecyclerView = findViewById(R.id.topScoresRecyclerView);
+        playerPositionRecyclerView = findViewById(R.id.playerPositionRecyclerView);
+        playerRankList = new ArrayList<>();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.eskills.dev.catappult.io/room/statistics/")
@@ -51,9 +54,15 @@ public class RankingsActivity extends AppCompatActivity {
             public void onResponse(Call<GeneralPlayerStatsResponse> call, Response<GeneralPlayerStatsResponse> response) {
                 Log.d(TAG,"Api request response arrived.");
                 GeneralPlayerStatsResponse generalPlayerStatsResponse = response.body();
+                assert response.body() != null;
                 Log.d(TAG, response.body().toString());
-                userRankingsList = new ArrayList<>(Arrays.asList(generalPlayerStatsResponse.getTop3()));
-                PutDataIntoRecyclerView(userRankingsList);
+                assert generalPlayerStatsResponse != null;
+                topScoresList = new ArrayList<>(Arrays.asList(generalPlayerStatsResponse.getTop3()));
+                playerRankList.addAll(Arrays.asList(generalPlayerStatsResponse.getAboveUser()));
+                playerRankList.add(generalPlayerStatsResponse.getPlayer());
+                playerRankList.addAll(Arrays.asList(generalPlayerStatsResponse.getBelowUser()));
+                PutDataIntoRecyclerView(topScoresList, topScoresRecyclerView);
+                PutDataIntoRecyclerView(playerRankList, playerPositionRecyclerView);
             }
 
             @Override
@@ -65,7 +74,7 @@ public class RankingsActivity extends AppCompatActivity {
         });
     }
 
-    private void PutDataIntoRecyclerView(List<UserRankings> players){
+    private void PutDataIntoRecyclerView(List<UserRankings> players, RecyclerView recyclerView){
         RankingsAdapter adapter = new RankingsAdapter(this, players);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
