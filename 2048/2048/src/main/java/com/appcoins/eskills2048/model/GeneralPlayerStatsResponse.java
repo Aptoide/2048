@@ -44,4 +44,5 @@ public class GeneralPlayerStatsResponse {
     public UserRankings getPlayer() {
         return player;
     }
+
 }
