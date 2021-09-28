@@ -4,7 +4,12 @@ import com.appcoins.eskills2048.api.RoomApi;
 import com.appcoins.eskills2048.model.PatchRoomRequest;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.UserStatus;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
+import java.net.SocketTimeoutException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import retrofit2.HttpException;
 
 public class RoomRepository {
 
@@ -18,10 +23,8 @@ public class RoomRepository {
 
   public Single<RoomResponse> patch(String session, long score, UserStatus status) {
     PatchRoomRequest patchRoomRequest = new PatchRoomRequest();
-
     patchRoomRequest.setScore(score);
     patchRoomRequest.setStatus(status);
-
     return roomApi.patchRoom(BEARER_ + session, patchRoomRequest);
   }
 

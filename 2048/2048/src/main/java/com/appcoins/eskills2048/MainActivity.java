@@ -2,12 +2,7 @@ package com.appcoins.eskills2048;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.repository.RoomRepository;

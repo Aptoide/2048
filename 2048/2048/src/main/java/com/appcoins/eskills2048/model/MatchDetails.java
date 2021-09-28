@@ -6,14 +6,16 @@ public class MatchDetails {
   private final String currency;
   private final Environment environment;
   private final int numberOfUsers;
+  private final int timeout;
 
   public MatchDetails(String product, float value, String currency, Environment environment,
-                      int numberOfUsers) {
+      int numberOfUsers, int timeout) {
     this.product = product;
     this.value = value;
     this.currency = currency;
     this.environment = environment;
     this.numberOfUsers = numberOfUsers;
+    this.timeout = timeout;
   }
 
   public String getProduct() {
@@ -34,6 +36,10 @@ public class MatchDetails {
 
   public int getNumberOfUsers() {
     return numberOfUsers;
+  }
+
+  public int getTimeout() {
+    return timeout;
   }
 
   public enum Environment {

@@ -7,23 +7,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
 import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
 import com.appcoins.eskills2048.util.KeyboardUtils;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.google.gson.Gson;
-
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public class LaunchActivity extends AppCompatActivity {
 
@@ -104,9 +100,9 @@ public class LaunchActivity extends AppCompatActivity {
   private MatchDetails getMatchDetails(MatchDetails.Environment environment) {
     int checkedId = binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId();
     if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
-      return new MatchDetails("1v1", 1f, "USD", environment, 2);
+      return new MatchDetails("1v1", 1f, "USD", environment, 2, 3600);
     } else if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
-      return new MatchDetails("multiplayer", 3f, "USD", environment, 3);
+      return new MatchDetails("multiplayer", 3f, "USD", environment, 3, 3600);
     }
     return null;
   }
@@ -127,11 +123,14 @@ public class LaunchActivity extends AppCompatActivity {
         + "&domain="
         + getPackageName()
         + "&environment="
-        + matchDetails.getEnvironment().name()
+        + matchDetails.getEnvironment()
+        .name()
         + "&metadata="
         + buildMetaData()
         + "&number_of_users="
-        + matchDetails.getNumberOfUsers();
+        + matchDetails.getNumberOfUsers()
+        + "&timeout="
+        + matchDetails.getTimeout();
 
     Intent intent = buildTargetIntent(url);
     try {

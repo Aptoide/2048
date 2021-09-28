@@ -2,12 +2,12 @@ package com.appcoins.eskills2048.factory;
 
 import com.appcoins.eskills2048.BuildConfig;
 import com.appcoins.eskills2048.api.RoomApi;
+import com.appcoins.eskills2048.util.LogInterceptor;
 import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-//import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RoomApiFactory {
 
@@ -27,6 +27,10 @@ public class RoomApiFactory {
   }
 
   private static OkHttpClient buildOkHttp() {
-    return new OkHttpClient();
+    OkHttpClient.Builder builder = new OkHttpClient.Builder();
+    if (BuildConfig.DEBUG) {
+      builder = builder.addInterceptor(new LogInterceptor());
+    }
+    return builder.build();
   }
 }
