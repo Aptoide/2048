@@ -1,81 +1,73 @@
 package com.appcoins.eskills2048;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.appcoins.eskills2048.api.GeneralPlayerStats;
 import com.appcoins.eskills2048.model.GeneralPlayerStatsResponse;
 import com.appcoins.eskills2048.model.RankingsItem;
 import com.appcoins.eskills2048.model.RankingsTitle;
-
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RankingsActivity extends AppCompatActivity {
 
-    private final String TAG = "RankingsActivity";
-    RecyclerView recyclerView;
-    List<RankingsItem> items;
-    private String hardCodedWalletAddress = "0x05512a1c8457380898181ef0f02e4c752200c6c5";
+  private RecyclerView recyclerView;
+  private List<RankingsItem> items;
+  private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rankings);
+  static public Intent create(Context context, String walletAddress) {
+    Intent intent = new Intent(context, RankingsActivity.class);
+    intent.putExtra(WALLET_ADDRESS_KEY, walletAddress);
+    return intent;
+  }
 
-        recyclerView = findViewById(R.id.rankingsRecyclerView);
-        items = new ArrayList<>();
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_rankings);
+    String userWalletAddress = getIntent().getExtras()
+        .getString(WALLET_ADDRESS_KEY);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.eskills.dev.catappult.io/room/statistics/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    recyclerView = findViewById(R.id.rankingsRecyclerView);
+    items = new ArrayList<>();
 
-        GeneralPlayerStats generalPlayerStats = retrofit.create(GeneralPlayerStats.class);
-        Call<GeneralPlayerStatsResponse> call = generalPlayerStats.getGeneralPlayerStats(
-                BuildConfig.APPLICATION_ID, hardCodedWalletAddress);
+    Retrofit retrofit =
+        new Retrofit.Builder().baseUrl("https://api.eskills.dev.catappult.io/room/statistics/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build();
 
+    GeneralPlayerStats generalPlayerStats = retrofit.create(GeneralPlayerStats.class);
+    Disposable subscribe =
+        generalPlayerStats.getGeneralPlayerStats(BuildConfig.APPLICATION_ID, userWalletAddress)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(this::updateRankingsList, Throwable::printStackTrace);
+  }
 
-        call.enqueue(new Callback<GeneralPlayerStatsResponse>() {
-            @Override
-            public void onResponse(Call<GeneralPlayerStatsResponse> call, Response<GeneralPlayerStatsResponse> response) {
-                Log.d(TAG, "Api request response arrived.");
-                GeneralPlayerStatsResponse generalPlayerStatsResponse = response.body();
-                assert response.body() != null;
-                Log.d(TAG, response.body().toString());
-                assert generalPlayerStatsResponse != null;
-                items.add(new RankingsTitle("TOP 3"));
-                items.addAll(Arrays.asList(generalPlayerStatsResponse.getTop3()));
-                items.add(new RankingsTitle("Your rank"));
-                items.addAll(Arrays.asList(generalPlayerStatsResponse.getAboveUser()));
-                items.add(generalPlayerStatsResponse.getPlayer());
-                items.addAll(Arrays.asList(generalPlayerStatsResponse.getBelowUser()));
-                PutDataIntoRecyclerView(items);
-            }
+  private void updateRankingsList(GeneralPlayerStatsResponse generalPlayerStatsResponse) {
+    items.add(new RankingsTitle("TOP 3"));
+    items.addAll(Arrays.asList(generalPlayerStatsResponse.getTop3()));
+    items.add(new RankingsTitle("Your rank"));
+    items.addAll(Arrays.asList(generalPlayerStatsResponse.getAboveUser()));
+    items.add(generalPlayerStatsResponse.getPlayer());
+    items.addAll(Arrays.asList(generalPlayerStatsResponse.getBelowUser()));
+    putDataIntoRecyclerView(items);
+  }
 
-            @Override
-            public void onFailure(Call<GeneralPlayerStatsResponse> call, Throwable t) {
-                Log.d(TAG, t.toString());
-                Log.d(TAG, call.request().toString());
-                Log.d(TAG, "Api request failed");
-            }
-        });
-    }
-
-    private void PutDataIntoRecyclerView(List<RankingsItem> items) {
-        RankingsAdapter adapter = new RankingsAdapter(this, items);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-    }
+  private void putDataIntoRecyclerView(List<RankingsItem> items) {
+    RankingsAdapter adapter = new RankingsAdapter(this, items);
+    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    recyclerView.setAdapter(adapter);
+  }
 }

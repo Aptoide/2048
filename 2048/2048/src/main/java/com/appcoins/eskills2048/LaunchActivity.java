@@ -53,8 +53,7 @@ public class LaunchActivity extends AppCompatActivity {
     Button goToPlayerStats;
     goToPlayerStats = findViewById(R.id.goToPlayerStats);
     goToPlayerStats.setOnClickListener(view -> {
-      Intent intent = new Intent(LaunchActivity.this, RankingsActivity.class);
-      startActivity(intent);
+      startActivity(RankingsActivity.create(this, "0x05512a1c8457380898181ef0f02e4c752200c6c5"));
     });
     //----->[DEBUG]
 
