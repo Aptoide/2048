@@ -21,13 +21,6 @@ public class SetScoreUseCase {
 
   public Single<RoomResponse> setScore(String session, long score) {
     return roomRepository.patch(session, score, UserStatus.PLAYING)
-        .subscribeOn(Schedulers.io())
-        .retryWhen(throwableFlowable -> {
-          AtomicInteger counter = new AtomicInteger();
-          return throwableFlowable.takeWhile(throwable -> counter.getAndIncrement() != 3
-              && (throwable instanceof SocketTimeoutException
-              || throwable instanceof HttpException))
-              .flatMap(throwable -> Flowable.timer(counter.get(), TimeUnit.SECONDS));
-        });
+        .subscribeOn(Schedulers.io());
   }
 }

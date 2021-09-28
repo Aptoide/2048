@@ -25,14 +25,7 @@ public class RoomRepository {
     PatchRoomRequest patchRoomRequest = new PatchRoomRequest();
     patchRoomRequest.setScore(score);
     patchRoomRequest.setStatus(status);
-    return roomApi.patchRoom(BEARER_ + session, patchRoomRequest)
-        .retryWhen(throwableFlowable -> {
-          AtomicInteger counter = new AtomicInteger();
-          return throwableFlowable.takeWhile(throwable -> counter.getAndIncrement() != 3
-              && (throwable instanceof SocketTimeoutException
-              || throwable instanceof HttpException))
-              .flatMap(throwable -> Flowable.timer(counter.get(), TimeUnit.SECONDS));
-        });
+    return roomApi.patchRoom(BEARER_ + session, patchRoomRequest);
   }
 
   public Single<RoomResponse> getRoom(String session) {

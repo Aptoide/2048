@@ -25,6 +25,7 @@
   <string name="opponent">OPPONENT</string>
   <string name="opponent_score">SCORE</string>
   <string name="restart">RESTART</string>
+  <string name="retry">RETRY</string>
   <string name="new_game">New Game</string>
   <string name="sandbox_game">Sandbox Game</string>
 

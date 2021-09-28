@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "760088056453",
+    "project_id": "eskills2048",
+    "storage_bucket": "eskills2048.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760088056453:android:0d554da78873487cc9cfec",
+        "android_client_info": {
+          "package_name": "com.appcoins.eskills2048"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "760088056453-aen6hpsivhmoh7nuec4gjb9a389bh735.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.appcoins.eskills2048",
+            "certificate_hash": "51e08f5c27cb81d35ff0d247e9f88eda676aa51e"
+          }
+        },
+        {
+          "client_id": "760088056453-5krfen2d5jlqu66eaons4r5acu2v82tc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB10KIRjK7-rEePKAqIs0K3DsYdp9Pz0k4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "760088056453-5krfen2d5jlqu66eaons4r5acu2v82tc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760088056453:android:34736173848bd812c9cfec",
+        "android_client_info": {
+          "package_name": "com.appcoins.eskills2048.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "760088056453-5krfen2d5jlqu66eaons4r5acu2v82tc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB10KIRjK7-rEePKAqIs0K3DsYdp9Pz0k4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "760088056453-5krfen2d5jlqu66eaons4r5acu2v82tc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

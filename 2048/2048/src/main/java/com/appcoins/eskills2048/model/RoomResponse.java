@@ -1,14 +1,11 @@
 package com.appcoins.eskills2048.model;
 
 import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import lombok.Data;
-import lombok.ToString;
 
-@ToString @Data public class RoomResponse {
+public class RoomResponse {
 
   @SerializedName("room_id") private String roomId;
   @SerializedName("room_result") private RoomResult roomResult;
@@ -18,10 +15,38 @@ import lombok.ToString;
   @SerializedName("usd_stake") private int stake;
   @SerializedName("users") private List<User> users;
 
+  public String getRoomId() {
+    return roomId;
+  }
+
+  public RoomResult getRoomResult() {
+    return roomResult;
+  }
+
+  public User getCurrentUser() {
+    return currentUser;
+  }
+
+  public String getPackageName() {
+    return packageName;
+  }
+
+  public RoomStatus getStatus() {
+    return status;
+  }
+
+  public int getStake() {
+    return stake;
+  }
+
+  public List<User> getUsers() {
+    return users;
+  }
+
   public List<User> getOpponents(String walletAddress) {
     List<User> sortedUsers = sortUsers(users);
     List<User> opponents = new ArrayList<>();
-    for (User user: setRank(sortedUsers)) {
+    for (User user: sortedUsers) {
       if (!user.getWalletAddress().equalsIgnoreCase(walletAddress)) {
         opponents.add(user);
       }
@@ -33,14 +58,6 @@ import lombok.ToString;
     Collections.sort(users, (user1, user2) ->
         Integer.valueOf(user2.getScore())
             .compareTo(Integer.valueOf(user1.getScore())));
-    return users;
-  }
-
-  private List<User> setRank(List<User> users){
-    for (int i = 0; i < users.size(); i++) {
-      User user = users.get(i);
-      user.setRank(i + 1);
-    }
     return users;
   }
 }

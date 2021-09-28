@@ -71,6 +71,21 @@
         app:layout_constraintTop_toBottomOf="@id/secondary_message"
         android:enabled="false"
         />
+
+    <Button
+        android:id="@+id/retry_button"
+        style="@style/ButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:text="@string/retry"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/secondary_message"
+        android:visibility="gone"
+        />
   </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,18 +3,15 @@ package com.appcoins.eskills2048;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -116,7 +113,7 @@ public class MainGame {
         try {
             List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
             User opponent = userDetailsHelper.getNextOpponent(opponents);
-            opponentRank = opponent.getRank();
+            opponentRank = opponent.getRank() + 1;
             opponentScore = opponent.getScore();
             opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
             mView.invalidate();
@@ -334,7 +331,7 @@ public class MainGame {
         }
 
         mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-                viewModel.getWalletAddress()));
+                viewModel.getWalletAddress(), score));
     }
 
     private Cell getVector(int direction) {
