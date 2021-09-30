@@ -37,4 +37,6 @@
     <string name="canceled_ticket_title">We\'re sorry to see you go</string>
     <string name="canceled_ticket_message">But don\'t worry, \nno funds were taken from your wallet.</string>
     <string name="close">Close</string>
+  <string name="rankings_top_3_title">TOP 3</string>
+    <string name="rankings_your_rank_title">Your rank</string>
 </resources>

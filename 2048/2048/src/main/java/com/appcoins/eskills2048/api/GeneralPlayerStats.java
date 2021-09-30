@@ -8,7 +8,7 @@ import retrofit2.http.Query;
 
 public interface GeneralPlayerStats {
 
-  @Headers("accept: application/json") @GET("general_player_stats")
+  @Headers("accept: application/json") @GET("room/statistics/general_player_stats")
   Single<GeneralPlayerStatsResponse> getGeneralPlayerStats(
       @Query("package_name") String packageName, @Query("wallet_address") String walletAddress);
 }
