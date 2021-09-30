@@ -22,8 +22,6 @@ import java.util.List;
 
 public class RankingsActivity extends AppCompatActivity {
 
-  private RecyclerView recyclerView;
-  private List<RankingsItem> items;
   private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
   private final CompositeDisposable disposables = new CompositeDisposable();
   private RankingsAdapter adapter;
@@ -40,12 +38,11 @@ public class RankingsActivity extends AppCompatActivity {
     String userWalletAddress = getIntent().getExtras()
         .getString(WALLET_ADDRESS_KEY);
 
-    recyclerView = findViewById(R.id.rankingsRecyclerView);
-    items = new ArrayList<>();
+    RecyclerView recyclerView = findViewById(R.id.rankingsRecyclerView);
     GeneralPlayerStats generalPlayerStats = StatisticsApiFactory.buildRoomApi();
     StatisticsRepository statisticsRepository = new StatisticsRepository(generalPlayerStats);
     GetUserStatisticsUseCase statisticsUseCase = new GetUserStatisticsUseCase(statisticsRepository);
-    adapter = new RankingsAdapter(items, LayoutInflater.from(this));
+    adapter = new RankingsAdapter(LayoutInflater.from(this));
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
     recyclerView.setAdapter(adapter);
 
@@ -55,6 +52,7 @@ public class RankingsActivity extends AppCompatActivity {
   }
 
   private void updateRankingsList(GeneralPlayerStatsResponse generalPlayerStatsResponse) {
+    List<RankingsItem> items = new ArrayList<>();
     items.add(new RankingsTitle(getString(R.string.rankings_top_3_title)));
     items.addAll(Arrays.asList(generalPlayerStatsResponse.getTop3()));
     items.add(new RankingsTitle(getString(R.string.rankings_your_rank_title)));

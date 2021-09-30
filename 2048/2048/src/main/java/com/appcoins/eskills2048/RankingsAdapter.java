@@ -17,7 +17,6 @@ import java.util.List;
 public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
   private static final String TAG = "RankingsAdapter";
-  private List<RankingsItem> rankingsItems;
 
   private static final DiffUtil.ItemCallback<RankingsItem> DIFF_CALLBACK =
       new DiffUtil.ItemCallback<RankingsItem>() {
@@ -35,8 +34,7 @@ public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
   private final AsyncListDiffer<RankingsItem> differ = new AsyncListDiffer<>(this, DIFF_CALLBACK);
   private final LayoutInflater layoutInflater;
 
-  public RankingsAdapter(List<RankingsItem> rankingsItems, LayoutInflater layoutInflater) {
-    this.rankingsItems = rankingsItems;
+  public RankingsAdapter(LayoutInflater layoutInflater) {
     this.layoutInflater = layoutInflater;
   }
 
@@ -54,25 +52,28 @@ public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
   @Override public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
     if (getItemViewType(position) == 1) {
-      UserRankings player = (UserRankings) rankingsItems.get(position);
+      UserRankings player = (UserRankings) differ.getCurrentList()
+          .get(position);
       ((PlayerStatsViewHolder) holder).setPlayerStats(player);
     } else {
-      RankingsTitle title = (RankingsTitle) rankingsItems.get(position);
+      RankingsTitle title = (RankingsTitle) differ.getCurrentList()
+          .get(position);
       ((RankingTitleViewHolder) holder).setTitle(title);
     }
   }
 
   public void setRankings(List<RankingsItem> rankingsItems) {
-    this.rankingsItems = rankingsItems;
     differ.submitList(rankingsItems);
   }
 
   @Override public int getItemCount() {
-    return rankingsItems.size();
+    return differ.getCurrentList()
+        .size();
   }
 
   @Override public int getItemViewType(int position) {
-    return rankingsItems.get(position)
+    return differ.getCurrentList()
+        .get(position)
         .getItemType();
   }
 
