@@ -51,6 +51,11 @@ public class RankingsActivity extends AppCompatActivity {
         .subscribe(this::updateRankingsList, Throwable::printStackTrace));
   }
 
+  @Override protected void onDestroy() {
+    disposables.clear();
+    super.onDestroy();
+  }
+
   private void updateRankingsList(GeneralPlayerStatsResponse generalPlayerStatsResponse) {
     List<RankingsItem> items = new ArrayList<>();
     items.add(new RankingsTitle(getString(R.string.rankings_top_3_title)));
