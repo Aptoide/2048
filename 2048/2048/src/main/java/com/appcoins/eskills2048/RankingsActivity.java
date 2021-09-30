@@ -3,6 +3,7 @@ package com.appcoins.eskills2048;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,8 +16,6 @@ import com.appcoins.eskills2048.repository.StatisticsRepository;
 import com.appcoins.eskills2048.usecase.GetUserStatisticsUseCase;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +45,7 @@ public class RankingsActivity extends AppCompatActivity {
     GeneralPlayerStats generalPlayerStats = StatisticsApiFactory.buildRoomApi();
     StatisticsRepository statisticsRepository = new StatisticsRepository(generalPlayerStats);
     GetUserStatisticsUseCase statisticsUseCase = new GetUserStatisticsUseCase(statisticsRepository);
-    adapter = new RankingsAdapter(this, items);
+    adapter = new RankingsAdapter(items, LayoutInflater.from(this));
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
     recyclerView.setAdapter(adapter);
 

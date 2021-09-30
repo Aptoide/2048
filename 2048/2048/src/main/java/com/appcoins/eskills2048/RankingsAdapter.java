@@ -1,6 +1,5 @@
 package com.appcoins.eskills2048;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +18,6 @@ public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
   private static final String TAG = "RankingsAdapter";
   private List<RankingsItem> rankingsItems;
-  private Context mContext;
 
   private static final DiffUtil.ItemCallback<RankingsItem> DIFF_CALLBACK =
       new DiffUtil.ItemCallback<RankingsItem>() {
@@ -35,16 +33,16 @@ public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
       };
 
   private final AsyncListDiffer<RankingsItem> differ = new AsyncListDiffer<>(this, DIFF_CALLBACK);
+  private final LayoutInflater layoutInflater;
 
-  public RankingsAdapter(Context mContext, List<RankingsItem> rankingsItems) {
-    this.mContext = mContext;
+  public RankingsAdapter(List<RankingsItem> rankingsItems, LayoutInflater layoutInflater) {
     this.rankingsItems = rankingsItems;
+    this.layoutInflater = layoutInflater;
   }
 
   @NonNull @Override
   public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     Log.d(TAG, String.format("\n\ntype=%d\n\n", viewType));
-    LayoutInflater layoutInflater = LayoutInflater.from(mContext);
     if (viewType == 1) {
 
       View v = layoutInflater.inflate(R.layout.player_rank_layout, parent, false);
