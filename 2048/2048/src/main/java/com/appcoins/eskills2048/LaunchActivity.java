@@ -189,8 +189,12 @@ public class LaunchActivity extends AppCompatActivity {
     if (requestCode == REQUEST_CODE) {
       switch (resultCode) {
         case RESULT_OK:
-          startActivity(buildMainActivityIntent(data));
-          finish();
+          if (data != null) {
+            startActivity(buildMainActivityIntent(data));
+            finish();
+          } else {
+            showCancelDialog();
+          }
           break;
         case RESULT_USER_CANCELED:
         case RESULT_ERROR:
