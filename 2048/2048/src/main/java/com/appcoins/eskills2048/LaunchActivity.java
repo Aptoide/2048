@@ -15,6 +15,7 @@ import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
 import com.appcoins.eskills2048.util.KeyboardUtils;
 import com.appcoins.eskills2048.util.UserDataStorage;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.List;
@@ -42,9 +43,9 @@ public class LaunchActivity extends AppCompatActivity {
 
   private ActivityLaunchBinding binding;
   private UserDataStorage userDataStorage;
+  private static final String TAG = LaunchActivity.class.getSimpleName();
 
-  @Override
-  protected void onCreate(@Nullable Bundle savedInstanceState) {
+  @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     binding = ActivityLaunchBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
@@ -62,6 +63,10 @@ public class LaunchActivity extends AppCompatActivity {
         view -> showCreateTicket(MatchDetails.Environment.LIVE));
     binding.startNewGameLayout.sandboxGameButton.setOnClickListener(
         view -> showCreateTicket(MatchDetails.Environment.SANDBOX));
+    FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+    Bundle bundle = new Bundle();
+    bundle.putLong("current_time", System.currentTimeMillis());
+    firebaseAnalytics.logEvent("app_started", bundle);
   }
 
   @Override
