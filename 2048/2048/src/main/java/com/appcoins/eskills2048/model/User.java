@@ -42,4 +42,18 @@ public class User {
     public int getRank() {
         return rank;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+            "walletAddress='" + walletAddress + '\'' +
+            ", userId='" + userId + '\'' +
+            ", userName='" + userName + '\'' +
+            ", ticketId='" + ticketId + '\'' +
+            ", roomMetadata=" + roomMetadata +
+            ", status=" + status +
+            ", score=" + score +
+            ", rank=" + rank +
+            '}';
+    }
 }

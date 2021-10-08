@@ -29,6 +29,10 @@ public class FinishGameActivityViewModel {
     this.userScore = userScore;
   }
 
+  public Single<RoomResponse> getRoom() {
+    return getRoomUseCase.getRoom(session);
+  }
+
   public Single<RoomResult> getRoomResult() {
     return getRoomUseCase.getRoom(session)
         .flatMap(roomResponse -> {

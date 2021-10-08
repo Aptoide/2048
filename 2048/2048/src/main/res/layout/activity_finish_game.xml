@@ -8,7 +8,7 @@
   <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/card"
       android:layout_width="300dp"
-      android:layout_height="270dp"
+      android:layout_height="wrap_content"
       android:background="@drawable/background_card"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
@@ -57,18 +57,31 @@
         app:layout_constraintTop_toBottomOf="@+id/animation_description_text"
         />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/ranking_recycler_view"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/big_margin"
+        android:background="@drawable/background_card"
+        android:backgroundTint="@color/text_brown"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/secondary_message"
+        />
+
     <Button
         android:id="@+id/restart_button"
         style="@style/ButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/big_margin"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="@dimen/big_margin"
         android:text="@string/restart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/secondary_message"
+        app:layout_constraintTop_toBottomOf="@id/ranking_recycler_view"
         android:enabled="false"
         />
 
@@ -78,12 +91,13 @@
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/big_margin"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="@dimen/big_margin"
         android:text="@string/retry"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/secondary_message"
+        app:layout_constraintTop_toBottomOf="@id/ranking_recycler_view"
         android:visibility="gone"
         />
   </androidx.constraintlayout.widget.ConstraintLayout>
