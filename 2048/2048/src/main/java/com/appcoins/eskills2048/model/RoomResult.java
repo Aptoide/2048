@@ -2,15 +2,19 @@ package com.appcoins.eskills2048.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
+public class RoomResult {
+    @SerializedName("winner")
+    private User winner;
+    @SerializedName("winner_tx")
+    private String winnerTx;
+    @SerializedName("winner_amount")
+    private float winnerAmount;
 
-import lombok.Data;
-import lombok.ToString;
+    public User getWinner() {
+        return winner;
+    }
 
-@ToString @Data public class RoomResult {
-
-  @SerializedName("winner") private User winner;
-  @SerializedName("winner_tx") private String winnerTx;
-  @SerializedName("winner_amount") private float winnerAmount;
+    public float getWinnerAmount() {
+        return winnerAmount;
+    }
 }

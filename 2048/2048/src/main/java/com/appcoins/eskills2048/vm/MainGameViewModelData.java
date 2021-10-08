@@ -1,8 +1,5 @@
 package com.appcoins.eskills2048.vm;
 
-import lombok.Data;
-
-@Data
 public class MainGameViewModelData {
 
   private final String userId;
@@ -13,5 +10,13 @@ public class MainGameViewModelData {
     this.userId = userId;
     this.walletAddress = walletAddress;
     this.session = session;
+  }
+
+  public String getWalletAddress() {
+    return walletAddress;
+  }
+
+  public String getSession() {
+    return session;
   }
 }

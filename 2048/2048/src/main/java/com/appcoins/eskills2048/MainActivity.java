@@ -2,7 +2,9 @@ package com.appcoins.eskills2048;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.repository.RoomRepository;
@@ -13,16 +15,6 @@ import com.appcoins.eskills2048.vm.MainGameViewModel;
 import com.appcoins.eskills2048.vm.MainGameViewModelData;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final String WIDTH = "width";
-    private static final String HEIGHT = "height";
-    private static final String SCORE = "score";
-    private static final String HIGH_SCORE = "high score temp";
-    private static final String UNDO_SCORE = "undo score";
-    private static final String CAN_UNDO = "can undo";
-    private static final String UNDO_GRID = "undo";
-    private static final String GAME_STATE = "game state";
-    private static final String UNDO_GAME_STATE = "undo game state";
     private MainView view;
 
     @Override
@@ -37,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private MainGameViewModelData buildViewModelData() {
-        String roomId = getIntent().getStringExtra(LaunchActivity.ROOM_ID);
         String userId = getIntent().getStringExtra(LaunchActivity.USER_ID);
         String walletAddress = getIntent().getStringExtra(LaunchActivity.WALLET_ADDRESS);
         String session = getIntent().getStringExtra(LaunchActivity.SESSION);
@@ -70,5 +61,10 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        view.onBackPressed();
     }
 }
