@@ -60,22 +60,29 @@ public class RankingsActivity extends AppCompatActivity {
   private void updateRankingsList(GeneralPlayerStatsResponse generalPlayerStatsResponse) {
     List<RankingsItem> items = new ArrayList<>();
     items.add(new RankingsTitle(getString(R.string.rankings_top_3_title)));
-    items.addAll(mapPlayers(generalPlayerStatsResponse.getTop3()));
+    items.addAll(mapPlayers(generalPlayerStatsResponse.getTop3(),
+        generalPlayerStatsResponse.getPlayer()
+            .getRankingWalletAddress()));
     items.add(new RankingsTitle(getString(R.string.rankings_your_rank_title)));
-    items.addAll(mapPlayers(generalPlayerStatsResponse.getAboveUser()));
+    items.addAll(mapPlayers(generalPlayerStatsResponse.getAboveUser(),
+        generalPlayerStatsResponse.getPlayer()
+            .getRankingWalletAddress()));
     items.add(new UserRankingsItem(generalPlayerStatsResponse.getPlayer()
         .getRankingUsername(), generalPlayerStatsResponse.getPlayer()
         .getRankingScore(), generalPlayerStatsResponse.getPlayer()
         .getRankPosition(), true));
-    items.addAll(mapPlayers(generalPlayerStatsResponse.getBelowUser()));
+    items.addAll(mapPlayers(generalPlayerStatsResponse.getBelowUser(),
+        generalPlayerStatsResponse.getPlayer()
+            .getRankingWalletAddress()));
     adapter.setRankings(items);
   }
 
-  private List<UserRankingsItem> mapPlayers(UserRankings[] players) {
+  private List<UserRankingsItem> mapPlayers(UserRankings[] players, String rankingWalletAddress) {
     ArrayList<UserRankingsItem> playersList = new ArrayList<>();
     for (UserRankings player : players) {
       playersList.add(new UserRankingsItem(player.getRankingUsername(), player.getRankingScore(),
-          player.getRankPosition(), false));
+          player.getRankPosition(),
+          rankingWalletAddress.equalsIgnoreCase(player.getRankingWalletAddress())));
     }
     return playersList;
   }
