@@ -12,12 +12,13 @@ import com.appcoins.eskills2048.factory.StatisticsApiFactory;
 import com.appcoins.eskills2048.model.GeneralPlayerStatsResponse;
 import com.appcoins.eskills2048.model.RankingsItem;
 import com.appcoins.eskills2048.model.RankingsTitle;
+import com.appcoins.eskills2048.model.UserRankings;
+import com.appcoins.eskills2048.model.UserRankingsItem;
 import com.appcoins.eskills2048.repository.StatisticsRepository;
 import com.appcoins.eskills2048.usecase.GetUserStatisticsUseCase;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RankingsActivity extends AppCompatActivity {
@@ -59,12 +60,23 @@ public class RankingsActivity extends AppCompatActivity {
   private void updateRankingsList(GeneralPlayerStatsResponse generalPlayerStatsResponse) {
     List<RankingsItem> items = new ArrayList<>();
     items.add(new RankingsTitle(getString(R.string.rankings_top_3_title)));
-    items.addAll(Arrays.asList(generalPlayerStatsResponse.getTop3()));
+    items.addAll(mapPlayers(generalPlayerStatsResponse.getTop3()));
     items.add(new RankingsTitle(getString(R.string.rankings_your_rank_title)));
-    items.addAll(Arrays.asList(generalPlayerStatsResponse.getAboveUser()));
-    items.add(generalPlayerStatsResponse.getPlayer());
-    items.addAll(Arrays.asList(generalPlayerStatsResponse.getBelowUser()));
+    items.addAll(mapPlayers(generalPlayerStatsResponse.getAboveUser()));
+    items.add(new UserRankingsItem(generalPlayerStatsResponse.getPlayer()
+        .getRankingUsername(), generalPlayerStatsResponse.getPlayer()
+        .getRankingScore(), generalPlayerStatsResponse.getPlayer()
+        .getRankPosition(), true));
+    items.addAll(mapPlayers(generalPlayerStatsResponse.getBelowUser()));
     adapter.setRankings(items);
   }
 
+  private List<UserRankingsItem> mapPlayers(UserRankings[] players) {
+    ArrayList<UserRankingsItem> playersList = new ArrayList<>();
+    for (UserRankings player : players) {
+      playersList.add(new UserRankingsItem(player.getRankingUsername(), player.getRankingScore(),
+          player.getRankPosition(), false));
+    }
+    return playersList;
+  }
 }

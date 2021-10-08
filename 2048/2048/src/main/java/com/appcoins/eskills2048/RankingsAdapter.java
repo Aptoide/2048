@@ -1,6 +1,5 @@
 package com.appcoins.eskills2048;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.appcoins.eskills2048.model.RankingsItem;
 import com.appcoins.eskills2048.model.RankingsTitle;
-import com.appcoins.eskills2048.model.UserRankings;
+import com.appcoins.eskills2048.model.UserRankingsItem;
 import java.util.List;
 
 public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -40,25 +39,29 @@ public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
   @NonNull @Override
   public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    Log.d(TAG, String.format("\n\ntype=%d\n\n", viewType));
-    if (viewType == 1) {
-
+    if (viewType == R.layout.player_rank_layout) {
       View v = layoutInflater.inflate(R.layout.player_rank_layout, parent, false);
       return new PlayerStatsViewHolder(v);
+    } else if (viewType == R.layout.rankings_title) {
+      View v = layoutInflater.inflate(R.layout.rankings_title, parent, false);
+      return new RankingTitleViewHolder(v);
+    } else {
+      throw new RuntimeException("Invalid view type " + viewType);
     }
-    View v = layoutInflater.inflate(R.layout.rankings_title, parent, false);
-    return new RankingTitleViewHolder(v);
   }
 
   @Override public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    if (getItemViewType(position) == 1) {
-      UserRankings player = (UserRankings) differ.getCurrentList()
+    int itemViewType = getItemViewType(position);
+    if (itemViewType == R.layout.player_rank_layout) {
+      UserRankingsItem player = (UserRankingsItem) differ.getCurrentList()
           .get(position);
       ((PlayerStatsViewHolder) holder).setPlayerStats(player);
-    } else {
+    } else if (itemViewType == R.layout.rankings_title) {
       RankingsTitle title = (RankingsTitle) differ.getCurrentList()
           .get(position);
       ((RankingTitleViewHolder) holder).setTitle(title);
+    } else {
+      throw new RuntimeException("Invalid view type " + itemViewType);
     }
   }
 
@@ -90,10 +93,21 @@ public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
       score = itemView.findViewById(R.id.rankingScore);
     }
 
-    void setPlayerStats(UserRankings player) {
-      username.setText(player.getRankingUsername());
-      score.setText(String.valueOf(player.getRankingScore()));
-      rank.setText(String.valueOf(player.getRankPosition()));
+    void setPlayerStats(UserRankingsItem player) {
+      username.setText(player.getUserName());
+      score.setText(String.valueOf(player.getScore()));
+      rank.setText(String.valueOf(player.getRank()));
+      int color;
+      if (player.isCurrentUser()) {
+        color = itemView.getResources()
+            .getColor(R.color.icon_background);
+      } else {
+        color = itemView.getResources()
+            .getColor(R.color.rankings_text_color);
+      }
+      username.setTextColor(color);
+      rank.setTextColor(color);
+      score.setTextColor(color);
     }
   }
 

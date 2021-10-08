@@ -13,6 +13,6 @@ public class StatisticsRepository {
 
   public Single<GeneralPlayerStatsResponse> getUserStatistics(String applicationId,
       String userWalletAddress) {
-    return api.getGeneralPlayerStats(applicationId, userWalletAddress);
+    return api.getGeneralPlayerStats(applicationId, userWalletAddress, 3, 2);
   }
 }

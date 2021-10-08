@@ -2,7 +2,7 @@ package com.appcoins.eskills2048.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class UserRankings implements RankingsItem{
+public class UserRankings {
 
     @SerializedName("username")
     private String rankingUsername;
@@ -34,8 +34,4 @@ public class UserRankings implements RankingsItem{
         return rankingScore;
     }
 
-    @Override
-    public int getItemType() {
-        return 1;
-    }
 }
