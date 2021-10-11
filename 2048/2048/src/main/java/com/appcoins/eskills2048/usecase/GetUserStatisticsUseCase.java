@@ -2,6 +2,7 @@ package com.appcoins.eskills2048.usecase;
 
 import com.appcoins.eskills2048.model.GeneralPlayerStatsResponse;
 import com.appcoins.eskills2048.repository.StatisticsRepository;
+import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
@@ -12,9 +13,9 @@ public class GetUserStatisticsUseCase {
     this.statisticsRepository = statisticsRepository;
   }
 
-  public Single<GeneralPlayerStatsResponse> execute(String applicationId,
-      String userWalletAddress) {
-    return statisticsRepository.getUserStatistics(applicationId, userWalletAddress)
+  public Single<GeneralPlayerStatsResponse> execute(String applicationId, String userWalletAddress,
+      StatisticsTimeFrame timeFrame) {
+    return statisticsRepository.getUserStatistics(applicationId, userWalletAddress, timeFrame)
         .subscribeOn(Schedulers.io());
   }
 }

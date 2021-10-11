@@ -12,7 +12,7 @@ public class StatisticsRepository {
   }
 
   public Single<GeneralPlayerStatsResponse> getUserStatistics(String applicationId,
-      String userWalletAddress) {
-    return api.getGeneralPlayerStats(applicationId, userWalletAddress, 3, 2);
+      String userWalletAddress, StatisticsTimeFrame timeFrame) {
+    return api.getGeneralPlayerStats(applicationId, userWalletAddress, 3, 2, timeFrame.name());
   }
 }

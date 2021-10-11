@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class GeneralPlayerStatsResponse {
 
-    @SerializedName("player")
+    @SerializedName("current_user")
     @Expose
     private UserRankings player;
 

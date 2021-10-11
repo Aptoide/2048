@@ -15,6 +15,7 @@ import com.appcoins.eskills2048.model.RankingsTitle;
 import com.appcoins.eskills2048.model.UserRankings;
 import com.appcoins.eskills2048.model.UserRankingsItem;
 import com.appcoins.eskills2048.repository.StatisticsRepository;
+import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
 import com.appcoins.eskills2048.usecase.GetUserStatisticsUseCase;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -47,7 +48,8 @@ public class RankingsActivity extends AppCompatActivity {
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
     recyclerView.setAdapter(adapter);
 
-    disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID, userWalletAddress)
+    disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID, userWalletAddress,
+        StatisticsTimeFrame.TODAY)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(this::updateRankingsList, Throwable::printStackTrace));
   }
