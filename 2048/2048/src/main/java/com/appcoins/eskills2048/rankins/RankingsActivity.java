@@ -41,19 +41,11 @@ public class RankingsActivity extends AppCompatActivity {
     setContentView(R.layout.activity_rankings);
     String userWalletAddress = getIntent().getExtras()
         .getString(WALLET_ADDRESS_KEY);
-
-    RecyclerView recyclerView = findViewById(R.id.rankingsRecyclerView);
-    GeneralPlayerStats generalPlayerStats = StatisticsApiFactory.buildRoomApi();
-    StatisticsRepository statisticsRepository = new StatisticsRepository(generalPlayerStats);
-    GetUserStatisticsUseCase statisticsUseCase = new GetUserStatisticsUseCase(statisticsRepository);
-    adapter = new RankingsAdapter(LayoutInflater.from(this));
-    recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    recyclerView.setAdapter(adapter);
-
-    disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID, userWalletAddress,
-        StatisticsTimeFrame.TODAY)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(this::updateRankingsList, Throwable::printStackTrace));
+    if (savedInstanceState == null) {
+      getSupportFragmentManager().beginTransaction()
+          .add(R.id.fragment_container, RankingsFragment.newInstance(userWalletAddress))
+          .commit();
+    }
   }
 
   @Override protected void onDestroy() {
@@ -61,33 +53,4 @@ public class RankingsActivity extends AppCompatActivity {
     super.onDestroy();
   }
 
-  private void updateRankingsList(GeneralPlayerStatsResponse generalPlayerStatsResponse) {
-    List<RankingsItem> items = new ArrayList<>();
-    items.add(new RankingsTitle(getString(R.string.rankings_top_3_title)));
-    items.addAll(mapPlayers(generalPlayerStatsResponse.getTop3(),
-        generalPlayerStatsResponse.getPlayer()
-            .getRankingWalletAddress()));
-    items.add(new RankingsTitle(getString(R.string.rankings_your_rank_title)));
-    items.addAll(mapPlayers(generalPlayerStatsResponse.getAboveUser(),
-        generalPlayerStatsResponse.getPlayer()
-            .getRankingWalletAddress()));
-    items.add(new UserRankingsItem(generalPlayerStatsResponse.getPlayer()
-        .getRankingUsername(), generalPlayerStatsResponse.getPlayer()
-        .getRankingScore(), generalPlayerStatsResponse.getPlayer()
-        .getRankPosition(), true));
-    items.addAll(mapPlayers(generalPlayerStatsResponse.getBelowUser(),
-        generalPlayerStatsResponse.getPlayer()
-            .getRankingWalletAddress()));
-    adapter.setRankings(items);
-  }
-
-  private List<UserRankingsItem> mapPlayers(UserRankings[] players, String rankingWalletAddress) {
-    ArrayList<UserRankingsItem> playersList = new ArrayList<>();
-    for (UserRankings player : players) {
-      playersList.add(new UserRankingsItem(player.getRankingUsername(), player.getRankingScore(),
-          player.getRankPosition(),
-          rankingWalletAddress.equalsIgnoreCase(player.getRankingWalletAddress())));
-    }
-    return playersList;
-  }
 }
