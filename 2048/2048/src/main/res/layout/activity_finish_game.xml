@@ -8,12 +8,13 @@
   <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/card"
       android:layout_width="300dp"
-      android:layout_height="270dp"
+      android:layout_height="wrap_content"
       android:background="@drawable/background_card"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent">
+      app:layout_constraintTop_toTopOf="parent"
+      >
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottie_animation"
@@ -65,11 +66,28 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
+        android:enabled="false"
         android:text="@string/restart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/secondary_message"
-        android:enabled="false"
+        />
+
+    <Button
+        android:id="@+id/rankings_button"
+        style="@style/ButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/rankings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/restart_button"
+        app:layout_constraintVertical_bias="0"
         />
 
     <Button
@@ -81,10 +99,10 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:text="@string/retry"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/secondary_message"
-        android:visibility="gone"
         />
   </androidx.constraintlayout.widget.ConstraintLayout>
 

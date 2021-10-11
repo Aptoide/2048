@@ -13,6 +13,7 @@ import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.databinding.ActivityFinishGameBinding;
 import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.model.RoomResult;
+import com.appcoins.eskills2048.rankins.RankingsActivity;
 import com.appcoins.eskills2048.repository.RoomRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
@@ -80,6 +81,8 @@ public class FinishGameActivity extends AppCompatActivity {
         .doOnError(this::showErrorMessage)
         .subscribe(roomResult -> {
         }, Throwable::printStackTrace));
+    findViewById(R.id.rankings_button).setOnClickListener(
+        view -> startActivity(RankingsActivity.create(this, walletAddress)));
   }
 
   private void showLoading() {

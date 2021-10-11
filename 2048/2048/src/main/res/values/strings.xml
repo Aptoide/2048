@@ -42,4 +42,5 @@
   <string name="rankings_today">TODAY</string>
     <string name="rankings_week">WEEK</string>
     <string name="rankings_all_time">ALL TIME</string>
+    <string name="rankings">RANKINGS</string>
 </resources>
