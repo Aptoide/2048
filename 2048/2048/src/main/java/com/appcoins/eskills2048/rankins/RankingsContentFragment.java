@@ -36,6 +36,7 @@ public class RankingsContentFragment extends Fragment {
   private GetUserStatisticsUseCase statisticsUseCase;
   private View loadingView;
   private RecyclerView recyclerView;
+  private View errorView;
 
   public static RankingsContentFragment newInstance(String walletAddress,
       StatisticsTimeFrame timeFrame) {
@@ -72,16 +73,39 @@ public class RankingsContentFragment extends Fragment {
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     recyclerView.setAdapter(adapter);
     loadingView = view.findViewById(R.id.loading);
-
-    disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress, timeFrame)
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnSuccess(disposable -> hideLoading())
-        .subscribe(this::updateRankingsList, Throwable::printStackTrace));
+    errorView = view.findViewById(R.id.error_view);
+    showRankings();
+    view.findViewById(R.id.retry_button)
+        .setOnClickListener(view1 -> showRankings());
   }
 
-  private void hideLoading() {
+  private void showRankings() {
+    disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress, timeFrame)
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnSubscribe(disposable -> showLoadingView())
+        .doOnSuccess(disposable -> showRecyclerView())
+        .subscribe(this::updateRankingsList, throwable -> {
+          throwable.printStackTrace();
+          showErrorView();
+        }));
+  }
+
+  private void showErrorView() {
+    errorView.setVisibility(View.VISIBLE);
     loadingView.setVisibility(View.GONE);
+    recyclerView.setVisibility(View.GONE);
+  }
+
+  private void showRecyclerView() {
+    loadingView.setVisibility(View.GONE);
+    errorView.setVisibility(View.GONE);
     recyclerView.setVisibility(View.VISIBLE);
+  }
+
+  private void showLoadingView() {
+    loadingView.setVisibility(View.VISIBLE);
+    errorView.setVisibility(View.GONE);
+    recyclerView.setVisibility(View.GONE);
   }
 
   private void updateRankingsList(GeneralPlayerStatsResponse generalPlayerStatsResponse) {
@@ -90,7 +114,8 @@ public class RankingsContentFragment extends Fragment {
     items.addAll(mapPlayers(generalPlayerStatsResponse.getTop3(),
         generalPlayerStatsResponse.getPlayer()
             .getRankingWalletAddress()));
-    if (generalPlayerStatsResponse.getPlayer().getRankingScore()>0) {
+    if (generalPlayerStatsResponse.getPlayer()
+        .getRankingScore() > 0) {
       items.add(new RankingsTitle(getString(R.string.rankings_your_rank_title)));
       items.addAll(mapPlayers(generalPlayerStatsResponse.getAboveUser(),
           generalPlayerStatsResponse.getPlayer()
