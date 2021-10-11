@@ -1,4 +1,4 @@
-package com.appcoins.eskills2048;
+package com.appcoins.eskills2048.rankins;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.AsyncListDiffer;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
+import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.model.RankingsItem;
 import com.appcoins.eskills2048.model.RankingsTitle;
 import com.appcoins.eskills2048.model.UserRankingsItem;

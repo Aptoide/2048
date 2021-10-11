@@ -1,4 +1,4 @@
-package com.appcoins.eskills2048;
+package com.appcoins.eskills2048.rankins;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.appcoins.eskills2048.BuildConfig;
+import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.api.GeneralPlayerStats;
 import com.appcoins.eskills2048.factory.StatisticsApiFactory;
 import com.appcoins.eskills2048.model.GeneralPlayerStatsResponse;
