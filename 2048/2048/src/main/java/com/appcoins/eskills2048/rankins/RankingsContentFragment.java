@@ -34,6 +34,8 @@ public class RankingsContentFragment extends Fragment {
   private RankingsAdapter adapter;
   private final CompositeDisposable disposables = new CompositeDisposable();
   private GetUserStatisticsUseCase statisticsUseCase;
+  private View loadingView;
+  private RecyclerView recyclerView;
 
   public static RankingsContentFragment newInstance(String walletAddress,
       StatisticsTimeFrame timeFrame) {
@@ -65,14 +67,21 @@ public class RankingsContentFragment extends Fragment {
 
   @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    RecyclerView recyclerView = view.findViewById(R.id.rankingsRecyclerView);
+    recyclerView = view.findViewById(R.id.rankingsRecyclerView);
     adapter = new RankingsAdapter(LayoutInflater.from(getContext()));
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     recyclerView.setAdapter(adapter);
+    loadingView = view.findViewById(R.id.loading);
 
     disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress, timeFrame)
         .observeOn(AndroidSchedulers.mainThread())
+        .doOnSuccess(disposable -> hideLoading())
         .subscribe(this::updateRankingsList, Throwable::printStackTrace));
+  }
+
+  private void hideLoading() {
+    loadingView.setVisibility(View.GONE);
+    recyclerView.setVisibility(View.VISIBLE);
   }
 
   private void updateRankingsList(GeneralPlayerStatsResponse generalPlayerStatsResponse) {
