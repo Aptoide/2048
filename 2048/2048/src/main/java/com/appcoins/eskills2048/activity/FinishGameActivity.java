@@ -35,7 +35,7 @@ public class FinishGameActivity extends AppCompatActivity {
   private final static int PENSIVE_FACE_EMOJI_UNICODE = 0x1F614;
   private CompositeDisposable disposables;
 
-  public static final Intent buildIntent(Context context, String session, String walletAddress,
+  public static Intent buildIntent(Context context, String session, String walletAddress,
       long score) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
@@ -103,7 +103,6 @@ public class FinishGameActivity extends AppCompatActivity {
     } else {
       handleRoomLoserBehaviour(roomResult);
     }
-    increaseCardSize();
     binding.restartButton.setEnabled(true);
     binding.restartButton.setVisibility(View.VISIBLE);
     binding.retryButton.setVisibility(View.GONE);
@@ -131,15 +130,6 @@ public class FinishGameActivity extends AppCompatActivity {
             .getScore());
     binding.secondaryMessage.setText(opponentDetails);
     binding.secondaryMessage.setVisibility(View.VISIBLE);
-  }
-
-  private void increaseCardSize() {
-    int cardHeight = (int) getResources().getDimension(R.dimen.finish_card_max_height);
-    ViewGroup.LayoutParams params = binding.card.getLayoutParams();
-    params.height = cardHeight;
-    binding.card.setLayoutParams(params);
-    binding.getRoot()
-        .invalidate();
   }
 
   private void showErrorMessage(Throwable throwable) {
