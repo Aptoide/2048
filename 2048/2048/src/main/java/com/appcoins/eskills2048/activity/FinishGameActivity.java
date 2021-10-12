@@ -129,7 +129,6 @@ public class FinishGameActivity extends AppCompatActivity {
   }
 
   private void updateRecyclerView(RoomResponse roomResponse) {
-    System.out.println("updateRecyclerView: " + roomFinished);
     adapter.updateData(roomResponse.getUsers(true));
   }
 

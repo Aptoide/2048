@@ -2,14 +2,11 @@ package com.appcoins.eskills2048;
 
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.appcoins.eskills2048.model.User;
@@ -21,19 +18,13 @@ public class PlayerRankingAdapter extends RecyclerView.Adapter<PlayerRankingAdap
   private final Context context;
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
-    private final ImageView medalImageView;
     private final TextView userNameTextView;
     private final TextView userScoreTextView;
 
     public ViewHolder(View view) {
       super(view);
-      medalImageView = (ImageView) view.findViewById(R.id.medal_image);
       userNameTextView = (TextView) view.findViewById(R.id.user_name);
       userScoreTextView = (TextView) view.findViewById(R.id.user_score);
-    }
-
-    public ImageView getMedalImageView() {
-      return medalImageView;
     }
 
     public TextView getUserNameTextView() {
@@ -60,25 +51,10 @@ public class PlayerRankingAdapter extends RecyclerView.Adapter<PlayerRankingAdap
 
   @Override
   public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-    viewHolder.getMedalImageView().setImageDrawable(getMedalDrawable(position));
     viewHolder.getUserNameTextView().setText(localDataSet.get(position).getUserName());
     viewHolder.getUserScoreTextView().setText(
         context.getResources().getString(R.string.rank_score_details,
             localDataSet.get(position).getScore()));
-  }
-
-  private Drawable getMedalDrawable(int position) {
-    switch (position) {
-      case 1:
-        return ResourcesCompat.getDrawable(
-            context.getResources(), R.drawable.ic_medal_second_place, null);
-      case 2:
-        return ResourcesCompat.getDrawable(
-            context.getResources(), R.drawable.ic_medal_third_place, null);
-      default:
-        return ResourcesCompat.getDrawable(
-            context.getResources(), R.drawable.ic_medal_first_place, null);
-    }
   }
 
   @Override
