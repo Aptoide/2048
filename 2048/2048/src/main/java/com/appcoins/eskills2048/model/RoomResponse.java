@@ -15,10 +15,6 @@ public class RoomResponse {
   @SerializedName("usd_stake") private int stake;
   @SerializedName("users") private List<User> users;
 
-  public String getRoomId() {
-    return roomId;
-  }
-
   public RoomResult getRoomResult() {
     return roomResult;
   }
@@ -27,16 +23,8 @@ public class RoomResponse {
     return currentUser;
   }
 
-  public String getPackageName() {
-    return packageName;
-  }
-
   public RoomStatus getStatus() {
     return status;
-  }
-
-  public int getStake() {
-    return stake;
   }
 
   public List<User> getUsers() {

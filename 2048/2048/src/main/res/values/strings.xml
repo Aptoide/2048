@@ -12,6 +12,8 @@
   <!-- Confirmation dialog-->
   <string name="reset">Reset</string>
   <string name="continue_game">Cancel</string>
+  <string name="quit_game">Quit game</string>
+  <string name="back">Back</string>
   <string name="reset_dialog_title">Reset game?</string>
   <string name="reset_dialog_message">Are you sure you wish to reset the game?</string>
 
@@ -37,4 +39,7 @@
   <string name="canceled_ticket_title">We\'re sorry to see you go</string>
   <string name="canceled_ticket_message">But don\'t worry, \nno funds were taken from your wallet.</string>
   <string name="close">Close</string>
+
+  <string name="confirm_quit_title">Are you sure you want to quit?</string>
+  <string name="confirm_quit_message">Your game will finish and \nyou won\'t be able to make any more moves</string>
 </resources>

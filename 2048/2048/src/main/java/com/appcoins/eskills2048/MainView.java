@@ -1,22 +1,26 @@
 package com.appcoins.eskills2048;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("deprecation")
 public class MainView extends View {
 
     //Internal Constants
@@ -29,7 +33,6 @@ public class MainView extends View {
     public final MainGame game;
     //Internal variables
     private final Paint paint = new Paint();
-    public boolean hasSaveState = false;
     public boolean continueButtonEnabled = false;
     public int startingX;
     public int startingY;
@@ -76,7 +79,8 @@ public class MainView extends View {
     private int titleWidthOpponentName;
     private int titleWidthOpponentScore;
 
-    public MainView(Context context, MainGameViewModel viewModel, UserDetailsHelper userDetailsHelper) {
+    public MainView(Context context, MainGameViewModel viewModel,
+                    UserDetailsHelper userDetailsHelper) {
         super(context);
 
         Resources resources = context.getResources();
@@ -612,5 +616,31 @@ public class MainView extends View {
 
     public void onDestroy() {
         game.stop();
+    }
+
+    public void onBackPressed() {
+        showQuitGameDialog();
+    }
+
+    private void showQuitGameDialog() {
+        Dialog dialog = new Dialog(getContext());
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        View view = LayoutInflater.from(getContext()).inflate(
+            R.layout.quit_confirmation_layout, null);
+        dialog.setContentView(view);
+
+        Button cancelButton = view.findViewById(R.id.back_button);
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        Button quitGameButton = view.findViewById(R.id.quit_game_button);
+        quitGameButton.setOnClickListener(v -> {
+            handleQuitGame();
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+    private void handleQuitGame() {
+        game.endGame(true);
     }
 }
