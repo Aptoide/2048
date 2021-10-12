@@ -51,14 +51,6 @@ public class LaunchActivity extends AppCompatActivity {
     binding = ActivityLaunchBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
 
-    //<-----[DEBUG]
-    Button goToPlayerStats;
-    goToPlayerStats = findViewById(R.id.goToPlayerStats);
-    goToPlayerStats.setOnClickListener(view -> {
-      startActivity(RankingsActivity.create(this, "0x05512a1c8457380898181ef0f02e4c752200c6c5"));
-    });
-    //----->[DEBUG]
-
     userDataStorage = new UserDataStorage(this, SHARED_PREFERENCES_NAME);
     binding.startNewGameLayout.newGameButton.setOnClickListener(
         view -> showCreateTicket(MatchDetails.Environment.LIVE));
