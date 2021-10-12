@@ -39,8 +39,8 @@ public class RoomResponse {
     return users;
   }
 
-  public List<User> getUsers(Boolean sortedByScore) {
-    return sortedByScore ? sortUsers(users) : users;
+  public List<User> getUsersSortedByScore() {
+    return sortUsers(users);
   }
 
   public List<User> getOpponents(String walletAddress) {

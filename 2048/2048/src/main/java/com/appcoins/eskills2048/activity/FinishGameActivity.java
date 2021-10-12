@@ -106,7 +106,7 @@ public class FinishGameActivity extends AppCompatActivity {
   private void buildRecyclerView() {
     recyclerView = findViewById(R.id.ranking_recycler_view);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    adapter = new PlayerRankingAdapter(this, new ArrayList<>());
+    adapter = new PlayerRankingAdapter(new ArrayList<>());
     recyclerView.setAdapter(adapter);
   }
 
@@ -120,7 +120,7 @@ public class FinishGameActivity extends AppCompatActivity {
   }
 
   private void updateRecyclerView(RoomResponse roomResponse) {
-    adapter.updateData(roomResponse.getUsers(true));
+    adapter.updateData(roomResponse.getUsersSortedByScore());
   }
 
   private void setRoomResultDetails(RoomResult roomResult) {
