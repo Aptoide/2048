@@ -10,10 +10,10 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class StatisticsApiFactory {
-  public static final String ENDPOINT = BuildConfig.BASE_HOST_SKILLS;
+  public static final String BASE_HOST_SKILLS = BuildConfig.BASE_HOST_SKILLS;
 
   public static GeneralPlayerStats buildRoomApi() {
-    return new Retrofit.Builder().baseUrl(ENDPOINT)
+    return new Retrofit.Builder().baseUrl(BASE_HOST_SKILLS)
         .client(buildOkHttp())
         .addConverterFactory(GsonConverterFactory.create(buildGson()))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
