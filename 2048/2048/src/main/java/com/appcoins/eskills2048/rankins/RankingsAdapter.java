@@ -16,8 +16,6 @@ import java.util.List;
 
 public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-  private static final String TAG = "RankingsAdapter";
-
   private static final DiffUtil.ItemCallback<RankingsItem> DIFF_CALLBACK =
       new DiffUtil.ItemCallback<RankingsItem>() {
         @Override public boolean areItemsTheSame(@NonNull RankingsItem oldProduct,
