@@ -27,5 +27,5 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:text="@string/score"
-        android:textColor="@color/status_background"/>
+        android:textColor="@color/text_black"/>
 </RelativeLayout>
