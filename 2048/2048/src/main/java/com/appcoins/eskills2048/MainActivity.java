@@ -37,14 +37,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        view.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
     protected void onPause() {
-        view.onDestroy();
+        view.onPause();
         super.onPause();
     }
 

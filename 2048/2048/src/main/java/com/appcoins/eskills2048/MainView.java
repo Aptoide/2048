@@ -615,7 +615,7 @@ public class MainView extends View {
         return (int) ((paint.descent() + paint.ascent()) / 2);
     }
 
-    public void onDestroy() {
+    public void onPause() {
         game.stop();
     }
 

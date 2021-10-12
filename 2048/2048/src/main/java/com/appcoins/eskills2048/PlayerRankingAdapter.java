@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.appcoins.eskills2048.model.User;
@@ -41,7 +42,7 @@ public class PlayerRankingAdapter extends RecyclerView.Adapter<PlayerRankingAdap
     this.context = context;
   }
 
-  @Override
+  @NonNull @Override
   public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
     View view = LayoutInflater.from(viewGroup.getContext())
         .inflate(R.layout.player_row_item, viewGroup, false);
