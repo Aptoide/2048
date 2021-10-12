@@ -5,33 +5,30 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.appcoins.eskills2048.MainGame;
-import com.appcoins.eskills2048.PlayerRankingAdapter;
-import com.appcoins.eskills2048.model.RoomResponse;
-import com.appcoins.eskills2048.util.EmojiUtils;
 import com.appcoins.eskills2048.LaunchActivity;
+import com.appcoins.eskills2048.PlayerRankingAdapter;
 import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.databinding.ActivityFinishGameBinding;
 import com.appcoins.eskills2048.factory.RoomApiFactory;
+import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomResult;
+import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.repository.RoomRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
+import com.appcoins.eskills2048.util.EmojiUtils;
 import com.appcoins.eskills2048.vm.FinishGameActivityViewModel;
-
-import java.util.concurrent.TimeUnit;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class FinishGameActivity extends AppCompatActivity {
 
@@ -47,10 +44,9 @@ public class FinishGameActivity extends AppCompatActivity {
   private CompositeDisposable disposables;
   private RecyclerView recyclerView;
   private PlayerRankingAdapter adapter;
-  private Boolean roomFinished = false;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
-                                   long score) {
+      long score) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
@@ -58,12 +54,12 @@ public class FinishGameActivity extends AppCompatActivity {
     return intent;
   }
 
-  @Override
-  protected void onCreate(@Nullable Bundle savedInstanceState) {
+  @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     binding = ActivityFinishGameBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     DeviceScreenManager.keepAwake(getWindow());
+    buildRecyclerView();
 
     disposables = new CompositeDisposable();
     String session = getIntent().getStringExtra(SESSION);
@@ -73,18 +69,13 @@ public class FinishGameActivity extends AppCompatActivity {
     viewModel = new FinishGameActivityViewModel(new GetRoomUseCase(roomRepository),
         new SetFinalScoreUseCase(roomRepository), session, walletAddress, userScore);
 
-    viewModel.getRoom()
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnSuccess(FinishGameActivity.this::buildRecyclerView)
-        .subscribe();
-
-    disposables.add(Observable.interval(GET_ROOM_PERIOD_SECONDS, GET_ROOM_PERIOD_SECONDS, TimeUnit.SECONDS)
+    disposables.add(Observable.interval(0, GET_ROOM_PERIOD_SECONDS, TimeUnit.SECONDS)
         .flatMapSingle(aLong -> viewModel.getRoom()
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess(FinishGameActivity.this::updateRecyclerView)
             .doOnError(Throwable::printStackTrace)
             .onErrorReturnItem(new RoomResponse()))
-        .takeUntil(roomResponse -> roomFinished)
+        .takeUntil(roomResponse -> roomResponse.getStatus() == RoomStatus.COMPLETED)
         .subscribe());
 
     binding.restartButton.setOnClickListener(view -> {
@@ -112,6 +103,13 @@ public class FinishGameActivity extends AppCompatActivity {
         }, Throwable::printStackTrace));
   }
 
+  private void buildRecyclerView() {
+    recyclerView = findViewById(R.id.ranking_recycler_view);
+    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    adapter = new PlayerRankingAdapter(this, new ArrayList<>());
+    recyclerView.setAdapter(adapter);
+  }
+
   private void showLoading() {
     binding.lottieAnimation.setAnimation(R.raw.transact_loading_animation);
     binding.lottieAnimation.playAnimation();
@@ -121,19 +119,11 @@ public class FinishGameActivity extends AppCompatActivity {
     binding.retryButton.setVisibility(View.GONE);
   }
 
-  private void buildRecyclerView(RoomResponse roomResponse) {
-    recyclerView = findViewById(R.id.ranking_recycler_view);
-    recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    adapter = new PlayerRankingAdapter(this, roomResponse.getUsers(true));
-    recyclerView.setAdapter(adapter);
-  }
-
   private void updateRecyclerView(RoomResponse roomResponse) {
     adapter.updateData(roomResponse.getUsers(true));
   }
 
   private void setRoomResultDetails(RoomResult roomResult) {
-    roomFinished = true;
     recyclerView.setVisibility(View.GONE);
     binding.lottieAnimation.setAnimation(R.raw.transact_credits_successful);
     binding.lottieAnimation.playAnimation();
