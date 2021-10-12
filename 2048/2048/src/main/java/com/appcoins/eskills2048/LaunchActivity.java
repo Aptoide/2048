@@ -63,6 +63,7 @@ public class LaunchActivity extends AppCompatActivity {
   public void onBackPressed() {
     binding.startNewGameLayout.startNewGameCard.setVisibility(View.VISIBLE);
     binding.createTicketLayout.createTicketCard.setVisibility(View.GONE);
+    binding.canceledTicketLayout.canceledCard.setVisibility(View.GONE);
   }
 
   private void showCreateTicket(MatchDetails.Environment environment) {
