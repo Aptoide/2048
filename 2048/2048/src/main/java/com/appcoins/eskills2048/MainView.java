@@ -78,12 +78,11 @@ public class MainView extends View {
     private int titleWidthOpponentRank;
     private int titleWidthOpponentName;
     private int titleWidthOpponentScore;
-    private final Context context;
 
     public MainView(Context context, MainGameViewModel viewModel,
                     UserDetailsHelper userDetailsHelper) {
         super(context);
-        this.context = context;
+
         Resources resources = context.getResources();
         //Loading resources
         game = new MainGame(context, this, viewModel, userDetailsHelper);
@@ -624,9 +623,10 @@ public class MainView extends View {
     }
 
     private void showQuitGameDialog() {
-        Dialog dialog = new Dialog(context);
+        Dialog dialog = new Dialog(getContext());
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        View view = LayoutInflater.from(context).inflate(R.layout.quit_confirmation_layout, null);
+        View view = LayoutInflater.from(getContext()).inflate(
+            R.layout.quit_confirmation_layout, null);
         dialog.setContentView(view);
 
         Button cancelButton = view.findViewById(R.id.back_button);
