@@ -316,7 +316,7 @@ public class MainGame {
         endGame(true);
     }
 
-    private void endGame(boolean setFinalScore) {
+    public void endGame(boolean setFinalScore) {
         playing = false;
         aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
                 NOTIFICATION_DELAY_TIME, null);
