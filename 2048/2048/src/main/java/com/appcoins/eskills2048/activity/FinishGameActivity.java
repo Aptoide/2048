@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,6 +16,7 @@ import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomResult;
 import com.appcoins.eskills2048.model.RoomStatus;
+import com.appcoins.eskills2048.rankins.RankingsActivity;
 import com.appcoins.eskills2048.repository.RoomRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
@@ -101,6 +101,8 @@ public class FinishGameActivity extends AppCompatActivity {
         .doOnError(this::showErrorMessage)
         .subscribe(roomResult -> {
         }, Throwable::printStackTrace));
+    findViewById(R.id.rankings_button).setOnClickListener(
+        view -> startActivity(RankingsActivity.create(this, walletAddress)));
   }
 
   private void buildRecyclerView() {
@@ -133,7 +135,6 @@ public class FinishGameActivity extends AppCompatActivity {
     } else {
       handleRoomLoserBehaviour(roomResult);
     }
-    increaseCardSize();
     binding.restartButton.setEnabled(true);
     binding.restartButton.setVisibility(View.VISIBLE);
     binding.retryButton.setVisibility(View.GONE);
@@ -161,15 +162,6 @@ public class FinishGameActivity extends AppCompatActivity {
             .getScore());
     binding.secondaryMessage.setText(opponentDetails);
     binding.secondaryMessage.setVisibility(View.VISIBLE);
-  }
-
-  private void increaseCardSize() {
-    int cardHeight = (int) getResources().getDimension(R.dimen.finish_card_max_height);
-    ViewGroup.LayoutParams params = binding.card.getLayoutParams();
-    params.height = cardHeight;
-    binding.card.setLayoutParams(params);
-    binding.getRoot()
-        .invalidate();
   }
 
   private void showErrorMessage(Throwable throwable) {

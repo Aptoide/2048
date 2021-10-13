@@ -23,4 +23,5 @@
     <color name="btn_cancel_text">#8f000000</color>
     <color name="dialog_buy_value_text">#4e4e4e</color>
     <color name="btn_disable_snd_color">#c9c9c9</color>
+    <color name="rankings_text_color">#808080</color>
 </resources>
