@@ -6,10 +6,13 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
 import com.appcoins.eskills2048.model.MatchDetails;
+import com.appcoins.eskills2048.rankins.RankingsActivity;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
 import com.appcoins.eskills2048.util.KeyboardUtils;
 import com.appcoins.eskills2048.util.UserDataStorage;

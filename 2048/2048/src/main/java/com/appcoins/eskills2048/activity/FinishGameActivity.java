@@ -13,6 +13,7 @@ import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.databinding.ActivityFinishGameBinding;
 import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.model.RoomResult;
+import com.appcoins.eskills2048.rankins.RankingsActivity;
 import com.appcoins.eskills2048.repository.RoomRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
@@ -34,7 +35,7 @@ public class FinishGameActivity extends AppCompatActivity {
   private final static int PENSIVE_FACE_EMOJI_UNICODE = 0x1F614;
   private CompositeDisposable disposables;
 
-  public static final Intent buildIntent(Context context, String session, String walletAddress,
+  public static Intent buildIntent(Context context, String session, String walletAddress,
       long score) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
@@ -80,6 +81,8 @@ public class FinishGameActivity extends AppCompatActivity {
         .doOnError(this::showErrorMessage)
         .subscribe(roomResult -> {
         }, Throwable::printStackTrace));
+    findViewById(R.id.rankings_button).setOnClickListener(
+        view -> startActivity(RankingsActivity.create(this, walletAddress)));
   }
 
   private void showLoading() {
@@ -100,7 +103,6 @@ public class FinishGameActivity extends AppCompatActivity {
     } else {
       handleRoomLoserBehaviour(roomResult);
     }
-    increaseCardSize();
     binding.restartButton.setEnabled(true);
     binding.restartButton.setVisibility(View.VISIBLE);
     binding.retryButton.setVisibility(View.GONE);
@@ -128,15 +130,6 @@ public class FinishGameActivity extends AppCompatActivity {
             .getScore());
     binding.secondaryMessage.setText(opponentDetails);
     binding.secondaryMessage.setVisibility(View.VISIBLE);
-  }
-
-  private void increaseCardSize() {
-    int cardHeight = (int) getResources().getDimension(R.dimen.finish_card_max_height);
-    ViewGroup.LayoutParams params = binding.card.getLayoutParams();
-    params.height = cardHeight;
-    binding.card.setLayoutParams(params);
-    binding.getRoot()
-        .invalidate();
   }
 
   private void showErrorMessage(Throwable throwable) {
