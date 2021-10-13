@@ -8,20 +8,13 @@ import java.util.List;
 
 public class RoomResponse {
 
-  @SerializedName("room_id")
-  private String roomId;
-  @SerializedName("room_result")
-  private RoomResult roomResult;
-  @SerializedName("current_user")
-  private User currentUser;
-  @SerializedName("package_name")
-  private String packageName;
-  @SerializedName("status")
-  private RoomStatus status;
-  @SerializedName("usd_stake")
-  private int stake;
-  @SerializedName("users")
-  private List<User> users;
+  @SerializedName("room_id") private String roomId;
+  @SerializedName("room_result") private RoomResult roomResult;
+  @SerializedName("current_user") private User currentUser;
+  @SerializedName("package_name") private String packageName;
+  @SerializedName("status") private RoomStatus status;
+  @SerializedName("usd_stake") private int stake;
+  @SerializedName("users") private List<User> users;
 
   public RoomResult getRoomResult() {
     return roomResult;
@@ -47,7 +40,8 @@ public class RoomResponse {
     List<User> sortedUsers = sortUsers(users);
     List<User> opponents = new ArrayList<>();
     for (User user : sortedUsers) {
-      if (!user.getWalletAddress().equalsIgnoreCase(walletAddress)) {
+      if (!user.getWalletAddress()
+          .equalsIgnoreCase(walletAddress)) {
         opponents.add(user);
       }
     }
@@ -55,9 +49,9 @@ public class RoomResponse {
   }
 
   private List<User> sortUsers(List<User> users) {
-    Collections.sort(users, (user1, user2) ->
-        Integer.valueOf(user2.getScore())
-            .compareTo(Integer.valueOf(user1.getScore())));
-    return users;
+    List<User> sortedUsers = new ArrayList<>(users);
+    Collections.sort(sortedUsers,
+        (user1, user2) -> Integer.compare(user2.getScore(), user1.getScore()));
+    return sortedUsers;
   }
 }
