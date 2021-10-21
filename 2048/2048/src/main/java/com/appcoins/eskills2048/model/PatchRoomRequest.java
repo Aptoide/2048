@@ -15,10 +15,6 @@ public class PatchRoomRequest {
     this.score = score;
   }
 
-  public UserStatus getStatus() {
-    return status;
-  }
-
   public void setStatus(UserStatus status) {
     this.status = status;
   }

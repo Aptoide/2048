@@ -2,4 +2,8 @@
 <resources>
     <dimen name="big_padding">16dp</dimen>
     <dimen name="finish_card_max_height">300dp</dimen>
+
+    <dimen name="button_height">36dp</dimen>
+    <dimen name="big_margin">16dp</dimen>
+    <dimen name="list_item_height">88dp</dimen>
 </resources>

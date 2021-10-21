@@ -6,10 +6,13 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
 import com.appcoins.eskills2048.model.MatchDetails;
+import com.appcoins.eskills2048.rankins.RankingsActivity;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
 import com.appcoins.eskills2048.util.KeyboardUtils;
 import com.appcoins.eskills2048.util.UserDataStorage;
@@ -63,6 +66,7 @@ public class LaunchActivity extends AppCompatActivity {
   public void onBackPressed() {
     binding.startNewGameLayout.startNewGameCard.setVisibility(View.VISIBLE);
     binding.createTicketLayout.createTicketCard.setVisibility(View.GONE);
+    binding.canceledTicketLayout.canceledCard.setVisibility(View.GONE);
   }
 
   private void showCreateTicket(MatchDetails.Environment environment) {
@@ -179,8 +183,12 @@ public class LaunchActivity extends AppCompatActivity {
     if (requestCode == REQUEST_CODE) {
       switch (resultCode) {
         case RESULT_OK:
-          startActivity(buildMainActivityIntent(data));
-          finish();
+          if (data != null) {
+            startActivity(buildMainActivityIntent(data));
+            finish();
+          } else {
+            showCancelDialog();
+          }
           break;
         case RESULT_USER_CANCELED:
         case RESULT_ERROR:
