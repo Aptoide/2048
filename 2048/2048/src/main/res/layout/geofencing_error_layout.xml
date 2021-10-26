@@ -6,7 +6,7 @@
     >
 
   <LinearLayout
-      android:id="@+id/canceled_card"
+      android:id="@+id/error_card"
       android:layout_width="340dp"
       android:layout_height="wrap_content"
       android:background="@drawable/background_card"
@@ -19,27 +19,27 @@
       >
 
     <TextView
-        android:id="@+id/cancel_ticket_title"
+        android:id="@+id/geofencing_error_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:lineSpacingExtra="8sp"
-        android:text="@string/canceled_ticket_title"
+        android:text="@string/geofencing_error_title"
         android:textColor="@color/black_87_alpha"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:fontFamily="sans-serif"
         />
 
     <TextView
-        android:id="@+id/cancel_ticket_message"
+        android:id="@+id/geofencing_error_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="@string/canceled_ticket_message"
+        android:text="@string/geofencing_error_message"
         android:textColor="@color/grey_alpha_active_54"
         />
 

@@ -26,9 +26,13 @@ import org.jetbrains.annotations.NotNull;
 public class LaunchActivity extends AppCompatActivity {
 
   private static final int REQUEST_CODE = 123;
+
   private static final int RESULT_OK = 0;
   private static final int RESULT_USER_CANCELED = 1;
+  private static final int RESULT_REGION_NOT_SUPPORTED = 2;
+  private static final int RESULT_NO_NETWORK = 3;
   private static final int RESULT_ERROR = 6;
+
   private static final String SHARED_PREFERENCES_NAME = "SKILL_SHARED_PREFERENCES";
   private static final String PREFERENCES_USER_NAME = "PREFERENCES_USER_NAME";
 
@@ -190,8 +194,10 @@ public class LaunchActivity extends AppCompatActivity {
             showCancelDialog();
           }
           break;
-        case RESULT_USER_CANCELED:
-        case RESULT_ERROR:
+        case RESULT_REGION_NOT_SUPPORTED:
+          showGeofencingErrorDialog();
+          break;
+        default:
           showCancelDialog();
           break;
       }
@@ -215,6 +221,15 @@ public class LaunchActivity extends AppCompatActivity {
     binding.canceledTicketLayout.canceledCard.setVisibility(View.VISIBLE);
     binding.canceledTicketLayout.closeButton.setOnClickListener(view -> {
       binding.canceledTicketLayout.canceledCard.setVisibility(View.GONE);
+      binding.createTicketLayout.createTicketCard.setVisibility(View.VISIBLE);
+    });
+  }
+
+  private void showGeofencingErrorDialog() {
+    binding.createTicketLayout.createTicketCard.setVisibility(View.GONE);
+    binding.geofencingErrorLayout.errorCard.setVisibility(View.VISIBLE);
+    binding.geofencingErrorLayout.closeButton.setOnClickListener(view -> {
+      binding.geofencingErrorLayout.errorCard.setVisibility(View.GONE);
       binding.createTicketLayout.createTicketCard.setVisibility(View.VISIBLE);
     });
   }
