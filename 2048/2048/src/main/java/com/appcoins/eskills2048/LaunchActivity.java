@@ -30,7 +30,7 @@ public class LaunchActivity extends AppCompatActivity {
   private static final int RESULT_OK = 0;
   private static final int RESULT_USER_CANCELED = 1;
   private static final int RESULT_REGION_NOT_SUPPORTED = 2;
-  private static final int RESULT_NO_NETWORK = 3;
+  private static final int RESULT_SERVICE_UNAVAILABLE = 3;
   private static final int RESULT_ERROR = 6;
 
   private static final String SHARED_PREFERENCES_NAME = "SKILL_SHARED_PREFERENCES";
