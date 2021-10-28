@@ -626,7 +626,7 @@ public class MainView extends View {
         Dialog dialog = new Dialog(getContext());
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         View view = LayoutInflater.from(getContext()).inflate(
-            R.layout.quit_confirmation_layout, null);
+                R.layout.quit_confirmation_layout, null);
         dialog.setContentView(view);
 
         Button cancelButton = view.findViewById(R.id.back_button);
@@ -642,5 +642,9 @@ public class MainView extends View {
 
     private void handleQuitGame() {
         game.endGame(true);
+    }
+
+    public void onResume() {
+        game.resume();
     }
 }

@@ -3,19 +3,22 @@ package com.appcoins.eskills2048;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class MainGame {
 
@@ -77,14 +80,7 @@ public class MainGame {
     public void newGame() {
         if (grid == null) {
             grid = new Grid(numSquaresX, numSquaresY);
-            disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
-                    .flatMapSingle(aLong -> viewModel.getRoom()
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .doOnSuccess(MainGame.this::updateOpponentInfo)
-                            .doOnError(Throwable::printStackTrace)
-                            .onErrorReturnItem(new RoomResponse()))
-                    .takeWhile(roomResponse -> playing)
-                    .subscribe());
+            startPeriodicOpponentUpdate();
         } else {
             prepareUndoState();
             saveUndoState();
@@ -103,6 +99,17 @@ public class MainGame {
         mView.refreshLastTime = true;
         mView.resyncTime();
         mView.invalidate();
+    }
+
+    private void startPeriodicOpponentUpdate() {
+        disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
+                .flatMapSingle(aLong -> viewModel.getRoom()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSuccess(MainGame.this::updateOpponentInfo)
+                        .doOnError(Throwable::printStackTrace)
+                        .onErrorReturnItem(new RoomResponse()))
+                .takeWhile(roomResponse -> playing)
+                .subscribe());
     }
 
     private void updateOpponentInfo(RoomResponse roomResponse) {
@@ -435,5 +442,9 @@ public class MainGame {
 
     public void stop() {
         disposable.clear();
+    }
+
+    public void resume() {
+        startPeriodicOpponentUpdate();
     }
 }
