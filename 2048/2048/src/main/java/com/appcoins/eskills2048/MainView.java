@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.appcoins.eskills2048.model.UserDetailsHelper;
+import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
 
 import java.util.ArrayList;
@@ -80,12 +81,12 @@ public class MainView extends View {
     private int titleWidthOpponentScore;
 
     public MainView(Context context, MainGameViewModel viewModel,
-                    UserDetailsHelper userDetailsHelper) {
+                    UserDetailsHelper userDetailsHelper, UserDataStorage userDataStorage) {
         super(context);
 
         Resources resources = context.getResources();
         //Loading resources
-        game = new MainGame(context, this, viewModel, userDetailsHelper);
+        game = new MainGame(context, this, viewModel, userDetailsHelper, userDataStorage);
         try {
             //Getting assets
             backgroundRectangle = resources.getDrawable(R.drawable.background_rectangle);

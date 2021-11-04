@@ -6,13 +6,11 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
 import com.appcoins.eskills2048.model.MatchDetails;
-import com.appcoins.eskills2048.rankins.RankingsActivity;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
 import com.appcoins.eskills2048.util.KeyboardUtils;
 import com.appcoins.eskills2048.util.UserDataStorage;
@@ -29,11 +27,10 @@ public class LaunchActivity extends AppCompatActivity {
   private static final int RESULT_OK = 0;
   private static final int RESULT_USER_CANCELED = 1;
   private static final int RESULT_ERROR = 6;
-  private static final String SHARED_PREFERENCES_NAME = "SKILL_SHARED_PREFERENCES";
   private static final String PREFERENCES_USER_NAME = "PREFERENCES_USER_NAME";
 
+  public static final String SHARED_PREFERENCES_NAME = "SKILL_SHARED_PREFERENCES";
   public static final String USER_ID = "USER_ID";
-  public static final String ROOM_ID = "ROOM_ID";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String SESSION = "SESSION";
 
@@ -44,7 +41,6 @@ public class LaunchActivity extends AppCompatActivity {
 
   private ActivityLaunchBinding binding;
   private UserDataStorage userDataStorage;
-  private static final String TAG = LaunchActivity.class.getSimpleName();
 
   @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -72,12 +68,12 @@ public class LaunchActivity extends AppCompatActivity {
   private void showCreateTicket(MatchDetails.Environment environment) {
     binding.startNewGameLayout.startNewGameCard.setVisibility(View.GONE);
     binding.createTicketLayout.createTicketCard.setVisibility(View.VISIBLE);
-    binding.createTicketLayout.userName.setText(userDataStorage.get(PREFERENCES_USER_NAME));
+    binding.createTicketLayout.userName.setText(userDataStorage.getString(PREFERENCES_USER_NAME));
     setGamePrice();
 
     binding.createTicketLayout.findRoomButton.setOnClickListener(view -> {
       String userName = binding.createTicketLayout.userName.getText().toString();
-      userDataStorage.put(PREFERENCES_USER_NAME, userName);
+      userDataStorage.putString(PREFERENCES_USER_NAME, userName);
       KeyboardUtils.hideKeyboard(view);
       DeviceScreenManager.keepAwake(getWindow());
 
@@ -200,14 +196,8 @@ public class LaunchActivity extends AppCompatActivity {
 
   @NotNull
   private Intent buildMainActivityIntent(Intent data) {
-    Intent intent = new Intent(this, MainActivity.class);
-
-    intent.putExtra(ROOM_ID, data.getStringExtra(ROOM_ID));
-    intent.putExtra(USER_ID, userId);
-    intent.putExtra(WALLET_ADDRESS, data.getStringExtra(WALLET_ADDRESS));
-    intent.putExtra(SESSION, data.getStringExtra(SESSION));
-
-    return intent;
+    return MainActivity.newIntent(this, userId, data.getStringExtra(WALLET_ADDRESS),
+            data.getStringExtra(SESSION));
   }
 
   private void showCancelDialog() {

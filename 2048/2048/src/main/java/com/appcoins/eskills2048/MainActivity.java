@@ -1,5 +1,12 @@
 package com.appcoins.eskills2048;
 
+import static com.appcoins.eskills2048.LaunchActivity.SESSION;
+import static com.appcoins.eskills2048.LaunchActivity.SHARED_PREFERENCES_NAME;
+import static com.appcoins.eskills2048.LaunchActivity.USER_ID;
+import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
+
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
@@ -7,31 +14,51 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
+import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
 import com.appcoins.eskills2048.repository.RoomRepository;
+import com.appcoins.eskills2048.usecase.GetGameStatusLocallyUseCase;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
+import com.appcoins.eskills2048.usecase.SetGameStatusLocallyUseCase;
 import com.appcoins.eskills2048.usecase.SetScoreUseCase;
+import com.appcoins.eskills2048.util.GameFieldConverter;
+import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
 import com.appcoins.eskills2048.vm.MainGameViewModelData;
+import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
     private MainView view;
+
+    public static Intent newIntent(Context context, String userId, String walletAddress, String session) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(USER_ID, userId);
+        intent.putExtra(WALLET_ADDRESS, walletAddress);
+        intent.putExtra(SESSION, session);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         RoomRepository roomRepository = new RoomRepository(RoomApiFactory.buildRoomApi());
+        UserDataStorage userDataStorage = new UserDataStorage(this, SHARED_PREFERENCES_NAME);
+        LocalGameStatusRepository localGameStatusRepository = new LocalGameStatusRepository(
+                userDataStorage, new GameFieldConverter(new Gson()));
+        GetRoomUseCase getRoomUseCase = new GetRoomUseCase(roomRepository);
         view = new MainView(this, new MainGameViewModel(new SetScoreUseCase(roomRepository),
                 new SetFinalScoreUseCase(roomRepository), buildViewModelData(),
-                new GetRoomUseCase(roomRepository)), new UserDetailsHelper());
+                getRoomUseCase, new SetGameStatusLocallyUseCase(localGameStatusRepository),
+                new GetGameStatusLocallyUseCase(localGameStatusRepository, getRoomUseCase)),
+                new UserDetailsHelper(), userDataStorage);
 
         setContentView(view);
     }
 
     private MainGameViewModelData buildViewModelData() {
-        String userId = getIntent().getStringExtra(LaunchActivity.USER_ID);
-        String walletAddress = getIntent().getStringExtra(LaunchActivity.WALLET_ADDRESS);
-        String session = getIntent().getStringExtra(LaunchActivity.SESSION);
+        String userId = getIntent().getStringExtra(USER_ID);
+        String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
+        String session = getIntent().getStringExtra(SESSION);
 
         return new MainGameViewModelData(userId, walletAddress, session);
     }

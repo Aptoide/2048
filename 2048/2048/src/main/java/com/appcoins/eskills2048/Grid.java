@@ -16,6 +16,12 @@ public class Grid {
         clearUndoGrid();
     }
 
+    public Grid(Tile[][] storedField) {
+        field = storedField;
+        undoField = storedField;
+        bufferField = storedField;
+    }
+
     public Cell randomAvailableCell() {
         ArrayList<Cell> availableCells = getAvailableCells();
         if (availableCells.size() >= 1) {
