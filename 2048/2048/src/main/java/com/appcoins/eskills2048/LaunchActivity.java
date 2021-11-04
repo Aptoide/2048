@@ -6,12 +6,19 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
+import com.appcoins.eskills2048.factory.RoomApiFactory;
+import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.MatchDetails;
+import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
+import com.appcoins.eskills2048.repository.RoomRepository;
+import com.appcoins.eskills2048.usecase.GetGameStatusLocallyUseCase;
+import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
+import com.appcoins.eskills2048.util.GameFieldConverter;
 import com.appcoins.eskills2048.util.KeyboardUtils;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -19,7 +26,6 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public class LaunchActivity extends AppCompatActivity {
 
@@ -33,6 +39,7 @@ public class LaunchActivity extends AppCompatActivity {
   public static final String USER_ID = "USER_ID";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String SESSION = "SESSION";
+  public static final String LOCAL_GAME_STATUS = "LOCAL_GAME_STATUS";
 
   private static final String ENTRY_PRICE_DUEL = "1 USD";
   private static final String ENTRY_PRICE_MULTIPLAYER = "3 USD";
@@ -48,6 +55,15 @@ public class LaunchActivity extends AppCompatActivity {
     setContentView(binding.getRoot());
 
     userDataStorage = new UserDataStorage(this, SHARED_PREFERENCES_NAME);
+
+    // TODO create loading layout
+    LocalGameStatus localGameStatus = getPreviousPendingGame();
+    if (localGameStatus != null) {
+      Toast.makeText(this, "Restoring your game...", Toast.LENGTH_LONG)
+          .show();
+      resumeGame(localGameStatus);
+    }
+
     binding.startNewGameLayout.newGameButton.setOnClickListener(
         view -> showCreateTicket(MatchDetails.Environment.LIVE));
     binding.startNewGameLayout.sandboxGameButton.setOnClickListener(
@@ -58,8 +74,24 @@ public class LaunchActivity extends AppCompatActivity {
     firebaseAnalytics.logEvent("app_started", bundle);
   }
 
-  @Override
-  public void onBackPressed() {
+  private void resumeGame(LocalGameStatus localGameStatus) {
+    Intent intent = MainActivity.newIntent(this, userId, localGameStatus.getWalletAddress(),
+        localGameStatus.getSession(), localGameStatus);
+    startActivity(intent);
+    finish();
+  }
+
+  private LocalGameStatus getPreviousPendingGame() {
+    LocalGameStatusRepository localGameStatusRepository =
+        new LocalGameStatusRepository(userDataStorage, new GameFieldConverter(new Gson()));
+    RoomRepository roomRepository = new RoomRepository(RoomApiFactory.buildRoomApi());
+    GetGameStatusLocallyUseCase getGameStatusLocallyUseCase =
+        new GetGameStatusLocallyUseCase(localGameStatusRepository,
+            new GetRoomUseCase(roomRepository));
+    return getGameStatusLocallyUseCase.getGameStatus();
+  }
+
+  @Override public void onBackPressed() {
     binding.startNewGameLayout.startNewGameCard.setVisibility(View.VISIBLE);
     binding.createTicketLayout.createTicketCard.setVisibility(View.GONE);
     binding.canceledTicketLayout.canceledCard.setVisibility(View.GONE);
@@ -72,7 +104,8 @@ public class LaunchActivity extends AppCompatActivity {
     setGamePrice();
 
     binding.createTicketLayout.findRoomButton.setOnClickListener(view -> {
-      String userName = binding.createTicketLayout.userName.getText().toString();
+      String userName = binding.createTicketLayout.userName.getText()
+          .toString();
       userDataStorage.putString(PREFERENCES_USER_NAME, userName);
       KeyboardUtils.hideKeyboard(view);
       DeviceScreenManager.keepAwake(getWindow());
@@ -82,20 +115,24 @@ public class LaunchActivity extends AppCompatActivity {
   }
 
   private void setGamePrice() {
-    binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-      if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
-        binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_DUEL);
-      } else if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
-        binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_MULTIPLAYER);
-      }
-    });
+    binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener(
+        (group, checkedId) -> {
+          if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
+            binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_DUEL);
+          } else if (checkedId
+              == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
+            binding.createTicketLayout.createTicketHeader.fiatPrice.setText(
+                ENTRY_PRICE_MULTIPLAYER);
+          }
+        });
   }
 
   private MatchDetails getMatchDetails(MatchDetails.Environment environment) {
     int checkedId = binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId();
     if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
       return new MatchDetails("1v1", 1f, "USD", environment, 2, 3600);
-    } else if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
+    } else if (checkedId
+        == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
       return new MatchDetails("multiplayer", 3f, "USD", environment, 3, 3600);
     }
     return null;
@@ -146,6 +183,7 @@ public class LaunchActivity extends AppCompatActivity {
    * AppCoins Wallet.
    *
    * @param url The url that generated by following the One Step payment rules
+   *
    * @return The intent used to call the wallet
    */
   private Intent buildTargetIntent(String url) {
@@ -155,8 +193,8 @@ public class LaunchActivity extends AppCompatActivity {
     // Check if there is an application that can process the AppCoins Billing
     // flow
     PackageManager packageManager = getApplicationContext().getPackageManager();
-    List<ResolveInfo> appsList = packageManager
-        .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+    List<ResolveInfo> appsList =
+        packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
     for (ResolveInfo app : appsList) {
       if (app.activityInfo.packageName.equals("cm.aptoide.pt")) {
         // If there's aptoide installed always choose Aptoide as default to open
@@ -172,15 +210,17 @@ public class LaunchActivity extends AppCompatActivity {
     return intent;
   }
 
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == REQUEST_CODE) {
       switch (resultCode) {
         case RESULT_OK:
           if (data != null) {
-            startActivity(buildMainActivityIntent(data));
+            Intent intent =
+                MainActivity.newIntent(this, userId, data.getStringExtra(WALLET_ADDRESS),
+                    data.getStringExtra(SESSION), null);
+            startActivity(intent);
             finish();
           } else {
             showCancelDialog();
@@ -192,12 +232,6 @@ public class LaunchActivity extends AppCompatActivity {
           break;
       }
     }
-  }
-
-  @NotNull
-  private Intent buildMainActivityIntent(Intent data) {
-    return MainActivity.newIntent(this, userId, data.getStringExtra(WALLET_ADDRESS),
-            data.getStringExtra(SESSION));
   }
 
   private void showCancelDialog() {
