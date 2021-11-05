@@ -7,7 +7,7 @@
     >
 
   <androidx.constraintlayout.widget.ConstraintLayout
-      android:id="@+id/start_new_game_card"
+      android:id="@+id/loading_card"
       android:layout_width="307dp"
       android:layout_height="wrap_content"
       android:background="@drawable/background_card"
@@ -31,35 +31,21 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <Button
-        android:id="@+id/new_game_button"
-        style="@style/ButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:text="@string/new_game"
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="48dp"
+        android:indeterminateDrawable="@drawable/gradient_progress"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/game_name"
         />
 
-    <Button
-        android:id="@+id/sandbox_game_button"
-        style="@style/ButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
-        android:text="@string/sandbox_game"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/new_game_button"
-        />
+
   </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

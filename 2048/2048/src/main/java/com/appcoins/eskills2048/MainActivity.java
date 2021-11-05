@@ -5,29 +5,32 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.appcompat.app.AppCompatActivity;
-import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
-import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
-import com.appcoins.eskills2048.repository.RoomRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import com.appcoins.eskills2048.usecase.SetGameStatusLocallyUseCase;
 import com.appcoins.eskills2048.usecase.SetScoreUseCase;
-import com.appcoins.eskills2048.util.GameFieldConverter;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
 import com.appcoins.eskills2048.vm.MainGameViewModelData;
-import com.google.gson.Gson;
+import dagger.hilt.android.AndroidEntryPoint;
+import javax.inject.Inject;
 
 import static com.appcoins.eskills2048.LaunchActivity.LOCAL_GAME_STATUS;
 import static com.appcoins.eskills2048.LaunchActivity.SESSION;
-import static com.appcoins.eskills2048.LaunchActivity.SHARED_PREFERENCES_NAME;
 import static com.appcoins.eskills2048.LaunchActivity.USER_ID;
 import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
 
-public class MainActivity extends AppCompatActivity {
+@AndroidEntryPoint public class MainActivity extends AppCompatActivity {
   private MainView view;
+
+  @Inject UserDataStorage userDataStorage;
+  @Inject GetRoomUseCase getRoomUseCase;
+  @Inject SetScoreUseCase setScoreUseCase;
+  @Inject SetFinalScoreUseCase setFinalScoreUseCase;
+  @Inject SetGameStatusLocallyUseCase setGameStatusLocallyUseCase;
+  @Inject UserDetailsHelper userDetailsHelper;
 
   public static Intent newIntent(Context context, String userId, String walletAddress,
       String session, LocalGameStatus localGameStatus) {
@@ -41,16 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    RoomRepository roomRepository = new RoomRepository(RoomApiFactory.buildRoomApi());
-    UserDataStorage userDataStorage = new UserDataStorage(this, SHARED_PREFERENCES_NAME);
-    LocalGameStatusRepository localGameStatusRepository =
-        new LocalGameStatusRepository(userDataStorage, new GameFieldConverter(new Gson()));
-    view = new MainView(this, new MainGameViewModel(new SetScoreUseCase(roomRepository),
-        new SetFinalScoreUseCase(roomRepository), buildViewModelData(),
-        new GetRoomUseCase(roomRepository),
-        new SetGameStatusLocallyUseCase(localGameStatusRepository)), new UserDetailsHelper(),
-        userDataStorage);
-
+    view = new MainView(this,
+        new MainGameViewModel(setScoreUseCase, setFinalScoreUseCase, buildViewModelData(),
+            getRoomUseCase, setGameStatusLocallyUseCase), userDetailsHelper, userDataStorage);
     setContentView(view);
   }
 
