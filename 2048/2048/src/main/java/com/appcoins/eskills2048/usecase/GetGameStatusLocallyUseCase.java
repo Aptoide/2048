@@ -21,12 +21,15 @@ public class GetGameStatusLocallyUseCase {
       return null;
     }
 
-    // TODO handle errors
-    RoomResponse roomResponse = getRoomUseCase.getRoom(localGameStatus.getSession())
-        .blockingGet();
-    if (roomResponse.getCurrentUser()
-        .getStatus() == UserStatus.PLAYING) {
-      return localGameStatus;
+    try {
+      RoomResponse roomResponse = getRoomUseCase.getRoom(localGameStatus.getSession())
+          .blockingGet();
+      if (roomResponse.getCurrentUser()
+          .getStatus() == UserStatus.PLAYING) {
+        return localGameStatus;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
     return null;
   }
