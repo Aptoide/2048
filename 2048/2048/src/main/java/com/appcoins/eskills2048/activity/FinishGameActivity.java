@@ -1,5 +1,6 @@
 package com.appcoins.eskills2048.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,6 +36,8 @@ public class FinishGameActivity extends AppCompatActivity {
   public static final String SESSION = "SESSION";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String USER_SCORE = "USER_SCORE";
+  private static final String SKU = "SKU";
+  private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
   private static final Long GET_ROOM_PERIOD_SECONDS = 3L;
 
   private ActivityFinishGameBinding binding;
@@ -47,10 +50,14 @@ public class FinishGameActivity extends AppCompatActivity {
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
       long score) {
+    String sku = ((Activity) context).getIntent().getStringExtra("SKU");
+    String matchEnvironment = ((Activity) context).getIntent().getStringExtra("MATCH_ENVIRONMENT");
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
     intent.putExtra(USER_SCORE, score);
+    intent.putExtra(SKU, sku);
+    intent.putExtra(MATCH_ENVIRONMENT, matchEnvironment);
     return intent;
   }
 

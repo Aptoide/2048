@@ -14,8 +14,9 @@ public class GetUserStatisticsUseCase {
   }
 
   public Single<GeneralPlayerStatsResponse> execute(String applicationId, String userWalletAddress,
+      String sku, String matchEnvironment,
       StatisticsTimeFrame timeFrame) {
-    return statisticsRepository.getUserStatistics(applicationId, userWalletAddress, timeFrame)
+    return statisticsRepository.getUserStatistics(applicationId, userWalletAddress, sku, matchEnvironment, timeFrame)
         .subscribeOn(Schedulers.io());
   }
 }

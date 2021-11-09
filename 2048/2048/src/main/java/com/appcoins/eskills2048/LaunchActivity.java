@@ -6,22 +6,23 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
 import com.appcoins.eskills2048.model.MatchDetails;
-import com.appcoins.eskills2048.rankins.RankingsActivity;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
 import com.appcoins.eskills2048.util.KeyboardUtils;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public class LaunchActivity extends AppCompatActivity {
 
@@ -35,6 +36,8 @@ public class LaunchActivity extends AppCompatActivity {
   public static final String USER_ID = "USER_ID";
   public static final String ROOM_ID = "ROOM_ID";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
+  public static final String SKU = "SKU";
+  public static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
   public static final String SESSION = "SESSION";
 
   private static final String ENTRY_PRICE_DUEL = "1 USD";
@@ -44,6 +47,8 @@ public class LaunchActivity extends AppCompatActivity {
 
   private ActivityLaunchBinding binding;
   private UserDataStorage userDataStorage;
+  private static String sku;
+  private static MatchDetails.Environment match_environment;
   private static final String TAG = LaunchActivity.class.getSimpleName();
 
   @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,10 +101,13 @@ public class LaunchActivity extends AppCompatActivity {
   }
 
   private MatchDetails getMatchDetails(MatchDetails.Environment environment) {
+    match_environment = environment;
     int checkedId = binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId();
     if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
+      sku = "1v1";
       return new MatchDetails("1v1", 1f, "USD", environment, 2, 3600);
     } else if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
+      sku = "multiplayer";
       return new MatchDetails("multiplayer", 3f, "USD", environment, 3, 3600);
     }
     return null;
@@ -203,6 +211,8 @@ public class LaunchActivity extends AppCompatActivity {
     Intent intent = new Intent(this, MainActivity.class);
 
     intent.putExtra(ROOM_ID, data.getStringExtra(ROOM_ID));
+    intent.putExtra(SKU, sku);
+    intent.putExtra(MATCH_ENVIRONMENT, match_environment);
     intent.putExtra(USER_ID, userId);
     intent.putExtra(WALLET_ADDRESS, data.getStringExtra(WALLET_ADDRESS));
     intent.putExtra(SESSION, data.getStringExtra(SESSION));

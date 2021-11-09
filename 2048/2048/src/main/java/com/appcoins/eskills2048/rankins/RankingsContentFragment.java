@@ -29,8 +29,12 @@ import java.util.List;
 public class RankingsContentFragment extends Fragment {
   private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
   private static final String TIME_FRAME_KEY = "TIME_FRAME_KEY";
+  private static final String SKU = "SKU";
+  private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
   private StatisticsTimeFrame timeFrame;
   private String walletAddress;
+  private String sku;
+  private String matchEnvironment;
   private RankingsAdapter adapter;
   private final CompositeDisposable disposables = new CompositeDisposable();
   private GetUserStatisticsUseCase statisticsUseCase;
@@ -38,11 +42,12 @@ public class RankingsContentFragment extends Fragment {
   private RecyclerView recyclerView;
   private View errorView;
 
-  public static RankingsContentFragment newInstance(String walletAddress,
-      StatisticsTimeFrame timeFrame) {
+  public static RankingsContentFragment newInstance(String walletAddress, String sku, String matchEnvironment, StatisticsTimeFrame timeFrame) {
     Bundle args = new Bundle();
     args.putString(WALLET_ADDRESS_KEY, walletAddress);
     args.putSerializable(TIME_FRAME_KEY, timeFrame);
+    args.putString(SKU, sku);
+    args.putString(MATCH_ENVIRONMENT, matchEnvironment);
     RankingsContentFragment fragment = new RankingsContentFragment();
     fragment.setArguments(args);
     return fragment;
@@ -54,6 +59,8 @@ public class RankingsContentFragment extends Fragment {
     if (arguments != null) {
       timeFrame = (StatisticsTimeFrame) arguments.getSerializable(TIME_FRAME_KEY);
       walletAddress = arguments.getString(WALLET_ADDRESS_KEY);
+      sku = arguments.getString(SKU);
+      matchEnvironment = arguments.getString(MATCH_ENVIRONMENT);
     }
     GeneralPlayerStats generalPlayerStats = StatisticsApiFactory.buildRoomApi();
     StatisticsRepository statisticsRepository = new StatisticsRepository(generalPlayerStats);
@@ -80,7 +87,7 @@ public class RankingsContentFragment extends Fragment {
   }
 
   private void showRankings() {
-    disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress, timeFrame)
+    disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID , sku, matchEnvironment, walletAddress, timeFrame)
         .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe(disposable -> showLoadingView())
         .doOnSuccess(disposable -> showRecyclerView())
