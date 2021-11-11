@@ -16,6 +16,7 @@ import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomResult;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.rankins.RankingsActivity;
+import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
@@ -47,6 +48,7 @@ import javax.inject.Inject;
 
   @Inject GetRoomUseCase getRoomUseCase;
   @Inject SetFinalScoreUseCase setFinalScoreUseCase;
+  @Inject LocalGameStatusRepository localGameStatusRepository;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
       long score) {
@@ -63,6 +65,7 @@ import javax.inject.Inject;
     setContentView(binding.getRoot());
     DeviceScreenManager.keepAwake(getWindow());
     buildRecyclerView();
+    localGameStatusRepository.removeLocalGameStatus();
 
     disposables = new CompositeDisposable();
     String session = getIntent().getStringExtra(SESSION);

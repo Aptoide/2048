@@ -47,7 +47,7 @@ public class LocalGameStatusRepository {
     userDataStorage.putLong(GAME_STATUS_PREFIX + SCORE, localGameStatus.getScore());
   }
 
-  private void removeLocalGameStatus() {
+  public void removeLocalGameStatus() {
     userDataStorage.remove(GAME_STATUS_PREFIX + SESSION);
     userDataStorage.remove(GAME_STATUS_PREFIX + FIELD);
     userDataStorage.remove(GAME_STATUS_PREFIX + SCORE);
