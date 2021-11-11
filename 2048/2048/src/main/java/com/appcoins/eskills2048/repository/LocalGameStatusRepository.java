@@ -7,8 +7,7 @@ import com.appcoins.eskills2048.util.UserDataStorage;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class LocalGameStatusRepository {
+@Singleton public class LocalGameStatusRepository {
   private static final String GAME_STATUS_PREFIX = "PREFERENCES_GAME_STATUS_";
   private static final String SESSION = "SESSION";
   private static final String WALLET_ADDRESS = "WALLET_ADDRESS";

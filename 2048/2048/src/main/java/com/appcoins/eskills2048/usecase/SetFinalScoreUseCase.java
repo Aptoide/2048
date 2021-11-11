@@ -13,8 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import retrofit2.HttpException;
 
-@Singleton
-public class SetFinalScoreUseCase {
+@Singleton public class SetFinalScoreUseCase {
 
   private final RoomRepository roomRepository;
 

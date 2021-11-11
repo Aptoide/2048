@@ -8,8 +8,7 @@ import io.reactivex.schedulers.Schedulers;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class GetUserStatisticsUseCase {
+@Singleton public class GetUserStatisticsUseCase {
   private final StatisticsRepository statisticsRepository;
 
   @Inject public GetUserStatisticsUseCase(StatisticsRepository statisticsRepository) {

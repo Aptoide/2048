@@ -4,8 +4,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class UserDetailsHelper {
+@Singleton public class UserDetailsHelper {
   private User currentUser;
 
   @Inject public UserDetailsHelper() {

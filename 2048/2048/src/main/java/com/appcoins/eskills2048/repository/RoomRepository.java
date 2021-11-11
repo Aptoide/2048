@@ -8,8 +8,7 @@ import io.reactivex.Single;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class RoomRepository {
+@Singleton public class RoomRepository {
 
   public static final String BEARER_ = "Bearer ";
 

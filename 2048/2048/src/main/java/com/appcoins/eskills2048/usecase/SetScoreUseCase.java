@@ -8,8 +8,7 @@ import io.reactivex.schedulers.Schedulers;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class SetScoreUseCase {
+@Singleton public class SetScoreUseCase {
 
   private final RoomRepository roomRepository;
 

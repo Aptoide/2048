@@ -5,10 +5,11 @@ import android.content.SharedPreferences;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class UserDataStorage {
+@Singleton public class UserDataStorage {
   private final Context context;
   private final String preferencesName;
 

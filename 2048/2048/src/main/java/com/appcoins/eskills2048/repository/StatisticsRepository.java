@@ -6,8 +6,7 @@ import io.reactivex.Single;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class StatisticsRepository {
+@Singleton public class StatisticsRepository {
   private final GeneralPlayerStats api;
 
   @Inject public StatisticsRepository(GeneralPlayerStats api) {

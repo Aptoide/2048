@@ -7,8 +7,7 @@ import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class GetGameStatusLocallyUseCase {
+@Singleton public class GetGameStatusLocallyUseCase {
   private final LocalGameStatusRepository localGameStatusRepository;
   private final GetRoomUseCase getRoomUseCase;
 

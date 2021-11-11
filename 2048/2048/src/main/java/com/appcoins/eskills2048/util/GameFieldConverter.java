@@ -5,8 +5,7 @@ import com.google.gson.Gson;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class GameFieldConverter {
+@Singleton public class GameFieldConverter {
   private final Gson gson;
 
   @Inject public GameFieldConverter(Gson gson) {

@@ -7,8 +7,7 @@ import io.reactivex.schedulers.Schedulers;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class GetRoomUseCase {
+@Singleton public class GetRoomUseCase {
 
   private final RoomRepository roomRepository;
 
