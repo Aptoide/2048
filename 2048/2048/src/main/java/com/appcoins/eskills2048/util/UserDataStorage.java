@@ -2,6 +2,9 @@ package com.appcoins.eskills2048.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -9,7 +12,8 @@ public class UserDataStorage {
   private final Context context;
   private final String preferencesName;
 
-  public UserDataStorage(Context context, String preferencesName) {
+  @Inject public UserDataStorage(@ApplicationContext Context context,
+      @Named("preferencesName") String preferencesName) {
     this.context = context;
     this.preferencesName = preferencesName;
   }

@@ -4,12 +4,15 @@ import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class GetGameStatusLocallyUseCase {
   private final LocalGameStatusRepository localGameStatusRepository;
   private final GetRoomUseCase getRoomUseCase;
 
-  public GetGameStatusLocallyUseCase(LocalGameStatusRepository localGameStatusRepository,
+  @Inject public GetGameStatusLocallyUseCase(LocalGameStatusRepository localGameStatusRepository,
       GetRoomUseCase getRoomUseCase) {
     this.localGameStatusRepository = localGameStatusRepository;
     this.getRoomUseCase = getRoomUseCase;
