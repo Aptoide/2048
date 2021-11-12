@@ -1,24 +1,21 @@
 package com.appcoins.eskills2048;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
 import com.appcoins.eskills2048.activity.FinishGameActivity;
+import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
+import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
-
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class MainGame {
 
@@ -43,8 +40,6 @@ public class MainGame {
   private int bufferGameState = GAME_NORMAL;
   private static final int GAME_ENDLESS = 2;
   private static final int GAME_ENDLESS_WON = 3;
-  private static final String HIGH_SCORE = "high score";
-  private static final String FIRST_RUN = "first run";
   private static int endingMaxValue;
   final int numSquaresX = 4;
   final int numSquaresY = 4;
@@ -66,43 +61,59 @@ public class MainGame {
   private static final int MAX_CHAR_DISPLAY_USERNAME = 11;
   private final UserDetailsHelper userDetailsHelper;
 
+  // shared preferences related
+  private final UserDataStorage userDataStorage;
+  private static final String FIRST_RUN = "first run";
+  private static final String HIGH_SCORE = "high score";
+
   public MainGame(Context context, MainView view, MainGameViewModel viewModel,
-      UserDetailsHelper userDetailsHelper) {
+      UserDetailsHelper userDetailsHelper, UserDataStorage userDataStorage) {
     mContext = context;
     mView = view;
     endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
     this.viewModel = viewModel;
     this.disposable = new CompositeDisposable();
     this.userDetailsHelper = userDetailsHelper;
+    this.userDataStorage = userDataStorage;
   }
 
   public void newGame() {
     if (grid == null) {
-      grid = new Grid(numSquaresX, numSquaresY);
+      createOrRestoreGrid();
     } else {
       prepareUndoState();
       saveUndoState();
       grid.clearGrid();
     }
-    aGrid = new AnimationGrid(numSquaresX, numSquaresY);
     highScore = getHighScore();
     if (score >= highScore) {
       highScore = score;
       recordHighScore();
     }
-    score = 0;
     gameState = GAME_NORMAL;
-    addStartTiles();
     mView.showHelp = firstRun();
     mView.refreshLastTime = true;
     mView.resyncTime();
     mView.invalidate();
   }
 
+  private void createOrRestoreGrid() {
+    aGrid = new AnimationGrid(numSquaresX, numSquaresY);
+    LocalGameStatus gameStatus = viewModel.getGameStatus();
+    if (gameStatus == null) {
+      grid = new Grid(numSquaresX, numSquaresY);
+      score = 0;
+      addStartTiles();
+    } else {
+      grid = new Grid(gameStatus.getField());
+      score = gameStatus.getScore();
+    }
+  }
+
   private void addStartTiles() {
     int startTiles = 2;
     for (int xx = 0; xx < startTiles; xx++) {
-      this.addRandomTile();
+      addRandomTile();
     }
   }
 
@@ -121,23 +132,16 @@ public class MainGame {
   }
 
   private void recordHighScore() {
-    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
-    SharedPreferences.Editor editor = settings.edit();
-    editor.putLong(HIGH_SCORE, highScore);
-    editor.commit();
+    userDataStorage.putLong(HIGH_SCORE, highScore);
   }
 
   private long getHighScore() {
-    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
-    return settings.getLong(HIGH_SCORE, -1);
+    return userDataStorage.getLong(HIGH_SCORE);
   }
 
   private boolean firstRun() {
-    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
-    if (settings.getBoolean(FIRST_RUN, true)) {
-      SharedPreferences.Editor editor = settings.edit();
-      editor.putBoolean(FIRST_RUN, false);
-      editor.commit();
+    if (userDataStorage.getBoolean(FIRST_RUN)) {
+      userDataStorage.putBoolean(FIRST_RUN, false);
       return true;
     }
     return false;
@@ -270,6 +274,8 @@ public class MainGame {
       addRandomTile();
       checkLose();
     }
+
+    viewModel.setGameStatus(grid.field, score);
     mView.resyncTime();
     mView.invalidate();
   }

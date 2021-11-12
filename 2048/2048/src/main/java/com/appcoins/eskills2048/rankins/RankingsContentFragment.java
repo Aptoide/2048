@@ -11,32 +11,32 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.appcoins.eskills2048.BuildConfig;
 import com.appcoins.eskills2048.R;
-import com.appcoins.eskills2048.api.GeneralPlayerStats;
-import com.appcoins.eskills2048.factory.StatisticsApiFactory;
 import com.appcoins.eskills2048.model.GeneralPlayerStatsResponse;
 import com.appcoins.eskills2048.model.RankingsItem;
 import com.appcoins.eskills2048.model.RankingsTitle;
 import com.appcoins.eskills2048.model.UserRankings;
 import com.appcoins.eskills2048.model.UserRankingsItem;
-import com.appcoins.eskills2048.repository.StatisticsRepository;
 import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
 import com.appcoins.eskills2048.usecase.GetUserStatisticsUseCase;
+import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 
-public class RankingsContentFragment extends Fragment {
+@AndroidEntryPoint public class RankingsContentFragment extends Fragment {
   private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
   private static final String TIME_FRAME_KEY = "TIME_FRAME_KEY";
   private StatisticsTimeFrame timeFrame;
   private String walletAddress;
   private RankingsAdapter adapter;
   private final CompositeDisposable disposables = new CompositeDisposable();
-  private GetUserStatisticsUseCase statisticsUseCase;
   private View loadingView;
   private RecyclerView recyclerView;
   private View errorView;
+
+  @Inject GetUserStatisticsUseCase getUserStatisticsUseCase;
 
   public static RankingsContentFragment newInstance(String walletAddress,
       StatisticsTimeFrame timeFrame) {
@@ -55,9 +55,6 @@ public class RankingsContentFragment extends Fragment {
       timeFrame = (StatisticsTimeFrame) arguments.getSerializable(TIME_FRAME_KEY);
       walletAddress = arguments.getString(WALLET_ADDRESS_KEY);
     }
-    GeneralPlayerStats generalPlayerStats = StatisticsApiFactory.buildRoomApi();
-    StatisticsRepository statisticsRepository = new StatisticsRepository(generalPlayerStats);
-    statisticsUseCase = new GetUserStatisticsUseCase(statisticsRepository);
   }
 
   @Nullable @Override
@@ -80,14 +77,15 @@ public class RankingsContentFragment extends Fragment {
   }
 
   private void showRankings() {
-    disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress, timeFrame)
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnSubscribe(disposable -> showLoadingView())
-        .doOnSuccess(disposable -> showRecyclerView())
-        .subscribe(this::updateRankingsList, throwable -> {
-          throwable.printStackTrace();
-          showErrorView();
-        }));
+    disposables.add(
+        getUserStatisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress, timeFrame)
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe(disposable -> showLoadingView())
+            .doOnSuccess(disposable -> showRecyclerView())
+            .subscribe(this::updateRankingsList, throwable -> {
+              throwable.printStackTrace();
+              showErrorView();
+            }));
   }
 
   private void showErrorView() {

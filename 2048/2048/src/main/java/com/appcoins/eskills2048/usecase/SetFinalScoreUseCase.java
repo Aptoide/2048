@@ -9,13 +9,15 @@ import io.reactivex.schedulers.Schedulers;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import retrofit2.HttpException;
 
-public class SetFinalScoreUseCase {
+@Singleton public class SetFinalScoreUseCase {
 
   private final RoomRepository roomRepository;
 
-  public SetFinalScoreUseCase(RoomRepository roomRepository) {
+  @Inject public SetFinalScoreUseCase(RoomRepository roomRepository) {
     this.roomRepository = roomRepository;
   }
 

@@ -12,25 +12,26 @@ import com.appcoins.eskills2048.LaunchActivity;
 import com.appcoins.eskills2048.PlayerRankingAdapter;
 import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.databinding.ActivityFinishGameBinding;
-import com.appcoins.eskills2048.factory.RoomApiFactory;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomResult;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.rankins.RankingsActivity;
-import com.appcoins.eskills2048.repository.RoomRepository;
+import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
 import com.appcoins.eskills2048.util.EmojiUtils;
 import com.appcoins.eskills2048.vm.FinishGameActivityViewModel;
+import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
-public class FinishGameActivity extends AppCompatActivity {
+@AndroidEntryPoint public class FinishGameActivity extends AppCompatActivity {
 
   public static final String SESSION = "SESSION";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
@@ -44,6 +45,10 @@ public class FinishGameActivity extends AppCompatActivity {
   private CompositeDisposable disposables;
   private RecyclerView recyclerView;
   private PlayerRankingAdapter adapter;
+
+  @Inject GetRoomUseCase getRoomUseCase;
+  @Inject SetFinalScoreUseCase setFinalScoreUseCase;
+  @Inject LocalGameStatusRepository localGameStatusRepository;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
       long score) {
@@ -60,14 +65,14 @@ public class FinishGameActivity extends AppCompatActivity {
     setContentView(binding.getRoot());
     DeviceScreenManager.keepAwake(getWindow());
     buildRecyclerView();
+    localGameStatusRepository.removeLocalGameStatus();
 
     disposables = new CompositeDisposable();
     String session = getIntent().getStringExtra(SESSION);
     String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
     long userScore = getIntent().getLongExtra(USER_SCORE, -1);
-    RoomRepository roomRepository = new RoomRepository(RoomApiFactory.buildRoomApi());
-    viewModel = new FinishGameActivityViewModel(new GetRoomUseCase(roomRepository),
-        new SetFinalScoreUseCase(roomRepository), session, walletAddress, userScore);
+    viewModel = new FinishGameActivityViewModel(getRoomUseCase, setFinalScoreUseCase, session,
+        walletAddress, userScore);
 
     disposables.add(Observable.interval(0, GET_ROOM_PERIOD_SECONDS, TimeUnit.SECONDS)
         .flatMapSingle(aLong -> viewModel.getRoom()
