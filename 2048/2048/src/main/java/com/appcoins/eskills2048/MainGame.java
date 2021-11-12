@@ -1,7 +1,6 @@
 package com.appcoins.eskills2048;
 
 import android.content.Context;
-
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.RoomResponse;
@@ -10,15 +9,13 @@ import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
-
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class MainGame {
 
@@ -83,14 +80,6 @@ public class MainGame {
   public void newGame() {
     if (grid == null) {
       createOrRestoreGrid();
-      disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
-          .flatMapSingle(aLong -> viewModel.getRoom()
-              .observeOn(AndroidSchedulers.mainThread())
-              .doOnSuccess(MainGame.this::updateOpponentInfo)
-              .doOnError(Throwable::printStackTrace)
-              .onErrorReturnItem(new RoomResponse()))
-          .takeWhile(roomResponse -> playing)
-          .subscribe());
     } else {
       prepareUndoState();
       saveUndoState();
@@ -118,31 +107,7 @@ public class MainGame {
     } else {
       grid = new Grid(gameStatus.getField());
       score = gameStatus.getScore();
-    }
-  }
-
-  private void updateOpponentInfo(RoomResponse roomResponse) {
-    if (roomResponse.getStatus() == RoomStatus.COMPLETED) {
-      endGame(false);
-    }
-    // if match environment is set to sandbox, the number of opponents can be 0
-    try {
-      List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
-      User opponent = userDetailsHelper.getNextOpponent(opponents);
-      opponentRank = opponent.getRank() + 1;
-      opponentScore = opponent.getScore();
-      opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
-      mView.invalidate();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public String truncate(String str, int len) {
-    if (str.length() > len) {
-      return str.substring(0, len) + "...";
-    } else {
-      return str;
+      canUndo = true;
     }
   }
 
@@ -445,5 +410,45 @@ public class MainGame {
 
   public void stop() {
     disposable.clear();
+  }
+
+  public void resume() {
+    startPeriodicOpponentUpdate();
+  }
+
+  private void startPeriodicOpponentUpdate() {
+    disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
+        .flatMapSingle(aLong -> viewModel.getRoom()
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess(MainGame.this::updateOpponentInfo)
+            .doOnError(Throwable::printStackTrace)
+            .onErrorReturnItem(new RoomResponse()))
+        .takeWhile(roomResponse -> playing)
+        .subscribe());
+  }
+
+  private void updateOpponentInfo(RoomResponse roomResponse) {
+    if (roomResponse.getStatus() == RoomStatus.COMPLETED) {
+      endGame(false);
+    }
+    // if match environment is set to sandbox, the number of opponents can be 0
+    try {
+      List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
+      User opponent = userDetailsHelper.getNextOpponent(opponents);
+      opponentRank = opponent.getRank() + 1;
+      opponentScore = opponent.getScore();
+      opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
+      mView.invalidate();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public String truncate(String str, int len) {
+    if (str.length() > len) {
+      return str.substring(0, len) + "...";
+    } else {
+      return str;
+    }
   }
 }

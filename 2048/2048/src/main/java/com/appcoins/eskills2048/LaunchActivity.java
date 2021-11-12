@@ -192,8 +192,7 @@ import javax.inject.Inject;
         packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
     for (ResolveInfo app : appsList) {
       if (app.activityInfo.packageName.equals("cm.aptoide.pt")) {
-        // If there's aptoide installed always choose Aptoide as default to open
-        // url
+        // If there's aptoide installed always choose Aptoide as default to open url
         intent.setPackage(app.activityInfo.packageName);
         break;
       } else if (app.activityInfo.packageName.equals(BuildConfig.WALLET_PACKAGE_NAME)) {

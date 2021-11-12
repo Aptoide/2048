@@ -60,6 +60,11 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
     return new MainGameViewModelData(userId, walletAddress, session, localGameStatus);
   }
 
+  @Override protected void onResume() {
+    view.onResume();
+    super.onResume();
+  }
+
   @Override protected void onPause() {
     view.onPause();
     super.onPause();
