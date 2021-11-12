@@ -107,7 +107,6 @@ public class MainGame {
     } else {
       grid = new Grid(gameStatus.getField());
       score = gameStatus.getScore();
-      canUndo = true;
     }
   }
 
