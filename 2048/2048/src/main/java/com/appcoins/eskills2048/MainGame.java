@@ -1,8 +1,6 @@
 package com.appcoins.eskills2048;
 
 import android.content.Context;
-import android.util.Log;
-
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.RoomResponse;
@@ -12,15 +10,13 @@ import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
-
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class MainGame {
 
@@ -58,10 +54,10 @@ public class MainGame {
     public long score = 0;
     public long highScore = 0;
     public long lastScore = 0;
-    public UserStatus userStatus = UserStatus.PLAYING;
     public int opponentRank = 1;
     public long opponentScore = 0;
     public String opponentName = "loading...";
+    public UserStatus userStatus = UserStatus.PLAYING;
     private long bufferScore = 0;
     private boolean playing = true;
     private static final int MAX_CHAR_DISPLAY_USERNAME = 11;
@@ -73,7 +69,7 @@ public class MainGame {
     private static final String HIGH_SCORE = "high score";
 
     public MainGame(Context context, MainView view, MainGameViewModel viewModel,
-                    UserDetailsHelper userDetailsHelper, UserDataStorage userDataStorage) {
+        UserDetailsHelper userDetailsHelper, UserDataStorage userDataStorage) {
         mContext = context;
         mView = view;
         endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
@@ -86,14 +82,6 @@ public class MainGame {
     public void newGame() {
         if (grid == null) {
             createOrRestoreGrid();
-            disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
-                    .flatMapSingle(aLong -> viewModel.getRoom()
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .doOnSuccess(MainGame.this::updateOpponentInfo)
-                            .doOnError(Throwable::printStackTrace)
-                            .onErrorReturnItem(new RoomResponse()))
-                    .takeWhile(roomResponse -> playing)
-                    .subscribe());
         } else {
             prepareUndoState();
             saveUndoState();
@@ -124,35 +112,6 @@ public class MainGame {
         }
     }
 
-    private void updateOpponentInfo(RoomResponse roomResponse) {
-        if (roomResponse.getStatus() == RoomStatus.COMPLETED) {
-            endGame(false);
-        }
-        if (roomResponse.getCurrentUser().getStatus() == UserStatus.TIME_UP) {
-            userStatus = UserStatus.TIME_UP;
-            endGame(false);
-        }
-        // if match environment is set to sandbox, the number of opponents can be 0
-        try {
-            List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
-            User opponent = userDetailsHelper.getNextOpponent(opponents);
-            opponentRank = opponent.getRank() + 1;
-            opponentScore = opponent.getScore();
-            opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
-            mView.invalidate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String truncate(String str, int len) {
-        if (str.length() > len) {
-            return str.substring(0, len) + "...";
-        } else {
-            return str;
-        }
-    }
-
     private void addStartTiles() {
         int startTiles = 2;
         for (int xx = 0; xx < startTiles; xx++) {
@@ -171,7 +130,7 @@ public class MainGame {
     private void spawnTile(Tile tile) {
         grid.insertTile(tile);
         aGrid.startAnimation(tile.getX(), tile.getY(), SPAWN_ANIMATION, SPAWN_ANIMATION_TIME,
-                MOVE_ANIMATION_TIME, null); //Direction: -1 = EXPANDING
+            MOVE_ANIMATION_TIME, null); //Direction: -1 = EXPANDING
     }
 
     private void recordHighScore() {
@@ -226,8 +185,8 @@ public class MainGame {
             grid.revertTiles();
             score = lastScore;
             disposable.add(viewModel.setScore(score)
-                    .subscribe(roomResponse -> {
-                    }, Throwable::printStackTrace));
+                .subscribe(roomResponse -> {
+                }, Throwable::printStackTrace));
             gameState = lastGameState;
             mView.refreshLastTime = true;
             mView.invalidate();
@@ -271,7 +230,7 @@ public class MainGame {
 
                     if (next != null && next.getValue() == tile.getValue() && next.getMergedFrom() == null) {
                         Tile merged = new Tile(positions[1], tile.getValue() * 2);
-                        Tile[] temp = {tile, next};
+                        Tile[] temp = { tile, next };
                         merged.setMergedFrom(temp);
 
                         grid.insertTile(merged);
@@ -280,17 +239,17 @@ public class MainGame {
                         // Converge the two tiles' positions
                         tile.updatePosition(positions[1]);
 
-                        int[] extras = {xx, yy};
+                        int[] extras = { xx, yy };
                         aGrid.startAnimation(merged.getX(), merged.getY(), MOVE_ANIMATION, MOVE_ANIMATION_TIME,
-                                0, extras); //Direction: 0 = MOVING MERGED
+                            0, extras); //Direction: 0 = MOVING MERGED
                         aGrid.startAnimation(merged.getX(), merged.getY(), MERGE_ANIMATION,
-                                SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null);
+                            SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null);
 
                         // Update the score
                         score = score + merged.getValue();
                         disposable.add(viewModel.setScore(score)
-                                .subscribe(roomResponse -> {
-                                }, Throwable::printStackTrace));
+                            .subscribe(roomResponse -> {
+                            }, Throwable::printStackTrace));
                         highScore = Math.max(score, highScore);
 
                         // The mighty 2048 tile
@@ -300,9 +259,9 @@ public class MainGame {
                         }
                     } else {
                         moveTile(tile, positions[0]);
-                        int[] extras = {xx, yy, 0};
+                        int[] extras = { xx, yy, 0 };
                         aGrid.startAnimation(positions[0].getX(), positions[0].getY(), MOVE_ANIMATION,
-                                MOVE_ANIMATION_TIME, 0, extras); //Direction: 1 = MOVING NO MERGE
+                            MOVE_ANIMATION_TIME, 0, extras); //Direction: 1 = MOVING NO MERGE
                     }
 
                     if (!positionsEqual(cell, tile)) {
@@ -337,27 +296,27 @@ public class MainGame {
     public void endGame(boolean setFinalScore) {
         playing = false;
         aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
-                NOTIFICATION_DELAY_TIME, null);
+            NOTIFICATION_DELAY_TIME, null);
         if (score >= highScore) {
             highScore = score;
             recordHighScore();
         }
         if (setFinalScore) {
             disposable.add(viewModel.setFinalScore(score)
-                    .subscribe(roomResponse -> {
-                    }, Throwable::printStackTrace));
+                .subscribe(roomResponse -> {
+                }, Throwable::printStackTrace));
         }
 
         mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-                viewModel.getWalletAddress(), score, userStatus));
+            viewModel.getWalletAddress(), score, userStatus));
     }
 
     private Cell getVector(int direction) {
         Cell[] map = {
-                new Cell(0, -1), // up
-                new Cell(1, 0),  // right
-                new Cell(0, 1),  // down
-                new Cell(-1, 0)  // left
+            new Cell(0, -1), // up
+            new Cell(1, 0),  // right
+            new Cell(0, 1),  // down
+            new Cell(-1, 0)  // left
         };
         return map[direction];
     }
@@ -396,7 +355,7 @@ public class MainGame {
             nextCell = new Cell(previous.getX() + vector.getX(), previous.getY() + vector.getY());
         } while (grid.isCellWithinBounds(nextCell) && grid.isCellAvailable(nextCell));
 
-        return new Cell[]{previous, nextCell};
+        return new Cell[] { previous, nextCell };
     }
 
     private boolean movesAvailable() {
@@ -452,5 +411,49 @@ public class MainGame {
 
     public void stop() {
         disposable.clear();
+    }
+
+    public void resume() {
+        startPeriodicOpponentUpdate();
+    }
+
+    private void startPeriodicOpponentUpdate() {
+        disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
+            .flatMapSingle(aLong -> viewModel.getRoom()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess(MainGame.this::updateOpponentInfo)
+                .doOnError(Throwable::printStackTrace)
+                .onErrorReturnItem(new RoomResponse()))
+            .takeWhile(roomResponse -> playing)
+            .subscribe());
+    }
+
+    private void updateOpponentInfo(RoomResponse roomResponse) {
+        if (roomResponse.getStatus() == RoomStatus.COMPLETED) {
+            endGame(false);
+        }
+        if (roomResponse.getCurrentUser().getStatus() == UserStatus.TIME_UP) {
+            userStatus = UserStatus.TIME_UP;
+            endGame(false);
+        }
+        // if match environment is set to sandbox, the number of opponents can be 0
+        try {
+            List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
+            User opponent = userDetailsHelper.getNextOpponent(opponents);
+            opponentRank = opponent.getRank() + 1;
+            opponentScore = opponent.getScore();
+            opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
+            mView.invalidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String truncate(String str, int len) {
+        if (str.length() > len) {
+            return str.substring(0, len) + "...";
+        } else {
+            return str;
+        }
     }
 }

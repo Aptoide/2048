@@ -18,8 +18,8 @@ public class Grid {
 
   public Grid(Tile[][] storedField) {
     field = storedField;
-    undoField = storedField;
-    bufferField = storedField;
+    undoField = new Tile[storedField.length][storedField[0].length];
+    bufferField = new Tile[storedField.length][storedField[0].length];
   }
 
   public Cell randomAvailableCell() {
