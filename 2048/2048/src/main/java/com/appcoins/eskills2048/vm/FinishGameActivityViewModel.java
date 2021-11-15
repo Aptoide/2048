@@ -58,6 +58,10 @@ public class FinishGameActivityViewModel {
         .equalsIgnoreCase(walletAddress);
   }
 
+  public boolean isTimeUp(RoomResponse roomResponse) {
+    return roomResponse.getCurrentUser().getStatus() == UserStatus.TIME_UP;
+  }
+
   private boolean isInProgress(RoomResponse roomResponse) {
     boolean completed = roomResponse.getStatus() == RoomStatus.COMPLETED;
     for (User user : roomResponse.getUsers()) {

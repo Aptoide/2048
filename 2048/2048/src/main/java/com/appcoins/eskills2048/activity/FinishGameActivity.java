@@ -15,6 +15,8 @@ import com.appcoins.eskills2048.databinding.ActivityFinishGameBinding;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomResult;
 import com.appcoins.eskills2048.model.RoomStatus;
+import com.appcoins.eskills2048.model.User;
+import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.rankins.RankingsActivity;
 import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
@@ -36,12 +38,14 @@ import javax.inject.Inject;
   public static final String SESSION = "SESSION";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String USER_SCORE = "USER_SCORE";
+  public static final String USER_STATUS = UserStatus.COMPLETED.toString();
   private static final Long GET_ROOM_PERIOD_SECONDS = 3L;
 
   private ActivityFinishGameBinding binding;
   private FinishGameActivityViewModel viewModel;
   private final static int PARTY_POPPER_EMOJI_UNICODE = 0x1F389;
   private final static int PENSIVE_FACE_EMOJI_UNICODE = 0x1F614;
+  private final static int ALARM_CLOCK_EMOJI_UNICODE =  0x23F0;
   private CompositeDisposable disposables;
   private RecyclerView recyclerView;
   private PlayerRankingAdapter adapter;
@@ -51,11 +55,12 @@ import javax.inject.Inject;
   @Inject LocalGameStatusRepository localGameStatusRepository;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
-      long score) {
+                                   long score, UserStatus userStatus) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
     intent.putExtra(USER_SCORE, score);
+    intent.putExtra(USER_STATUS, userStatus.toString());
     return intent;
   }
 
@@ -134,7 +139,6 @@ import javax.inject.Inject;
     recyclerView.setVisibility(View.GONE);
     binding.lottieAnimation.setAnimation(R.raw.transact_credits_successful);
     binding.lottieAnimation.playAnimation();
-
     if (viewModel.isWinner(roomResult)) {
       handleRoomWinnerBehaviour(roomResult);
     } else {
@@ -158,7 +162,13 @@ import javax.inject.Inject;
 
   private void handleRoomLoserBehaviour(RoomResult roomResult) {
     String sadEmoji = EmojiUtils.getEmojiByUnicode(PENSIVE_FACE_EMOJI_UNICODE);
-    String descriptionText = getResources().getString(R.string.you_lost, sadEmoji);
+    String alarmEmoji = EmojiUtils.getEmojiByUnicode(ALARM_CLOCK_EMOJI_UNICODE);
+    String descriptionText = "";
+    if(getIntent().getStringExtra(USER_STATUS).equals(UserStatus.TIME_UP.toString()))
+      descriptionText = getResources().getString(R.string.you_lost_timeout, alarmEmoji);
+    else{
+      descriptionText = getResources().getString(R.string.you_lost, sadEmoji);
+    }
     binding.animationDescriptionText.setText(descriptionText);
 
     String opponentDetails = getResources().getString(R.string.opponent_details,
@@ -167,9 +177,20 @@ import javax.inject.Inject;
             .getScore());
     binding.secondaryMessage.setText(opponentDetails);
     binding.secondaryMessage.setVisibility(View.VISIBLE);
+
   }
 
   private void showErrorMessage(Throwable throwable) {
+    throwable.printStackTrace();
+    binding.lottieAnimation.setAnimation(R.raw.error_animation);
+    binding.lottieAnimation.playAnimation();
+    binding.animationDescriptionText.setText(getResources().getString(R.string.unknown_error));
+    binding.retryButton.setVisibility(View.VISIBLE);
+    binding.restartButton.setVisibility(View.GONE);
+    binding.restartButton.setEnabled(true);
+  }
+
+  private void showTimeUpMessage(Throwable throwable){
     throwable.printStackTrace();
     binding.lottieAnimation.setAnimation(R.raw.error_animation);
     binding.lottieAnimation.playAnimation();
