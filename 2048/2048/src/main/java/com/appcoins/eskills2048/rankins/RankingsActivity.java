@@ -5,9 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.R;
+import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.disposables.CompositeDisposable;
 
-public class RankingsActivity extends AppCompatActivity {
+@AndroidEntryPoint public class RankingsActivity extends AppCompatActivity {
 
   private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
   private final CompositeDisposable disposables = new CompositeDisposable();
@@ -34,5 +35,4 @@ public class RankingsActivity extends AppCompatActivity {
     disposables.clear();
     super.onDestroy();
   }
-
 }

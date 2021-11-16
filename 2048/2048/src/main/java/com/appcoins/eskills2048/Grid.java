@@ -4,133 +4,140 @@ import java.util.ArrayList;
 
 public class Grid {
 
-    public final Tile[][] field;
-    public final Tile[][] undoField;
-    private final Tile[][] bufferField;
+  public final Tile[][] field;
+  private final Tile[][] undoField;
+  private final Tile[][] bufferField;
 
-    public Grid(int sizeX, int sizeY) {
-        field = new Tile[sizeX][sizeY];
-        undoField = new Tile[sizeX][sizeY];
-        bufferField = new Tile[sizeX][sizeY];
-        clearGrid();
-        clearUndoGrid();
+  public Grid(int sizeX, int sizeY) {
+    field = new Tile[sizeX][sizeY];
+    undoField = new Tile[sizeX][sizeY];
+    bufferField = new Tile[sizeX][sizeY];
+    clearGrid();
+    clearUndoGrid();
+  }
+
+  public Grid(Tile[][] storedField) {
+    field = storedField;
+    undoField = new Tile[storedField.length][storedField[0].length];
+    bufferField = new Tile[storedField.length][storedField[0].length];
+  }
+
+  public Cell randomAvailableCell() {
+    ArrayList<Cell> availableCells = getAvailableCells();
+    if (availableCells.size() >= 1) {
+      return availableCells.get((int) Math.floor(Math.random() * availableCells.size()));
     }
+    return null;
+  }
 
-    public Cell randomAvailableCell() {
-        ArrayList<Cell> availableCells = getAvailableCells();
-        if (availableCells.size() >= 1) {
-            return availableCells.get((int) Math.floor(Math.random() * availableCells.size()));
+  private ArrayList<Cell> getAvailableCells() {
+    ArrayList<Cell> availableCells = new ArrayList<>();
+    for (int xx = 0; xx < field.length; xx++) {
+      for (int yy = 0; yy < field[0].length; yy++) {
+        if (field[xx][yy] == null) {
+          availableCells.add(new Cell(xx, yy));
         }
-        return null;
+      }
     }
+    return availableCells;
+  }
 
-    private ArrayList<Cell> getAvailableCells() {
-        ArrayList<Cell> availableCells = new ArrayList<>();
-        for (int xx = 0; xx < field.length; xx++) {
-            for (int yy = 0; yy < field[0].length; yy++) {
-                if (field[xx][yy] == null) {
-                    availableCells.add(new Cell(xx, yy));
-                }
-            }
-        }
-        return availableCells;
+  public boolean isCellsAvailable() {
+    return (getAvailableCells().size() >= 1);
+  }
+
+  public boolean isCellAvailable(Cell cell) {
+    return !isCellOccupied(cell);
+  }
+
+  public boolean isCellOccupied(Cell cell) {
+    return (getCellContent(cell) != null);
+  }
+
+  public Tile getCellContent(Cell cell) {
+    if (cell != null && isCellWithinBounds(cell)) {
+      return field[cell.getX()][cell.getY()];
+    } else {
+      return null;
     }
+  }
 
-    public boolean isCellsAvailable() {
-        return (getAvailableCells().size() >= 1);
+  public Tile getCellContent(int x, int y) {
+    if (isCellWithinBounds(x, y)) {
+      return field[x][y];
+    } else {
+      return null;
     }
+  }
 
-    public boolean isCellAvailable(Cell cell) {
-        return !isCellOccupied(cell);
-    }
+  public boolean isCellWithinBounds(Cell cell) {
+    return 0 <= cell.getX()
+        && cell.getX() < field.length
+        && 0 <= cell.getY()
+        && cell.getY() < field[0].length;
+  }
 
-    public boolean isCellOccupied(Cell cell) {
-        return (getCellContent(cell) != null);
-    }
+  private boolean isCellWithinBounds(int x, int y) {
+    return 0 <= x && x < field.length && 0 <= y && y < field[0].length;
+  }
 
-    public Tile getCellContent(Cell cell) {
-        if (cell != null && isCellWithinBounds(cell)) {
-            return field[cell.getX()][cell.getY()];
+  public void insertTile(Tile tile) {
+    field[tile.getX()][tile.getY()] = tile;
+  }
+
+  public void removeTile(Tile tile) {
+    field[tile.getX()][tile.getY()] = null;
+  }
+
+  public void saveTiles() {
+    for (int xx = 0; xx < bufferField.length; xx++) {
+      for (int yy = 0; yy < bufferField[0].length; yy++) {
+        if (bufferField[xx][yy] == null) {
+          undoField[xx][yy] = null;
         } else {
-            return null;
+          undoField[xx][yy] = new Tile(xx, yy, bufferField[xx][yy].getValue());
         }
+      }
     }
+  }
 
-    public Tile getCellContent(int x, int y) {
-        if (isCellWithinBounds(x, y)) {
-            return field[x][y];
+  public void prepareSaveTiles() {
+    for (int xx = 0; xx < field.length; xx++) {
+      for (int yy = 0; yy < field[0].length; yy++) {
+        if (field[xx][yy] == null) {
+          bufferField[xx][yy] = null;
         } else {
-            return null;
+          bufferField[xx][yy] = new Tile(xx, yy, field[xx][yy].getValue());
         }
+      }
     }
+  }
 
-    public boolean isCellWithinBounds(Cell cell) {
-        return 0 <= cell.getX() && cell.getX() < field.length
-                && 0 <= cell.getY() && cell.getY() < field[0].length;
-    }
-
-    private boolean isCellWithinBounds(int x, int y) {
-        return 0 <= x && x < field.length
-                && 0 <= y && y < field[0].length;
-    }
-
-    public void insertTile(Tile tile) {
-        field[tile.getX()][tile.getY()] = tile;
-    }
-
-    public void removeTile(Tile tile) {
-        field[tile.getX()][tile.getY()] = null;
-    }
-
-    public void saveTiles() {
-        for (int xx = 0; xx < bufferField.length; xx++) {
-            for (int yy = 0; yy < bufferField[0].length; yy++) {
-                if (bufferField[xx][yy] == null) {
-                    undoField[xx][yy] = null;
-                } else {
-                    undoField[xx][yy] = new Tile(xx, yy, bufferField[xx][yy].getValue());
-                }
-            }
+  public void revertTiles() {
+    for (int xx = 0; xx < undoField.length; xx++) {
+      for (int yy = 0; yy < undoField[0].length; yy++) {
+        if (undoField[xx][yy] == null) {
+          field[xx][yy] = null;
+        } else {
+          field[xx][yy] = new Tile(xx, yy, undoField[xx][yy].getValue());
         }
+      }
     }
+  }
 
-    public void prepareSaveTiles() {
-        for (int xx = 0; xx < field.length; xx++) {
-            for (int yy = 0; yy < field[0].length; yy++) {
-                if (field[xx][yy] == null) {
-                    bufferField[xx][yy] = null;
-                } else {
-                    bufferField[xx][yy] = new Tile(xx, yy, field[xx][yy].getValue());
-                }
-            }
-        }
+  public void clearGrid() {
+    for (int xx = 0; xx < field.length; xx++) {
+      for (int yy = 0; yy < field[0].length; yy++) {
+        field[xx][yy] = null;
+      }
     }
+  }
 
-    public void revertTiles() {
-        for (int xx = 0; xx < undoField.length; xx++) {
-            for (int yy = 0; yy < undoField[0].length; yy++) {
-                if (undoField[xx][yy] == null) {
-                    field[xx][yy] = null;
-                } else {
-                    field[xx][yy] = new Tile(xx, yy, undoField[xx][yy].getValue());
-                }
-            }
-        }
+  private void clearUndoGrid() {
+    for (int xx = 0; xx < field.length; xx++) {
+      for (int yy = 0; yy < field[0].length; yy++) {
+        undoField[xx][yy] = null;
+      }
     }
-
-    public void clearGrid() {
-        for (int xx = 0; xx < field.length; xx++) {
-            for (int yy = 0; yy < field[0].length; yy++) {
-                field[xx][yy] = null;
-            }
-        }
-    }
-
-    private void clearUndoGrid() {
-        for (int xx = 0; xx < field.length; xx++) {
-            for (int yy = 0; yy < field[0].length; yy++) {
-                undoField[xx][yy] = null;
-            }
-        }
-    }
+  }
 }

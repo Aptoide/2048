@@ -1,27 +1,29 @@
 package com.appcoins.eskills2048;
 
-public class Cell {
-    private int x;
-    private int y;
+import java.io.Serializable;
 
-    public Cell(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
+public class Cell implements Serializable {
+  private int x;
+  private int y;
 
-    public int getX() {
-        return this.x;
-    }
+  public Cell(int x, int y) {
+    this.x = x;
+    this.y = y;
+  }
 
-    void setX(int x) {
-        this.x = x;
-    }
+  public int getX() {
+    return this.x;
+  }
 
-    public int getY() {
-        return this.y;
-    }
+  void setX(int x) {
+    this.x = x;
+  }
 
-    void setY(int y) {
-        this.y = y;
-    }
+  public int getY() {
+    return this.y;
+  }
+
+  void setY(int y) {
+    this.y = y;
+  }
 }

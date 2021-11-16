@@ -5,11 +5,13 @@ import com.appcoins.eskills2048.repository.StatisticsRepository;
 import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-public class GetUserStatisticsUseCase {
+@Singleton public class GetUserStatisticsUseCase {
   private final StatisticsRepository statisticsRepository;
 
-  public GetUserStatisticsUseCase(StatisticsRepository statisticsRepository) {
+  @Inject public GetUserStatisticsUseCase(StatisticsRepository statisticsRepository) {
     this.statisticsRepository = statisticsRepository;
   }
 

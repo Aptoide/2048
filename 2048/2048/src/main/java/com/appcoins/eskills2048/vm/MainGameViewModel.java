@@ -1,8 +1,11 @@
 package com.appcoins.eskills2048.vm;
 
+import com.appcoins.eskills2048.Tile;
+import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
+import com.appcoins.eskills2048.usecase.SetGameStatusLocallyUseCase;
 import com.appcoins.eskills2048.usecase.SetScoreUseCase;
 import io.reactivex.Single;
 
@@ -12,13 +15,16 @@ public class MainGameViewModel {
   private final MainGameViewModelData data;
   private final SetScoreUseCase setScoreUseCase;
   private final GetRoomUseCase getRoomUseCase;
+  private final SetGameStatusLocallyUseCase setGameStatusLocallyUseCase;
 
-  public MainGameViewModel(SetScoreUseCase setScoreUseCase, SetFinalScoreUseCase setFinalScoreUseCase,
-                           MainGameViewModelData data, GetRoomUseCase getRoomUseCase) {
+  public MainGameViewModel(SetScoreUseCase setScoreUseCase,
+      SetFinalScoreUseCase setFinalScoreUseCase, MainGameViewModelData data,
+      GetRoomUseCase getRoomUseCase, SetGameStatusLocallyUseCase setGameStatusLocallyUseCase) {
     this.setScoreUseCase = setScoreUseCase;
     this.setFinalScoreUseCase = setFinalScoreUseCase;
     this.data = data;
     this.getRoomUseCase = getRoomUseCase;
+    this.setGameStatusLocallyUseCase = setGameStatusLocallyUseCase;
   }
 
   public Single<RoomResponse> setFinalScore(long score) {
@@ -38,6 +44,15 @@ public class MainGameViewModel {
   }
 
   public Single<RoomResponse> getRoom() {
-      return getRoomUseCase.getRoom(data.getSession());
+    return getRoomUseCase.getRoom(data.getSession());
+  }
+
+  public void setGameStatus(Tile[][] field, long score) {
+    setGameStatusLocallyUseCase.setGameStatus(
+        new LocalGameStatus(data.getSession(), data.getWalletAddress(), field, score));
+  }
+
+  public LocalGameStatus getGameStatus() {
+    return data.getLocalGameStatus();
   }
 }
