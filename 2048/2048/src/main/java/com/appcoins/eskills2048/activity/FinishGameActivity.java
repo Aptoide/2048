@@ -45,7 +45,7 @@ import javax.inject.Inject;
   private FinishGameActivityViewModel viewModel;
   private final static int PARTY_POPPER_EMOJI_UNICODE = 0x1F389;
   private final static int PENSIVE_FACE_EMOJI_UNICODE = 0x1F614;
-  private final static int ALARM_CLOCK_EMOJI_UNICODE =  0x23F0;
+  private final static int ALARM_CLOCK_EMOJI_UNICODE = 0x23F0;
   private CompositeDisposable disposables;
   private RecyclerView recyclerView;
   private PlayerRankingAdapter adapter;
@@ -55,12 +55,11 @@ import javax.inject.Inject;
   @Inject LocalGameStatusRepository localGameStatusRepository;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
-                                   long score, UserStatus userStatus) {
+      long score) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
     intent.putExtra(USER_SCORE, score);
-    intent.putExtra(USER_STATUS, userStatus.toString());
     return intent;
   }
 
@@ -73,9 +72,10 @@ import javax.inject.Inject;
     localGameStatusRepository.removeLocalGameStatus();
 
     disposables = new CompositeDisposable();
-    String session = getIntent().getStringExtra(SESSION);
-    String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
-    long userScore = getIntent().getLongExtra(USER_SCORE, -1);
+    Intent intent = getIntent();
+    String session = intent.getStringExtra(SESSION);
+    String walletAddress = intent.getStringExtra(WALLET_ADDRESS);
+    long userScore = intent.getLongExtra(USER_SCORE, -1);
     viewModel = new FinishGameActivityViewModel(getRoomUseCase, setFinalScoreUseCase, session,
         walletAddress, userScore);
 
@@ -90,9 +90,9 @@ import javax.inject.Inject;
 
     binding.restartButton.setOnClickListener(view -> {
       DeviceScreenManager.stopKeepAwake(getWindow());
-      Intent intent = new Intent(this, LaunchActivity.class);
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-      startActivity(intent);
+      Intent restartIntent = new Intent(this, LaunchActivity.class);
+      restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      startActivity(restartIntent);
     });
 
     binding.retryButton.setOnClickListener(v -> disposables.add(viewModel.getRoomResult()
@@ -135,14 +135,14 @@ import javax.inject.Inject;
     adapter.updateData(roomResponse.getUsersSortedByScore());
   }
 
-  private void setRoomResultDetails(RoomResult roomResult) {
+  private void setRoomResultDetails(RoomResponse room) {
     recyclerView.setVisibility(View.GONE);
     binding.lottieAnimation.setAnimation(R.raw.transact_credits_successful);
     binding.lottieAnimation.playAnimation();
-    if (viewModel.isWinner(roomResult)) {
-      handleRoomWinnerBehaviour(roomResult);
+    if (viewModel.isWinner(room.getRoomResult())) {
+      handleRoomWinnerBehaviour(room.getRoomResult());
     } else {
-      handleRoomLoserBehaviour(roomResult);
+      handleRoomLoserBehaviour(room);
     }
     binding.restartButton.setEnabled(true);
     binding.restartButton.setVisibility(View.VISIBLE);
@@ -160,24 +160,25 @@ import javax.inject.Inject;
     binding.secondaryMessage.setVisibility(View.VISIBLE);
   }
 
-  private void handleRoomLoserBehaviour(RoomResult roomResult) {
+  private void handleRoomLoserBehaviour(RoomResponse roomResponse) {
     String sadEmoji = EmojiUtils.getEmojiByUnicode(PENSIVE_FACE_EMOJI_UNICODE);
     String alarmEmoji = EmojiUtils.getEmojiByUnicode(ALARM_CLOCK_EMOJI_UNICODE);
-    String descriptionText = "";
-    if(getIntent().getStringExtra(USER_STATUS).equals(UserStatus.TIME_UP.toString()))
+    String descriptionText;
+    if (roomResponse.getCurrentUser()
+        .getStatus() == UserStatus.TIME_UP) {
       descriptionText = getResources().getString(R.string.you_lost_timeout, alarmEmoji);
-    else{
+    } else {
       descriptionText = getResources().getString(R.string.you_lost, sadEmoji);
     }
     binding.animationDescriptionText.setText(descriptionText);
 
-    String opponentDetails = getResources().getString(R.string.opponent_details,
-        roomResult.getWinner()
-            .getUserName(), roomResult.getWinner()
-            .getScore());
+    User winner = roomResponse.getRoomResult()
+        .getWinner();
+    String opponentDetails =
+        getResources().getString(R.string.opponent_details, winner.getUserName(),
+            winner.getScore());
     binding.secondaryMessage.setText(opponentDetails);
     binding.secondaryMessage.setVisibility(View.VISIBLE);
-
   }
 
   private void showErrorMessage(Throwable throwable) {
@@ -190,7 +191,7 @@ import javax.inject.Inject;
     binding.restartButton.setEnabled(true);
   }
 
-  private void showTimeUpMessage(Throwable throwable){
+  private void showTimeUpMessage(Throwable throwable) {
     throwable.printStackTrace();
     binding.lottieAnimation.setAnimation(R.raw.error_animation);
     binding.lottieAnimation.playAnimation();

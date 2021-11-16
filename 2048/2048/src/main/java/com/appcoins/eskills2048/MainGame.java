@@ -57,7 +57,6 @@ public class MainGame {
   public int opponentRank = 1;
   public long opponentScore = 0;
   public String opponentName = "loading...";
-  public UserStatus userStatus = UserStatus.PLAYING;
   private long bufferScore = 0;
   private boolean playing = true;
   private static final int MAX_CHAR_DISPLAY_USERNAME = 11;
@@ -308,7 +307,7 @@ public class MainGame {
     }
 
     mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-        viewModel.getWalletAddress(), score, userStatus));
+        viewModel.getWalletAddress(), score));
   }
 
   private Cell getVector(int direction) {
@@ -434,7 +433,6 @@ public class MainGame {
     }
     if (roomResponse.getCurrentUser()
         .getStatus() == UserStatus.TIME_UP) {
-      userStatus = UserStatus.TIME_UP;
       endGame(false);
     }
     // if match environment is set to sandbox, the number of opponents can be 0
