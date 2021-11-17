@@ -14,6 +14,8 @@ import com.appcoins.eskills2048.usecase.SetScoreUseCase;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
 import com.appcoins.eskills2048.vm.MainGameViewModelData;
 
+import java.io.Serializable;
+
 public class MainActivity extends AppCompatActivity {
     private MainView view;
 
@@ -32,8 +34,9 @@ public class MainActivity extends AppCompatActivity {
         String userId = getIntent().getStringExtra(LaunchActivity.USER_ID);
         String walletAddress = getIntent().getStringExtra(LaunchActivity.WALLET_ADDRESS);
         String session = getIntent().getStringExtra(LaunchActivity.SESSION);
+        Serializable matchEnvironment = getIntent().getSerializableExtra(LaunchActivity.MATCH_ENVIRONMENT);
 
-        return new MainGameViewModelData(userId, walletAddress, session);
+        return new MainGameViewModelData(userId, walletAddress, session, matchEnvironment);
     }
 
     @Override

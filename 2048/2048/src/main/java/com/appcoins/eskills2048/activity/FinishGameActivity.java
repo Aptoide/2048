@@ -28,6 +28,8 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -49,9 +51,8 @@ public class FinishGameActivity extends AppCompatActivity {
   private PlayerRankingAdapter adapter;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
-      long score) {
+                                   long score, Serializable matchEnvironment) {
     String sku = ((Activity) context).getIntent().getStringExtra("SKU");
-    String matchEnvironment = ((Activity) context).getIntent().getStringExtra("MATCH_ENVIRONMENT");
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);

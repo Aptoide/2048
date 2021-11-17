@@ -42,11 +42,10 @@ public class RankingsContentFragment extends Fragment {
   private RecyclerView recyclerView;
   private View errorView;
 
-  public static RankingsContentFragment newInstance(String walletAddress, String sku, String matchEnvironment, StatisticsTimeFrame timeFrame) {
+  public static RankingsContentFragment newInstance(String walletAddress, String matchEnvironment, StatisticsTimeFrame timeFrame) {
     Bundle args = new Bundle();
     args.putString(WALLET_ADDRESS_KEY, walletAddress);
     args.putSerializable(TIME_FRAME_KEY, timeFrame);
-    args.putString(SKU, sku);
     args.putString(MATCH_ENVIRONMENT, matchEnvironment);
     RankingsContentFragment fragment = new RankingsContentFragment();
     fragment.setArguments(args);
@@ -87,7 +86,7 @@ public class RankingsContentFragment extends Fragment {
   }
 
   private void showRankings() {
-    disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID , sku, matchEnvironment, walletAddress, timeFrame)
+    disposables.add(statisticsUseCase.execute(BuildConfig.APPLICATION_ID , walletAddress, matchEnvironment, timeFrame)
         .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe(disposable -> showLoadingView())
         .doOnSuccess(disposable -> showRecyclerView())

@@ -10,18 +10,16 @@ import java.security.InvalidParameterException;
 class RankingsPagerAdapter extends FragmentStateAdapter {
 
   private final String walletAddress;
-  private final String sku;
   private final String matchEnvironment;
 
-  public RankingsPagerAdapter(@NonNull Fragment fragment, String walletAddress, String sku, String matchEnvironment) {
+  public RankingsPagerAdapter(@NonNull Fragment fragment, String walletAddress, String matchEnvironment) {
     super(fragment);
     this.walletAddress = walletAddress;
-    this.sku = sku;
     this.matchEnvironment = matchEnvironment;
   }
 
   @NonNull @Override public Fragment createFragment(int position) {
-    return RankingsContentFragment.newInstance(walletAddress, sku, matchEnvironment, getTimeFrame(position));
+    return RankingsContentFragment.newInstance(walletAddress, matchEnvironment, getTimeFrame(position));
   }
 
   private StatisticsTimeFrame getTimeFrame(int position) {

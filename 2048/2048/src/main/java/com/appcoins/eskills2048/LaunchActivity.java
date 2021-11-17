@@ -210,7 +210,7 @@ public class LaunchActivity extends AppCompatActivity {
   private Intent buildMainActivityIntent(Intent data) {
     Intent intent = new Intent(this, MainActivity.class);
 
-    intent.putExtra(ROOM_ID, data.getStringExtra(ROOM_ID));
+    intent.putExtra(ROOM_ID,data.getStringExtra(ROOM_ID));
     intent.putExtra(SKU, sku);
     intent.putExtra(MATCH_ENVIRONMENT, match_environment);
     intent.putExtra(USER_ID, userId);

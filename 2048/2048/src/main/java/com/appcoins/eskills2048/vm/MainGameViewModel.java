@@ -4,6 +4,9 @@ import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import com.appcoins.eskills2048.usecase.SetScoreUseCase;
+
+import java.io.Serializable;
+
 import io.reactivex.Single;
 
 public class MainGameViewModel {
@@ -40,4 +43,6 @@ public class MainGameViewModel {
   public Single<RoomResponse> getRoom() {
       return getRoomUseCase.getRoom(data.getSession());
   }
+
+  public Serializable getMatchEnvironment(){return data.getMatchEnvironment();}
 }

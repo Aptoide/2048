@@ -14,17 +14,18 @@ import com.appcoins.eskills2048.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.io.Serializable;
+
 public class RankingsFragment extends Fragment {
 
     private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
     private static final String SKU = "SKU";
     private static final String MATCH_ENVIRONMENT= "MATCH_ENVIRONMENT";
 
-    public static RankingsFragment newInstance(String userWalletAddress, String sku, String matchEnvironment) {
+    public static RankingsFragment newInstance(String userWalletAddress, Serializable matchEnvironment) {
         Bundle args = new Bundle();
         args.putString(WALLET_ADDRESS_KEY, userWalletAddress);
-        args.putString(SKU, sku);
-        args.putString(MATCH_ENVIRONMENT, matchEnvironment);
+        args.putString(MATCH_ENVIRONMENT, matchEnvironment.toString());
         RankingsFragment fragment = new RankingsFragment();
         fragment.setArguments(args);
         return fragment;
@@ -48,7 +49,7 @@ public class RankingsFragment extends Fragment {
             sku = getArguments().getString(SKU);
             matchEnvironment = getArguments().getString(MATCH_ENVIRONMENT);
         }
-        RankingsPagerAdapter rankingsPagerAdapter = new RankingsPagerAdapter(this, walletAddress, sku, matchEnvironment);
+        RankingsPagerAdapter rankingsPagerAdapter = new RankingsPagerAdapter(this, walletAddress, matchEnvironment);
         ViewPager2 viewPager = view.findViewById(R.id.pager);
         viewPager.setAdapter(rankingsPagerAdapter);
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
