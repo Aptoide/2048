@@ -7,6 +7,7 @@ import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
+import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
 import io.reactivex.Observable;
@@ -428,6 +429,10 @@ public class MainGame {
 
   private void updateOpponentInfo(RoomResponse roomResponse) {
     if (roomResponse.getStatus() == RoomStatus.COMPLETED) {
+      endGame(false);
+    }
+    if (roomResponse.getCurrentUser()
+        .getStatus() == UserStatus.TIME_UP) {
       endGame(false);
     }
     // if match environment is set to sandbox, the number of opponents can be 0

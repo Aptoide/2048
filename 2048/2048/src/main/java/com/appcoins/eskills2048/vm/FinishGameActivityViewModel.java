@@ -33,7 +33,7 @@ public class FinishGameActivityViewModel {
     return getRoomUseCase.getRoom(session);
   }
 
-  public Single<RoomResult> getRoomResult() {
+  public Single<RoomResponse> getRoomResult() {
     return getRoomUseCase.getRoom(session)
         .flatMap(roomResponse -> {
           if (roomResponse.getCurrentUser()
@@ -47,7 +47,6 @@ public class FinishGameActivityViewModel {
         .toObservable()
         .repeatWhen(objectFlowable -> objectFlowable.delay(3, TimeUnit.SECONDS))
         .skipWhile(this::isInProgress)
-        .map(RoomResponse::getRoomResult)
         .take(1)
         .singleOrError();
   }
@@ -56,6 +55,10 @@ public class FinishGameActivityViewModel {
     return roomResult.getWinner()
         .getWalletAddress()
         .equalsIgnoreCase(walletAddress);
+  }
+
+  public boolean isTimeUp(RoomResponse roomResponse) {
+    return roomResponse.getCurrentUser().getStatus() == UserStatus.TIME_UP;
   }
 
   private boolean isInProgress(RoomResponse roomResponse) {

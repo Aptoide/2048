@@ -15,6 +15,8 @@ import com.appcoins.eskills2048.databinding.ActivityFinishGameBinding;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomResult;
 import com.appcoins.eskills2048.model.RoomStatus;
+import com.appcoins.eskills2048.model.User;
+import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.rankins.RankingsActivity;
 import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
@@ -36,12 +38,14 @@ import javax.inject.Inject;
   public static final String SESSION = "SESSION";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String USER_SCORE = "USER_SCORE";
+  public static final String USER_STATUS = UserStatus.COMPLETED.toString();
   private static final Long GET_ROOM_PERIOD_SECONDS = 3L;
 
   private ActivityFinishGameBinding binding;
   private FinishGameActivityViewModel viewModel;
   private final static int PARTY_POPPER_EMOJI_UNICODE = 0x1F389;
   private final static int PENSIVE_FACE_EMOJI_UNICODE = 0x1F614;
+  private final static int ALARM_CLOCK_EMOJI_UNICODE = 0x23F0;
   private CompositeDisposable disposables;
   private RecyclerView recyclerView;
   private PlayerRankingAdapter adapter;
@@ -68,9 +72,10 @@ import javax.inject.Inject;
     localGameStatusRepository.removeLocalGameStatus();
 
     disposables = new CompositeDisposable();
-    String session = getIntent().getStringExtra(SESSION);
-    String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
-    long userScore = getIntent().getLongExtra(USER_SCORE, -1);
+    Intent intent = getIntent();
+    String session = intent.getStringExtra(SESSION);
+    String walletAddress = intent.getStringExtra(WALLET_ADDRESS);
+    long userScore = intent.getLongExtra(USER_SCORE, -1);
     viewModel = new FinishGameActivityViewModel(getRoomUseCase, setFinalScoreUseCase, session,
         walletAddress, userScore);
 
@@ -85,9 +90,9 @@ import javax.inject.Inject;
 
     binding.restartButton.setOnClickListener(view -> {
       DeviceScreenManager.stopKeepAwake(getWindow());
-      Intent intent = new Intent(this, LaunchActivity.class);
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-      startActivity(intent);
+      Intent restartIntent = new Intent(this, LaunchActivity.class);
+      restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      startActivity(restartIntent);
     });
 
     binding.retryButton.setOnClickListener(v -> disposables.add(viewModel.getRoomResult()
@@ -130,15 +135,14 @@ import javax.inject.Inject;
     adapter.updateData(roomResponse.getUsersSortedByScore());
   }
 
-  private void setRoomResultDetails(RoomResult roomResult) {
+  private void setRoomResultDetails(RoomResponse room) {
     recyclerView.setVisibility(View.GONE);
     binding.lottieAnimation.setAnimation(R.raw.transact_credits_successful);
     binding.lottieAnimation.playAnimation();
-
-    if (viewModel.isWinner(roomResult)) {
-      handleRoomWinnerBehaviour(roomResult);
+    if (viewModel.isWinner(room.getRoomResult())) {
+      handleRoomWinnerBehaviour(room.getRoomResult());
     } else {
-      handleRoomLoserBehaviour(roomResult);
+      handleRoomLoserBehaviour(room);
     }
     binding.restartButton.setEnabled(true);
     binding.restartButton.setVisibility(View.VISIBLE);
@@ -156,20 +160,38 @@ import javax.inject.Inject;
     binding.secondaryMessage.setVisibility(View.VISIBLE);
   }
 
-  private void handleRoomLoserBehaviour(RoomResult roomResult) {
+  private void handleRoomLoserBehaviour(RoomResponse roomResponse) {
     String sadEmoji = EmojiUtils.getEmojiByUnicode(PENSIVE_FACE_EMOJI_UNICODE);
-    String descriptionText = getResources().getString(R.string.you_lost, sadEmoji);
+    String alarmEmoji = EmojiUtils.getEmojiByUnicode(ALARM_CLOCK_EMOJI_UNICODE);
+    String descriptionText;
+    if (roomResponse.getCurrentUser()
+        .getStatus() == UserStatus.TIME_UP) {
+      descriptionText = getResources().getString(R.string.you_lost_timeout, alarmEmoji);
+    } else {
+      descriptionText = getResources().getString(R.string.you_lost, sadEmoji);
+    }
     binding.animationDescriptionText.setText(descriptionText);
 
-    String opponentDetails = getResources().getString(R.string.opponent_details,
-        roomResult.getWinner()
-            .getUserName(), roomResult.getWinner()
-            .getScore());
+    User winner = roomResponse.getRoomResult()
+        .getWinner();
+    String opponentDetails =
+        getResources().getString(R.string.opponent_details, winner.getUserName(),
+            winner.getScore());
     binding.secondaryMessage.setText(opponentDetails);
     binding.secondaryMessage.setVisibility(View.VISIBLE);
   }
 
   private void showErrorMessage(Throwable throwable) {
+    throwable.printStackTrace();
+    binding.lottieAnimation.setAnimation(R.raw.error_animation);
+    binding.lottieAnimation.playAnimation();
+    binding.animationDescriptionText.setText(getResources().getString(R.string.unknown_error));
+    binding.retryButton.setVisibility(View.VISIBLE);
+    binding.restartButton.setVisibility(View.GONE);
+    binding.restartButton.setEnabled(true);
+  }
+
+  private void showTimeUpMessage(Throwable throwable) {
     throwable.printStackTrace();
     binding.lottieAnimation.setAnimation(R.raw.error_animation);
     binding.lottieAnimation.playAnimation();

@@ -20,9 +20,11 @@
   <string name="rank_score_details">%1$d points</string>
   <string name="waiting_for_opponents_to_finish">Waiting for opponents to finish game.</string>
   <string name="opponent_details">(%1$s did %2$d points)</string>
+
   <string name="amount_won_details">(your wallet is now %1$.2f$ heavier)</string>
   <string name="you_won">You Won! %1$s</string>
   <string name="you_lost">You Lost! %1$s</string>
+  <string name="you_lost_timeout">Your time is up, You Lost! %1$s</string>
   <string name="unknown_error">An error has occurred.</string>
   <string name="rank">RANK</string>
   <string name="opponent">OPPONENT</string>
