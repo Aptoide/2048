@@ -37,7 +37,7 @@
   <string name="find_room">Find a Room</string>
   <string name="challenge_your_friends">Challenge your friends!</string>
   <string name="game_type_duel">Duel (1 on 1)\nYou can win 1.5$</string>
-  <string name="game_type_multiplayer">Multiplayer (3 players)\nYou can win 6.75$</string>
+  <string name="game_type_multiplayer">Multiplayer (3 players)\nYou can win 9$</string>
   <string name="canceled_ticket_title">We\'re sorry to see you go</string>
   <string name="canceled_ticket_message">But don\'t worry, \nno funds were taken from your wallet.</string>
   <string name="close">Close</string>

@@ -38,7 +38,7 @@ import javax.inject.Inject;
   public static final String LOCAL_GAME_STATUS = "LOCAL_GAME_STATUS";
 
   private static final String ENTRY_PRICE_DUEL = "1 USD";
-  private static final String ENTRY_PRICE_MULTIPLAYER = "3 USD";
+  private static final String ENTRY_PRICE_MULTIPLAYER = "4 USD";
 
   private final String userId = "string_user_id";
 
@@ -129,7 +129,7 @@ import javax.inject.Inject;
       return new MatchDetails("1v1", 1f, "USD", environment, 2, 3600);
     } else if (checkedId
         == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
-      return new MatchDetails("multiplayer", 3f, "USD", environment, 3, 3600);
+      return new MatchDetails("multiplayer", 4f, "USD", environment, 3, 3600);
     }
     return null;
   }
