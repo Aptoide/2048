@@ -3,7 +3,9 @@ package com.appcoins.eskills2048.vm;
 import com.appcoins.eskills2048.Tile;
 import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.RoomResponse;
+import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
+import com.appcoins.eskills2048.usecase.NotifyOpponentFinishedUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import com.appcoins.eskills2048.usecase.SetGameStatusLocallyUseCase;
 import com.appcoins.eskills2048.usecase.SetScoreUseCase;
@@ -16,15 +18,18 @@ public class MainGameViewModel {
   private final SetScoreUseCase setScoreUseCase;
   private final GetRoomUseCase getRoomUseCase;
   private final SetGameStatusLocallyUseCase setGameStatusLocallyUseCase;
+  private final NotifyOpponentFinishedUseCase notifyOpponentFinishedUseCase;
 
   public MainGameViewModel(SetScoreUseCase setScoreUseCase,
       SetFinalScoreUseCase setFinalScoreUseCase, MainGameViewModelData data,
-      GetRoomUseCase getRoomUseCase, SetGameStatusLocallyUseCase setGameStatusLocallyUseCase) {
+      GetRoomUseCase getRoomUseCase, SetGameStatusLocallyUseCase setGameStatusLocallyUseCase,
+      NotifyOpponentFinishedUseCase notifyOpponentFinishedUseCase) {
     this.setScoreUseCase = setScoreUseCase;
     this.setFinalScoreUseCase = setFinalScoreUseCase;
     this.data = data;
     this.getRoomUseCase = getRoomUseCase;
     this.setGameStatusLocallyUseCase = setGameStatusLocallyUseCase;
+    this.notifyOpponentFinishedUseCase = notifyOpponentFinishedUseCase;
   }
 
   public Single<RoomResponse> setFinalScore(long score) {
@@ -54,5 +59,9 @@ public class MainGameViewModel {
 
   public LocalGameStatus getGameStatus() {
     return data.getLocalGameStatus();
+  }
+
+  public void notify(User opponent) {
+    notifyOpponentFinishedUseCase.notify(opponent);
   }
 }

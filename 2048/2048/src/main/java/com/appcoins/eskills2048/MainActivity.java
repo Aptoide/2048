@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
+import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
+import com.appcoins.eskills2048.usecase.NotifyOpponentFinishedUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import com.appcoins.eskills2048.usecase.SetGameStatusLocallyUseCase;
 import com.appcoins.eskills2048.usecase.SetScoreUseCase;
@@ -22,7 +24,8 @@ import static com.appcoins.eskills2048.LaunchActivity.SESSION;
 import static com.appcoins.eskills2048.LaunchActivity.USER_ID;
 import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
 
-@AndroidEntryPoint public class MainActivity extends AppCompatActivity {
+@AndroidEntryPoint public class MainActivity extends AppCompatActivity
+    implements OpponentStatusListener {
   private MainView view;
 
   @Inject UserDataStorage userDataStorage;
@@ -46,7 +49,8 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
     super.onCreate(savedInstanceState);
     view = new MainView(this,
         new MainGameViewModel(setScoreUseCase, setFinalScoreUseCase, buildViewModelData(),
-            getRoomUseCase, setGameStatusLocallyUseCase), userDetailsHelper, userDataStorage);
+            getRoomUseCase, setGameStatusLocallyUseCase, new NotifyOpponentFinishedUseCase(this)),
+        userDetailsHelper, userDataStorage);
     setContentView(view);
   }
 
@@ -92,5 +96,9 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
 
   @Override public void onBackPressed() {
     view.onBackPressed();
+  }
+
+  @Override public void onOpponentFinished(User opponent) {
+    view.game.onOpponentFinished(opponent);
   }
 }
