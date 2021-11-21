@@ -1,22 +1,38 @@
 package com.appcoins.eskills2048;
 
 import android.content.Context;
+import android.text.TextUtils;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
+import com.appcoins.eskills2048.model.RoomApiMapper;
 import com.appcoins.eskills2048.model.RoomResponse;
+import com.appcoins.eskills2048.model.RoomResponseErrorCode;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import okhttp3.ResponseBody;
+import org.json.JSONException;
+import org.json.JSONObject;
+import retrofit2.Converter;
+import retrofit2.HttpException;
+import retrofit2.Retrofit;
 
 public class MainGame {
 
@@ -192,6 +208,15 @@ public class MainGame {
     }
   }
 
+  private void onError(@NonNull Throwable throwable){
+    RoomApiMapper mapper = new RoomApiMapper();
+    RoomResponseErrorCode code = mapper.mapException(throwable);
+    if(code == RoomResponseErrorCode.REGION_NOT_SUPPORTED){
+      endGame();
+    }
+    Toast.makeText(mContext.getApplicationContext(),"There has been an HttpError"+code,Toast.LENGTH_SHORT).show();
+  }
+
   public boolean gameWon() {
     return (gameState > 0 && gameState % 2 != 0);
   }
@@ -247,8 +272,10 @@ public class MainGame {
             // Update the score
             score = score + merged.getValue();
             disposable.add(viewModel.setScore(score)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(roomResponse -> {
-                }, Throwable::printStackTrace));
+                },this::onError));
+            highScore = Math.max(score, highScore);
             highScore = Math.max(score, highScore);
 
             // The mighty 2048 tile
