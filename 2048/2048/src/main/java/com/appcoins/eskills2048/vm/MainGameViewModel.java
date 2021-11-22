@@ -2,6 +2,7 @@ package com.appcoins.eskills2048.vm;
 
 import com.appcoins.eskills2048.Tile;
 import com.appcoins.eskills2048.model.LocalGameStatus;
+import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
@@ -37,6 +38,10 @@ public class MainGameViewModel {
 
   public String getWalletAddress() {
     return data.getWalletAddress();
+  }
+
+  public MatchDetails.Environment getMatchEnvironment() {
+    return data.getMatchEnvironment();
   }
 
   public String getSession() {

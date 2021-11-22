@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.appcoins.eskills2048.BuildConfig;
 import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.model.GeneralPlayerStatsResponse;
+import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.RankingsItem;
 import com.appcoins.eskills2048.model.RankingsTitle;
 import com.appcoins.eskills2048.model.UserRankings;
@@ -28,7 +29,9 @@ import javax.inject.Inject;
 @AndroidEntryPoint public class RankingsContentFragment extends Fragment {
   private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
   private static final String TIME_FRAME_KEY = "TIME_FRAME_KEY";
+  private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
   private StatisticsTimeFrame timeFrame;
+  private MatchDetails.Environment matchEnvironment;
   private String walletAddress;
   private RankingsAdapter adapter;
   private final CompositeDisposable disposables = new CompositeDisposable();
@@ -39,9 +42,10 @@ import javax.inject.Inject;
   @Inject GetUserStatisticsUseCase getUserStatisticsUseCase;
 
   public static RankingsContentFragment newInstance(String walletAddress,
-      StatisticsTimeFrame timeFrame) {
+                                                    MatchDetails.Environment matchEnvironment, StatisticsTimeFrame timeFrame) {
     Bundle args = new Bundle();
     args.putString(WALLET_ADDRESS_KEY, walletAddress);
+    args.putSerializable(MATCH_ENVIRONMENT, matchEnvironment);
     args.putSerializable(TIME_FRAME_KEY, timeFrame);
     RankingsContentFragment fragment = new RankingsContentFragment();
     fragment.setArguments(args);
@@ -54,6 +58,7 @@ import javax.inject.Inject;
     if (arguments != null) {
       timeFrame = (StatisticsTimeFrame) arguments.getSerializable(TIME_FRAME_KEY);
       walletAddress = arguments.getString(WALLET_ADDRESS_KEY);
+      matchEnvironment = (MatchDetails.Environment) arguments.getSerializable(MATCH_ENVIRONMENT);
     }
   }
 
@@ -78,7 +83,7 @@ import javax.inject.Inject;
 
   private void showRankings() {
     disposables.add(
-        getUserStatisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress, timeFrame)
+        getUserStatisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress, matchEnvironment, timeFrame)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe(disposable -> showLoadingView())
             .doOnSuccess(disposable -> showRecyclerView())

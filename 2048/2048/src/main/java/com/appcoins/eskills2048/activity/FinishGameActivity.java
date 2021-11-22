@@ -12,6 +12,7 @@ import com.appcoins.eskills2048.LaunchActivity;
 import com.appcoins.eskills2048.PlayerRankingAdapter;
 import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.databinding.ActivityFinishGameBinding;
+import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomResult;
 import com.appcoins.eskills2048.model.RoomStatus;
@@ -40,6 +41,7 @@ import javax.inject.Inject;
   public static final String USER_SCORE = "USER_SCORE";
   public static final String USER_STATUS = UserStatus.COMPLETED.toString();
   private static final Long GET_ROOM_PERIOD_SECONDS = 3L;
+  private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
 
   private ActivityFinishGameBinding binding;
   private FinishGameActivityViewModel viewModel;
@@ -55,10 +57,11 @@ import javax.inject.Inject;
   @Inject LocalGameStatusRepository localGameStatusRepository;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
-      long score) {
+                                   MatchDetails.Environment matchEnvironment, long score) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
+    intent.putExtra(MATCH_ENVIRONMENT, matchEnvironment);
     intent.putExtra(USER_SCORE, score);
     return intent;
   }
@@ -75,6 +78,7 @@ import javax.inject.Inject;
     Intent intent = getIntent();
     String session = intent.getStringExtra(SESSION);
     String walletAddress = intent.getStringExtra(WALLET_ADDRESS);
+    MatchDetails.Environment matchEnvironment = (MatchDetails.Environment) intent.getSerializableExtra(MATCH_ENVIRONMENT);
     long userScore = intent.getLongExtra(USER_SCORE, -1);
     viewModel = new FinishGameActivityViewModel(getRoomUseCase, setFinalScoreUseCase, session,
         walletAddress, userScore);
@@ -112,7 +116,7 @@ import javax.inject.Inject;
         .subscribe(roomResult -> {
         }, Throwable::printStackTrace));
     findViewById(R.id.rankings_button).setOnClickListener(
-        view -> startActivity(RankingsActivity.create(this, walletAddress)));
+        view -> startActivity(RankingsActivity.create(this, walletAddress, matchEnvironment)));
   }
 
   private void buildRecyclerView() {

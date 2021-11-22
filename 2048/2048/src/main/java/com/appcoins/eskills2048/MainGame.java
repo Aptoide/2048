@@ -307,7 +307,7 @@ public class MainGame {
     }
 
     mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-        viewModel.getWalletAddress(), score));
+        viewModel.getWalletAddress(), viewModel.getMatchEnvironment(), score));
   }
 
   private Cell getVector(int direction) {

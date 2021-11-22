@@ -34,6 +34,8 @@ import javax.inject.Inject;
 
   public static final String USER_ID = "USER_ID";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
+  public static final String SKU = "SKU";
+  public static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
   public static final String SESSION = "SESSION";
   public static final String LOCAL_GAME_STATUS = "LOCAL_GAME_STATUS";
 
@@ -41,6 +43,7 @@ import javax.inject.Inject;
   private static final String ENTRY_PRICE_MULTIPLAYER = "4 USD";
 
   private final String userId = "string_user_id";
+  private MatchDetails.Environment match_environment;
 
   private ActivityLaunchBinding binding;
 
@@ -77,7 +80,7 @@ import javax.inject.Inject;
 
   private void resumeGame(LocalGameStatus localGameStatus) {
     Intent intent = MainActivity.newIntent(this, userId, localGameStatus.getWalletAddress(),
-        localGameStatus.getSession(), localGameStatus);
+        match_environment, localGameStatus.getSession(), localGameStatus);
     startActivity(intent);
     finish();
   }
@@ -92,6 +95,7 @@ import javax.inject.Inject;
   }
 
   private void showCreateTicket(MatchDetails.Environment environment) {
+    this.match_environment = environment;
     binding.startNewGameLayout.getRoot()
         .setVisibility(View.GONE);
     binding.createTicketLayout.getRoot()
@@ -213,7 +217,7 @@ import javax.inject.Inject;
           if (data != null) {
             Intent intent =
                 MainActivity.newIntent(this, userId, data.getStringExtra(WALLET_ADDRESS),
-                    data.getStringExtra(SESSION), null);
+                     match_environment, data.getStringExtra(SESSION), null);
             startActivity(intent);
             finish();
           } else {
