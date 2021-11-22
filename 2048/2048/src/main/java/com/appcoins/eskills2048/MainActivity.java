@@ -24,8 +24,7 @@ import static com.appcoins.eskills2048.LaunchActivity.SESSION;
 import static com.appcoins.eskills2048.LaunchActivity.USER_ID;
 import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
 
-@AndroidEntryPoint public class MainActivity extends AppCompatActivity
-    implements OpponentStatusListener {
+@AndroidEntryPoint public class MainActivity extends AppCompatActivity {
   private MainView view;
 
   @Inject UserDataStorage userDataStorage;
@@ -49,7 +48,7 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
     super.onCreate(savedInstanceState);
     view = new MainView(this,
         new MainGameViewModel(setScoreUseCase, setFinalScoreUseCase, buildViewModelData(),
-            getRoomUseCase, setGameStatusLocallyUseCase, new NotifyOpponentFinishedUseCase(this)),
+            getRoomUseCase, setGameStatusLocallyUseCase, new NotifyOpponentFinishedUseCase(opponent -> view.game.onOpponentFinished(opponent))),
         userDetailsHelper, userDataStorage);
     setContentView(view);
   }
