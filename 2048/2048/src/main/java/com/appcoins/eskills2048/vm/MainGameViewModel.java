@@ -61,4 +61,7 @@ public class MainGameViewModel {
     return data.getLocalGameStatus();
   }
 
+  public void notify(User opponent) {
+    notifyOpponentFinishedUseCase.notify(opponent);
+  }
 }

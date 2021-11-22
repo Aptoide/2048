@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
-import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.NotifyOpponentFinishedUseCase;
@@ -48,7 +47,8 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
     super.onCreate(savedInstanceState);
     view = new MainView(this,
         new MainGameViewModel(setScoreUseCase, setFinalScoreUseCase, buildViewModelData(),
-            getRoomUseCase, setGameStatusLocallyUseCase, new NotifyOpponentFinishedUseCase(opponent -> view.game.onOpponentFinished(opponent))),
+            getRoomUseCase, setGameStatusLocallyUseCase,
+            new NotifyOpponentFinishedUseCase(opponent -> view.game.onOpponentFinished(opponent))),
         userDetailsHelper, userDataStorage);
     setContentView(view);
   }
@@ -95,9 +95,5 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
 
   @Override public void onBackPressed() {
     view.onBackPressed();
-  }
-
-  @Override public void onOpponentFinished(User opponent) {
-    view.game.onOpponentFinished(opponent);
   }
 }

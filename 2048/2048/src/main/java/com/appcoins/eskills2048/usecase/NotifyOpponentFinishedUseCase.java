@@ -5,9 +5,8 @@ import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserStatus;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Singleton;
 
-@Singleton public class NotifyOpponentFinishedUseCase {
+public class NotifyOpponentFinishedUseCase {
   private final List<String> finishedOpponents = new ArrayList<>();
   private final OpponentStatusListener opponentStatusListener;
 
