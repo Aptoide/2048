@@ -98,7 +98,7 @@ import javax.inject.Inject;
     });
 
     if(this.getIntent().getBooleanExtra(EXCEPTION_ENDED_GAME,false)){
-      binding.extraInfo.setVisibility(View.VISIBLE);
+      binding.geofencingErrorMessage.setVisibility(View.VISIBLE);
     }
 
     binding.retryButton.setOnClickListener(v -> disposables.add(viewModel.getRoomResult()
