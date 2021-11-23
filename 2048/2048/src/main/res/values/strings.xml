@@ -31,8 +31,8 @@
   <string name="opponent_score">SCORE</string>
   <string name="restart">RESTART</string>
   <string name="retry">RETRY</string>
-  <string name="new_game">New Game</string>
-  <string name="sandbox_game">Sandbox Game</string>
+  <string name="new_game">Play for Rewards</string>
+  <string name="sandbox_game">Practice</string>
   <string name="user_name">Username</string>
   <string name="find_room">Find a Room</string>
   <string name="challenge_your_friends">Challenge your friends!</string>

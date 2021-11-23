@@ -196,14 +196,4 @@ import javax.inject.Inject;
     binding.restartButton.setVisibility(View.GONE);
     binding.restartButton.setEnabled(true);
   }
-
-  private void showTimeUpMessage(Throwable throwable) {
-    throwable.printStackTrace();
-    binding.lottieAnimation.setAnimation(R.raw.error_animation);
-    binding.lottieAnimation.playAnimation();
-    binding.animationDescriptionText.setText(getResources().getString(R.string.unknown_error));
-    binding.retryButton.setVisibility(View.VISIBLE);
-    binding.restartButton.setVisibility(View.GONE);
-    binding.restartButton.setEnabled(true);
-  }
 }

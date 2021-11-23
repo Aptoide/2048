@@ -1,7 +1,7 @@
 package com.appcoins.eskills2048;
 
 import android.content.Context;
-import android.text.TextUtils;
+
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.appcoins.eskills2048.activity.FinishGameActivity;
@@ -15,24 +15,15 @@ import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import okhttp3.ResponseBody;
-import org.json.JSONException;
-import org.json.JSONObject;
-import retrofit2.Converter;
-import retrofit2.HttpException;
-import retrofit2.Retrofit;
 
 public class MainGame {
 
@@ -466,6 +457,7 @@ public class MainGame {
     try {
       List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
       User opponent = userDetailsHelper.getNextOpponent(opponents);
+      viewModel.notify(opponent);
       opponentRank = opponent.getRank() + 1;
       opponentScore = opponent.getScore();
       opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
@@ -481,5 +473,11 @@ public class MainGame {
     } else {
       return str;
     }
+  }
+
+  public void onOpponentFinished(User opponent) {
+    Toast.makeText(mView.getContext(), "Opponent " + opponent.getUserName() + " has finished.",
+        Toast.LENGTH_LONG)
+        .show();
   }
 }
