@@ -52,4 +52,5 @@
   <string name="rankings">RANKINGS</string>
 
   <string name="entry_price_duel">1 USD</string>
+  <string name="geofencing_message"> Your game has ended because your region is not supported.</string>
 </resources>

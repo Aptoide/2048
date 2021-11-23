@@ -77,6 +77,7 @@ public class MainGame {
   private boolean playing = true;
   private static final int MAX_CHAR_DISPLAY_USERNAME = 11;
   private final UserDetailsHelper userDetailsHelper;
+  private boolean exceptionEndedGamge = false;
 
   // shared preferences related
   private final UserDataStorage userDataStorage;
@@ -212,9 +213,9 @@ public class MainGame {
     RoomApiMapper mapper = new RoomApiMapper();
     RoomResponseErrorCode code = mapper.mapException(throwable);
     if(code == RoomResponseErrorCode.REGION_NOT_SUPPORTED){
-      endGame();
+      this.exceptionEndedGamge = true;
+      endGame(false);
     }
-    Toast.makeText(mContext.getApplicationContext(),"There has been an HttpError"+code,Toast.LENGTH_SHORT).show();
   }
 
   public boolean gameWon() {
@@ -276,7 +277,6 @@ public class MainGame {
                 .subscribe(roomResponse -> {
                 },this::onError));
             highScore = Math.max(score, highScore);
-            highScore = Math.max(score, highScore);
 
             // The mighty 2048 tile
             if (merged.getValue() >= winValue() && !gameWon()) {
@@ -334,7 +334,7 @@ public class MainGame {
     }
 
     mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-        viewModel.getWalletAddress(), score));
+        viewModel.getWalletAddress(), score, exceptionEndedGamge));
   }
 
   private Cell getVector(int direction) {

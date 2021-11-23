@@ -38,8 +38,9 @@ import javax.inject.Inject;
   public static final String SESSION = "SESSION";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String USER_SCORE = "USER_SCORE";
-  public static final String USER_STATUS = UserStatus.COMPLETED.toString();
+  private static final String EXCEPTION_ENDED_GAME = "EXCEPTION_ENDED_GAME";
   private static final Long GET_ROOM_PERIOD_SECONDS = 3L;
+
 
   private ActivityFinishGameBinding binding;
   private FinishGameActivityViewModel viewModel;
@@ -55,11 +56,12 @@ import javax.inject.Inject;
   @Inject LocalGameStatusRepository localGameStatusRepository;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
-      long score) {
+      long score, boolean exceptionEndedGame) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
     intent.putExtra(USER_SCORE, score);
+    intent.putExtra(EXCEPTION_ENDED_GAME, exceptionEndedGame);
     return intent;
   }
 
@@ -94,6 +96,10 @@ import javax.inject.Inject;
       restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
       startActivity(restartIntent);
     });
+
+    if(this.getIntent().getBooleanExtra(EXCEPTION_ENDED_GAME,false)){
+      binding.thirdMessage.setVisibility(View.VISIBLE);
+    }
 
     binding.retryButton.setOnClickListener(v -> disposables.add(viewModel.getRoomResult()
         .subscribeOn(Schedulers.io())
