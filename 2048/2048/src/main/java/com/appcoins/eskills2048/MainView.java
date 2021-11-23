@@ -627,7 +627,7 @@ public class MainView extends View {
   }
 
   private void handleQuitGame() {
-    game.endGame(true);
+    game.endGame(true, false);
   }
 
   public void onResume() {

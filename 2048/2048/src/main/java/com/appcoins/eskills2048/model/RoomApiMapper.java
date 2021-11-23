@@ -1,33 +1,44 @@
 package com.appcoins.eskills2048.model;
 
 import androidx.annotation.NonNull;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import java.util.Objects;
 import org.json.JSONObject;
 import retrofit2.HttpException;
 
+
+
 public class RoomApiMapper {
+  private class Response{
+    Detail detail;
+  }
+  private class Detail{
+    String code;
+    String message;
+  }
 
   public RoomResponseErrorCode mapException(@NonNull Throwable throwable){
-    String body;
     RoomResponseErrorCode response;
     if(throwable instanceof HttpException) {
       HttpException exception = (HttpException) throwable;
       try {
-        body = Objects.requireNonNull(Objects.requireNonNull(exception.response())
+        Gson gson = new Gson();
+        Response gsonResponse = gson.fromJson(Objects.requireNonNull(Objects.requireNonNull(exception.response())
             .errorBody())
-            .string();
-        JSONObject detail = new JSONObject(body).getJSONObject("detail");
-        response = RoomResponseErrorCode.valueOf(detail.getString("code"));
+            .charStream(),Response.class);
+        response = RoomResponseErrorCode.valueOf(gsonResponse.detail.code);
       }
       catch (Exception e){
         e.printStackTrace();
-        response = RoomResponseErrorCode.DEFAULT_ERROR;
+        response = RoomResponseErrorCode.GENERIC_ERROR;
       }
     }
     else{
-      response = RoomResponseErrorCode.DEFAULT_ERROR;
+      response = RoomResponseErrorCode.GENERIC_ERROR;
     }
     return response;
   }
+
 }
 

@@ -68,7 +68,6 @@ public class MainGame {
   private boolean playing = true;
   private static final int MAX_CHAR_DISPLAY_USERNAME = 11;
   private final UserDetailsHelper userDetailsHelper;
-  private boolean exceptionEndedGamge = false;
 
   // shared preferences related
   private final UserDataStorage userDataStorage;
@@ -204,8 +203,7 @@ public class MainGame {
     RoomApiMapper mapper = new RoomApiMapper();
     RoomResponseErrorCode code = mapper.mapException(throwable);
     if(code == RoomResponseErrorCode.REGION_NOT_SUPPORTED){
-      this.exceptionEndedGamge = true;
-      endGame(false);
+      endGame(false, true);
     }
   }
 
@@ -307,10 +305,10 @@ public class MainGame {
   }
 
   private void endGame() {
-    endGame(true);
+    endGame(true,false);
   }
 
-  public void endGame(boolean setFinalScore) {
+  public void endGame(boolean setFinalScore, boolean exceptionEndedGame) {
     playing = false;
     aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
         NOTIFICATION_DELAY_TIME, null);
@@ -325,7 +323,7 @@ public class MainGame {
     }
 
     mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-        viewModel.getWalletAddress(), score, exceptionEndedGamge));
+        viewModel.getWalletAddress(), score, exceptionEndedGame));
   }
 
   private Cell getVector(int direction) {
@@ -447,11 +445,11 @@ public class MainGame {
 
   private void updateOpponentInfo(RoomResponse roomResponse) {
     if (roomResponse.getStatus() == RoomStatus.COMPLETED) {
-      endGame(false);
+      endGame(false, false);
     }
     if (roomResponse.getCurrentUser()
         .getStatus() == UserStatus.TIME_UP) {
-      endGame(false);
+      endGame(false, false);
     }
     // if match environment is set to sandbox, the number of opponents can be 0
     try {
