@@ -57,7 +57,7 @@ import javax.inject.Inject;
   @Inject LocalGameStatusRepository localGameStatusRepository;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
-                                   MatchDetails.Environment matchEnvironment, long score) {
+      MatchDetails.Environment matchEnvironment, long score) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
@@ -78,7 +78,8 @@ import javax.inject.Inject;
     Intent intent = getIntent();
     String session = intent.getStringExtra(SESSION);
     String walletAddress = intent.getStringExtra(WALLET_ADDRESS);
-    MatchDetails.Environment matchEnvironment = (MatchDetails.Environment) intent.getSerializableExtra(MATCH_ENVIRONMENT);
+    MatchDetails.Environment matchEnvironment =
+        (MatchDetails.Environment) intent.getSerializableExtra(MATCH_ENVIRONMENT);
     long userScore = intent.getLongExtra(USER_SCORE, -1);
     viewModel = new FinishGameActivityViewModel(getRoomUseCase, setFinalScoreUseCase, session,
         walletAddress, userScore);

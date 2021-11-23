@@ -19,7 +19,7 @@ public class RankingsFragment extends Fragment {
   private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
 
   public static RankingsFragment newInstance(String userWalletAddress,
-                                             MatchDetails.Environment matchEnvironment) {
+      MatchDetails.Environment matchEnvironment) {
     Bundle args = new Bundle();
     args.putString(WALLET_ADDRESS_KEY, userWalletAddress);
     args.putSerializable(MATCH_ENVIRONMENT, matchEnvironment);
@@ -40,14 +40,15 @@ public class RankingsFragment extends Fragment {
     MatchDetails.Environment matchEnvironment = null;
     if (getArguments() != null) {
       walletAddress = getArguments().getString(WALLET_ADDRESS_KEY);
-      matchEnvironment = (MatchDetails.Environment) getArguments().getSerializable(MATCH_ENVIRONMENT);
+      matchEnvironment =
+          (MatchDetails.Environment) getArguments().getSerializable(MATCH_ENVIRONMENT);
     }
-    RankingsPagerAdapter rankingsPagerAdapter = new RankingsPagerAdapter(this, walletAddress, matchEnvironment);
+    RankingsPagerAdapter rankingsPagerAdapter =
+        new RankingsPagerAdapter(this, walletAddress, matchEnvironment);
     ViewPager2 viewPager = view.findViewById(R.id.pager);
     viewPager.setAdapter(rankingsPagerAdapter);
     TabLayout tabLayout = view.findViewById(R.id.tab_layout);
     new TabLayoutMediator(tabLayout, viewPager,
-        (tab, position) -> tab.setText(rankingsPagerAdapter.getFragmentTitle(position))
-    ).attach();
+        (tab, position) -> tab.setText(rankingsPagerAdapter.getFragmentTitle(position))).attach();
   }
 }

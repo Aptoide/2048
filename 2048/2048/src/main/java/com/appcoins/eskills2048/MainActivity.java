@@ -35,7 +35,7 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
   @Inject UserDetailsHelper userDetailsHelper;
 
   public static Intent newIntent(Context context, String userId, String walletAddress,
-                                 MatchDetails.Environment match_environment, String session, LocalGameStatus localGameStatus) {
+      MatchDetails.Environment match_environment, String session, LocalGameStatus localGameStatus) {
     Intent intent = new Intent(context, MainActivity.class);
     intent.putExtra(USER_ID, userId);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
@@ -56,12 +56,14 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
   private MainGameViewModelData buildViewModelData() {
     String userId = getIntent().getStringExtra(USER_ID);
     String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
-    MatchDetails.Environment matchEnvironment = (MatchDetails.Environment) getIntent().getSerializableExtra(MATCH_ENVIRONMENT);
+    MatchDetails.Environment matchEnvironment =
+        (MatchDetails.Environment) getIntent().getSerializableExtra(MATCH_ENVIRONMENT);
     String session = getIntent().getStringExtra(SESSION);
     LocalGameStatus localGameStatus =
         (LocalGameStatus) getIntent().getSerializableExtra(LOCAL_GAME_STATUS);
 
-    return new MainGameViewModelData(userId, walletAddress, matchEnvironment, session, localGameStatus);
+    return new MainGameViewModelData(userId, walletAddress, matchEnvironment, session,
+        localGameStatus);
   }
 
   @Override protected void onResume() {

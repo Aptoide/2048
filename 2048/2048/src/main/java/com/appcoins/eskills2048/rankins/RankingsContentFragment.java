@@ -42,7 +42,7 @@ import javax.inject.Inject;
   @Inject GetUserStatisticsUseCase getUserStatisticsUseCase;
 
   public static RankingsContentFragment newInstance(String walletAddress,
-                                                    MatchDetails.Environment matchEnvironment, StatisticsTimeFrame timeFrame) {
+      MatchDetails.Environment matchEnvironment, StatisticsTimeFrame timeFrame) {
     Bundle args = new Bundle();
     args.putString(WALLET_ADDRESS_KEY, walletAddress);
     args.putSerializable(MATCH_ENVIRONMENT, matchEnvironment);
@@ -82,15 +82,15 @@ import javax.inject.Inject;
   }
 
   private void showRankings() {
-    disposables.add(
-        getUserStatisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress, matchEnvironment, timeFrame)
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe(disposable -> showLoadingView())
-            .doOnSuccess(disposable -> showRecyclerView())
-            .subscribe(this::updateRankingsList, throwable -> {
-              throwable.printStackTrace();
-              showErrorView();
-            }));
+    disposables.add(getUserStatisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress,
+        matchEnvironment, timeFrame)
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnSubscribe(disposable -> showLoadingView())
+        .doOnSuccess(disposable -> showRecyclerView())
+        .subscribe(this::updateRankingsList, throwable -> {
+          throwable.printStackTrace();
+          showErrorView();
+        }));
   }
 
   private void showErrorView() {

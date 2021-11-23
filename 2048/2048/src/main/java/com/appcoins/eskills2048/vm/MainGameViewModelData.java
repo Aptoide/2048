@@ -11,8 +11,8 @@ public class MainGameViewModelData {
   private final String session;
   private final LocalGameStatus localGameStatus;
 
-  public MainGameViewModelData(String userId, String walletAddress, MatchDetails.Environment matchEnvironment,
-                               String session, LocalGameStatus localGameStatus) {
+  public MainGameViewModelData(String userId, String walletAddress,
+      MatchDetails.Environment matchEnvironment, String session, LocalGameStatus localGameStatus) {
     this.userId = userId;
     this.walletAddress = walletAddress;
     this.matchEnvironment = matchEnvironment;
@@ -24,7 +24,9 @@ public class MainGameViewModelData {
     return walletAddress;
   }
 
-  public MatchDetails.Environment getMatchEnvironment() {return matchEnvironment;}
+  public MatchDetails.Environment getMatchEnvironment() {
+    return matchEnvironment;
+  }
 
   public String getSession() {
     return session;

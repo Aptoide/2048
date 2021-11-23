@@ -14,14 +14,15 @@ class RankingsPagerAdapter extends FragmentStateAdapter {
   private final MatchDetails.Environment matchEnvironment;
 
   public RankingsPagerAdapter(@NonNull Fragment fragment, String walletAddress,
-                              MatchDetails.Environment matchEnvironment) {
+      MatchDetails.Environment matchEnvironment) {
     super(fragment);
     this.walletAddress = walletAddress;
     this.matchEnvironment = matchEnvironment;
   }
 
   @NonNull @Override public Fragment createFragment(int position) {
-    return RankingsContentFragment.newInstance(walletAddress, matchEnvironment, getTimeFrame(position));
+    return RankingsContentFragment.newInstance(walletAddress, matchEnvironment,
+        getTimeFrame(position));
   }
 
   private StatisticsTimeFrame getTimeFrame(int position) {

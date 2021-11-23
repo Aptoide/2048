@@ -79,8 +79,9 @@ import javax.inject.Inject;
   }
 
   private void resumeGame(LocalGameStatus localGameStatus) {
-    Intent intent = MainActivity.newIntent(this, userId, localGameStatus.getWalletAddress(),
-        match_environment, localGameStatus.getSession(), localGameStatus);
+    Intent intent =
+        MainActivity.newIntent(this, userId, localGameStatus.getWalletAddress(), match_environment,
+            localGameStatus.getSession(), localGameStatus);
     startActivity(intent);
     finish();
   }
@@ -217,7 +218,7 @@ import javax.inject.Inject;
           if (data != null) {
             Intent intent =
                 MainActivity.newIntent(this, userId, data.getStringExtra(WALLET_ADDRESS),
-                     match_environment, data.getStringExtra(SESSION), null);
+                    match_environment, data.getStringExtra(SESSION), null);
             startActivity(intent);
             finish();
           } else {

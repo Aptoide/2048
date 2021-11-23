@@ -17,8 +17,9 @@ import javax.inject.Singleton;
   }
 
   public Single<GeneralPlayerStatsResponse> execute(String applicationId, String userWalletAddress,
-                                                    MatchDetails.Environment matchEnvironment, StatisticsTimeFrame timeFrame) {
-    return statisticsRepository.getUserStatistics(applicationId, userWalletAddress, matchEnvironment, timeFrame)
+      MatchDetails.Environment matchEnvironment, StatisticsTimeFrame timeFrame) {
+    return statisticsRepository.getUserStatistics(applicationId, userWalletAddress,
+        matchEnvironment, timeFrame)
         .subscribeOn(Schedulers.io());
   }
 }
