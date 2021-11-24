@@ -19,7 +19,7 @@ import javax.inject.Singleton;
   public Single<GeneralPlayerStatsResponse> getUserStatistics(String applicationId,
       String userWalletAddress, MatchDetails.Environment matchEnvironment,
       StatisticsTimeFrame timeFrame) {
-    return api.getGeneralPlayerStats(applicationId, userWalletAddress, null, 3, 2,
-        matchEnvironment.toString(), timeFrame.name());
+    return api.getGeneralPlayerStats(applicationId, userWalletAddress, null, 3, 2, matchEnvironment,
+        timeFrame.name());
   }
 }

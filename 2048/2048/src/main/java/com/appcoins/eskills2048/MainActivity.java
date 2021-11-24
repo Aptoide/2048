@@ -35,11 +35,11 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
   @Inject UserDetailsHelper userDetailsHelper;
 
   public static Intent newIntent(Context context, String userId, String walletAddress,
-      MatchDetails.Environment match_environment, String session, LocalGameStatus localGameStatus) {
+      MatchDetails.Environment matchEnvironment, String session, LocalGameStatus localGameStatus) {
     Intent intent = new Intent(context, MainActivity.class);
     intent.putExtra(USER_ID, userId);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
-    intent.putExtra(MATCH_ENVIRONMENT, match_environment);
+    intent.putExtra(MATCH_ENVIRONMENT, matchEnvironment);
     intent.putExtra(SESSION, session);
     intent.putExtra(LOCAL_GAME_STATUS, localGameStatus);
     return intent;
