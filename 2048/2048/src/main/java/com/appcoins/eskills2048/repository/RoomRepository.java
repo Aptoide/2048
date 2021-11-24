@@ -1,8 +1,11 @@
 package com.appcoins.eskills2048.repository;
 
+import androidx.annotation.NonNull;
 import com.appcoins.eskills2048.api.RoomApi;
 import com.appcoins.eskills2048.model.PatchRoomRequest;
+import com.appcoins.eskills2048.model.RoomApiMapper;
 import com.appcoins.eskills2048.model.RoomResponse;
+import com.appcoins.eskills2048.model.RoomResponseErrorCode;
 import com.appcoins.eskills2048.model.UserStatus;
 import io.reactivex.Single;
 import javax.inject.Inject;
@@ -13,8 +16,10 @@ import javax.inject.Singleton;
   public static final String BEARER_ = "Bearer ";
 
   private final RoomApi roomApi;
+  private final RoomApiMapper roomApiMapper;
 
-  @Inject public RoomRepository(RoomApi roomApi) {
+  @Inject public RoomRepository(RoomApi roomApi, RoomApiMapper roomApiMapper) {
+    this.roomApiMapper = roomApiMapper;
     this.roomApi = roomApi;
   }
 
@@ -22,7 +27,7 @@ import javax.inject.Singleton;
     PatchRoomRequest patchRoomRequest = new PatchRoomRequest();
     patchRoomRequest.setScore(score);
     patchRoomRequest.setStatus(status);
-    return roomApi.patchRoom(BEARER_ + session, patchRoomRequest);
+    return roomApiMapper.map(roomApi.patchRoom(BEARER_ + session, patchRoomRequest));
   }
 
   public Single<RoomResponse> getRoom(String session) {

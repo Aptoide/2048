@@ -38,7 +38,7 @@ import javax.inject.Inject;
   public static final String SESSION = "SESSION";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String USER_SCORE = "USER_SCORE";
-  private static final String EXCEPTION_ENDED_GAME = "EXCEPTION_ENDED_GAME";
+  private static final String STATUS_CODE = "STATUS_CODE";
   private static final Long GET_ROOM_PERIOD_SECONDS = 3L;
 
 
@@ -56,12 +56,12 @@ import javax.inject.Inject;
   @Inject LocalGameStatusRepository localGameStatusRepository;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
-      long score, boolean exceptionEndedGame) {
+      long score, RoomResponse.StatusCode statusCode) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
     intent.putExtra(USER_SCORE, score);
-    intent.putExtra(EXCEPTION_ENDED_GAME, exceptionEndedGame);
+    intent.putExtra(STATUS_CODE, statusCode);
     return intent;
   }
 
@@ -97,7 +97,7 @@ import javax.inject.Inject;
       startActivity(restartIntent);
     });
 
-    if(this.getIntent().getBooleanExtra(EXCEPTION_ENDED_GAME,false)){
+    if(this.getIntent().getSerializableExtra(STATUS_CODE).equals(RoomResponse.StatusCode.SUCCESSFUL_RESPONSE)){
       binding.geofencingErrorMessage.setVisibility(View.VISIBLE);
     }
 

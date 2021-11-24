@@ -3,6 +3,7 @@ package com.appcoins.eskills2048.di;
 import com.appcoins.eskills2048.BuildConfig;
 import com.appcoins.eskills2048.api.GeneralPlayerStats;
 import com.appcoins.eskills2048.api.RoomApi;
+import com.appcoins.eskills2048.model.RoomApiMapper;
 import com.appcoins.eskills2048.util.LogInterceptor;
 import com.google.gson.Gson;
 import dagger.Module;
@@ -43,6 +44,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
         .create(RoomApi.class);
+  }
+
+  @Singleton @Provides public RoomApiMapper provideRoomApiMapper(){
+    return new RoomApiMapper();
   }
 
   @Singleton @Provides

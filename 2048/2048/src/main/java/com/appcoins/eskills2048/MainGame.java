@@ -199,11 +199,10 @@ public class MainGame {
     }
   }
 
-  private void onError(@NonNull Throwable throwable){
-    RoomApiMapper mapper = new RoomApiMapper();
-    RoomResponseErrorCode code = mapper.mapException(throwable);
-    if(code == RoomResponseErrorCode.REGION_NOT_SUPPORTED){
-      endGame(false, true);
+  private void onSuccess(RoomResponse roomResponse) {
+    if (roomResponse.getStatusCode()
+        .equals(RoomResponse.StatusCode.REGION_NOT_SUPPORTED)) {
+      endGame(false,roomResponse.getStatusCode());
     }
   }
 
@@ -264,7 +263,7 @@ public class MainGame {
             disposable.add(viewModel.setScore(score)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(roomResponse -> {
-                },this::onError));
+                }, Throwable::printStackTrace));
             highScore = Math.max(score, highScore);
 
             // The mighty 2048 tile
@@ -305,10 +304,10 @@ public class MainGame {
   }
 
   private void endGame() {
-    endGame(true,false);
+    endGame(true, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
   }
 
-  public void endGame(boolean setFinalScore, boolean exceptionEndedGame) {
+  public void endGame(boolean setFinalScore, RoomResponse.StatusCode statusCode) {
     playing = false;
     aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
         NOTIFICATION_DELAY_TIME, null);
@@ -323,7 +322,7 @@ public class MainGame {
     }
 
     mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-        viewModel.getWalletAddress(), score, exceptionEndedGame));
+        viewModel.getWalletAddress(), score, statusCode));
   }
 
   private Cell getVector(int direction) {
@@ -444,12 +443,10 @@ public class MainGame {
   }
 
   private void updateOpponentInfo(RoomResponse roomResponse) {
-    if (roomResponse.getStatus() == RoomStatus.COMPLETED) {
-      endGame(false, false);
-    }
-    if (roomResponse.getCurrentUser()
+    if (roomResponse.getStatus() == RoomStatus.COMPLETED
+        || roomResponse.getCurrentUser()
         .getStatus() == UserStatus.TIME_UP) {
-      endGame(false, false);
+      endGame(false, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
     }
     // if match environment is set to sandbox, the number of opponents can be 0
     try {
