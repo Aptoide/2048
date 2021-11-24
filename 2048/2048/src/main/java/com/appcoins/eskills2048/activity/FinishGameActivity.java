@@ -39,7 +39,6 @@ import javax.inject.Inject;
   public static final String SESSION = "SESSION";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String USER_SCORE = "USER_SCORE";
-  public static final String USER_STATUS = UserStatus.COMPLETED.toString();
   private static final Long GET_ROOM_PERIOD_SECONDS = 3L;
   private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
 
@@ -187,16 +186,6 @@ import javax.inject.Inject;
   }
 
   private void showErrorMessage(Throwable throwable) {
-    throwable.printStackTrace();
-    binding.lottieAnimation.setAnimation(R.raw.error_animation);
-    binding.lottieAnimation.playAnimation();
-    binding.animationDescriptionText.setText(getResources().getString(R.string.unknown_error));
-    binding.retryButton.setVisibility(View.VISIBLE);
-    binding.restartButton.setVisibility(View.GONE);
-    binding.restartButton.setEnabled(true);
-  }
-
-  private void showTimeUpMessage(Throwable throwable) {
     throwable.printStackTrace();
     binding.lottieAnimation.setAnimation(R.raw.error_animation);
     binding.lottieAnimation.playAnimation();

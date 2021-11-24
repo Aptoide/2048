@@ -1,6 +1,7 @@
 package com.appcoins.eskills2048;
 
 import android.content.Context;
+import android.widget.Toast;
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.RoomResponse;
@@ -439,6 +440,7 @@ public class MainGame {
     try {
       List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
       User opponent = userDetailsHelper.getNextOpponent(opponents);
+      viewModel.notify(opponent);
       opponentRank = opponent.getRank() + 1;
       opponentScore = opponent.getScore();
       opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
@@ -454,5 +456,11 @@ public class MainGame {
     } else {
       return str;
     }
+  }
+
+  public void onOpponentFinished(User opponent) {
+    Toast.makeText(mView.getContext(), "Opponent " + opponent.getUserName() + " has finished.",
+        Toast.LENGTH_LONG)
+        .show();
   }
 }

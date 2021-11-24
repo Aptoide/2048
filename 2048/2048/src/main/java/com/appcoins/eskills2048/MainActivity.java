@@ -9,6 +9,7 @@ import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
+import com.appcoins.eskills2048.usecase.NotifyOpponentFinishedUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import com.appcoins.eskills2048.usecase.SetGameStatusLocallyUseCase;
 import com.appcoins.eskills2048.usecase.SetScoreUseCase;
@@ -49,7 +50,9 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
     super.onCreate(savedInstanceState);
     view = new MainView(this,
         new MainGameViewModel(setScoreUseCase, setFinalScoreUseCase, buildViewModelData(),
-            getRoomUseCase, setGameStatusLocallyUseCase), userDetailsHelper, userDataStorage);
+            getRoomUseCase, setGameStatusLocallyUseCase,
+            new NotifyOpponentFinishedUseCase(opponent -> view.game.onOpponentFinished(opponent))),
+        userDetailsHelper, userDataStorage);
     setContentView(view);
   }
 
