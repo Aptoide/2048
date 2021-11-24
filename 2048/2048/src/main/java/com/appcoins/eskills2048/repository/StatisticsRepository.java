@@ -2,7 +2,10 @@ package com.appcoins.eskills2048.repository;
 
 import com.appcoins.eskills2048.api.GeneralPlayerStats;
 import com.appcoins.eskills2048.model.GeneralPlayerStatsResponse;
+import com.appcoins.eskills2048.model.MatchDetails;
+
 import io.reactivex.Single;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -14,7 +17,9 @@ import javax.inject.Singleton;
   }
 
   public Single<GeneralPlayerStatsResponse> getUserStatistics(String applicationId,
-      String userWalletAddress, StatisticsTimeFrame timeFrame) {
-    return api.getGeneralPlayerStats(applicationId, userWalletAddress, 3, 2, timeFrame.name());
+      String userWalletAddress, MatchDetails.Environment matchEnvironment,
+      StatisticsTimeFrame timeFrame) {
+    return api.getGeneralPlayerStats(applicationId, userWalletAddress, 3, 2, matchEnvironment,
+        timeFrame.name());
   }
 }
