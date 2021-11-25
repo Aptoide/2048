@@ -191,8 +191,7 @@ public class MainGame {
       grid.revertTiles();
       score = lastScore;
       disposable.add(viewModel.setScore(score)
-          .subscribe(roomResponse -> {
-          }, Throwable::printStackTrace));
+          .subscribe(this::onSuccess, Throwable::printStackTrace));
       gameState = lastGameState;
       mView.refreshLastTime = true;
       mView.invalidate();
@@ -262,8 +261,7 @@ public class MainGame {
             score = score + merged.getValue();
             disposable.add(viewModel.setScore(score)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(roomResponse -> {
-                }, Throwable::printStackTrace));
+                .subscribe(this::onSuccess, Throwable::printStackTrace));
             highScore = Math.max(score, highScore);
 
             // The mighty 2048 tile
