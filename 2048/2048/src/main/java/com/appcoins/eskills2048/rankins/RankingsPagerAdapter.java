@@ -4,20 +4,25 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.appcoins.eskills2048.R;
+import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
 import java.security.InvalidParameterException;
 
 class RankingsPagerAdapter extends FragmentStateAdapter {
 
   private final String walletAddress;
+  private final MatchDetails.Environment matchEnvironment;
 
-  public RankingsPagerAdapter(@NonNull Fragment fragment, String walletAddress) {
+  public RankingsPagerAdapter(@NonNull Fragment fragment, String walletAddress,
+      MatchDetails.Environment matchEnvironment) {
     super(fragment);
     this.walletAddress = walletAddress;
+    this.matchEnvironment = matchEnvironment;
   }
 
   @NonNull @Override public Fragment createFragment(int position) {
-    return RankingsContentFragment.newInstance(walletAddress, getTimeFrame(position));
+    return RankingsContentFragment.newInstance(walletAddress, matchEnvironment,
+        getTimeFrame(position));
   }
 
   private StatisticsTimeFrame getTimeFrame(int position) {

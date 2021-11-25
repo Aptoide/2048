@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
+import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.NotifyOpponentFinishedUseCase;
@@ -19,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import javax.inject.Inject;
 
 import static com.appcoins.eskills2048.LaunchActivity.LOCAL_GAME_STATUS;
+import static com.appcoins.eskills2048.LaunchActivity.MATCH_ENVIRONMENT;
 import static com.appcoins.eskills2048.LaunchActivity.SESSION;
 import static com.appcoins.eskills2048.LaunchActivity.USER_ID;
 import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
@@ -34,10 +36,11 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
   @Inject UserDetailsHelper userDetailsHelper;
 
   public static Intent newIntent(Context context, String userId, String walletAddress,
-      String session, LocalGameStatus localGameStatus) {
+      MatchDetails.Environment matchEnvironment, String session, LocalGameStatus localGameStatus) {
     Intent intent = new Intent(context, MainActivity.class);
     intent.putExtra(USER_ID, userId);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
+    intent.putExtra(MATCH_ENVIRONMENT, matchEnvironment);
     intent.putExtra(SESSION, session);
     intent.putExtra(LOCAL_GAME_STATUS, localGameStatus);
     return intent;
@@ -56,11 +59,14 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
   private MainGameViewModelData buildViewModelData() {
     String userId = getIntent().getStringExtra(USER_ID);
     String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
+    MatchDetails.Environment matchEnvironment =
+        (MatchDetails.Environment) getIntent().getSerializableExtra(MATCH_ENVIRONMENT);
     String session = getIntent().getStringExtra(SESSION);
     LocalGameStatus localGameStatus =
         (LocalGameStatus) getIntent().getSerializableExtra(LOCAL_GAME_STATUS);
 
-    return new MainGameViewModelData(userId, walletAddress, session, localGameStatus);
+    return new MainGameViewModelData(userId, walletAddress, matchEnvironment, session,
+        localGameStatus);
   }
 
   @Override protected void onResume() {

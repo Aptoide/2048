@@ -321,8 +321,14 @@ public class MainGame {
           }, Throwable::printStackTrace));
     }
 
-    mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-        viewModel.getWalletAddress(), score, statusCode));
+    mContext.startActivity(FinishGameActivity.buildIntent(
+        mContext,
+        viewModel.getSession(),
+        viewModel.getWalletAddress(),
+        viewModel.getMatchEnvironment(),
+        score,
+        statusCode
+    ));
   }
 
   private Cell getVector(int direction) {
