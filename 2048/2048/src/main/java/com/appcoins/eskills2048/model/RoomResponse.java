@@ -54,4 +54,16 @@ public class RoomResponse {
         (user1, user2) -> Integer.compare(user2.getScore(), user1.getScore()));
     return sortedUsers;
   }
+
+  public int getUserRank(User user) {
+    List<User> sortedUsers = sortUsers(users);
+    for (int i = 0; i < sortedUsers.size(); i++) {
+      if (sortedUsers.get(i)
+          .getWalletAddress()
+          .equalsIgnoreCase(user.getWalletAddress())) {
+        return i + 1;
+      }
+    }
+    return -1;
+  }
 }
