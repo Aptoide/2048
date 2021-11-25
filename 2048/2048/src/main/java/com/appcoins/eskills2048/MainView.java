@@ -15,11 +15,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-
+import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
-
 import java.util.ArrayList;
 
 public class MainView extends View {
@@ -627,7 +626,7 @@ public class MainView extends View {
   }
 
   private void handleQuitGame() {
-    game.endGame(true, false);
+    game.endGame(true, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
   }
 
   public void onResume() {
