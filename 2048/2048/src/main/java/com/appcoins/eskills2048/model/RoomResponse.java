@@ -67,4 +67,16 @@ public class RoomResponse {
   public void setStatusCode(StatusCode statusCode) {
     this.statusCode = statusCode;
   }
+
+  public int getUserRank(User user) {
+    List<User> sortedUsers = sortUsers(users);
+    for (int i = 0; i < sortedUsers.size(); i++) {
+      if (sortedUsers.get(i)
+          .getWalletAddress()
+          .equalsIgnoreCase(user.getWalletAddress())) {
+        return i + 1;
+      }
+    }
+    return -1;
+  }
 }

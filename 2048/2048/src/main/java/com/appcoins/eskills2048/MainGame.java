@@ -457,7 +457,7 @@ public class MainGame {
       List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
       User opponent = userDetailsHelper.getNextOpponent(opponents);
       viewModel.notify(opponent);
-      opponentRank = opponent.getRank() + 1;
+      opponentRank = roomResponse.getUserRank(opponent);
       opponentScore = opponent.getScore();
       opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
       mView.invalidate();
