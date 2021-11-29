@@ -2,7 +2,6 @@ package com.appcoins.eskills2048.model;
 
 import androidx.annotation.NonNull;
 import com.google.gson.Gson;
-import io.reactivex.Completable;
 import io.reactivex.Single;
 import javax.inject.Inject;
 import retrofit2.HttpException;
@@ -10,12 +9,12 @@ import retrofit2.HttpException;
 
 
 public class RoomApiMapper {
-  private class Response{
+  private class Response {
     Detail detail;
   }
-  private class Detail{
+
+  private static class Detail {
     String code;
-    String message;
   }
   @Inject Gson gson;
 
