@@ -11,7 +11,7 @@ import retrofit2.HttpException;
 public class RoomApiMapper {
   private final Gson gson;
 
-  @Inject public RoomApiMapper(Gson gson) {
+  public RoomApiMapper(Gson gson) {
     this.gson = gson;
   }
 
