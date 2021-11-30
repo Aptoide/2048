@@ -108,7 +108,9 @@ import javax.inject.Inject;
       startActivity(restartIntent);
     });
 
-    if(this.getIntent().getSerializableExtra(STATUS_CODE).equals(RoomResponse.StatusCode.SUCCESSFUL_RESPONSE)){
+    if (this.getIntent()
+        .getSerializableExtra(STATUS_CODE)
+        .equals(RoomResponse.StatusCode.REGION_NOT_SUPPORTED)) {
       binding.geofencingErrorMessage.setVisibility(View.VISIBLE);
     }
 
