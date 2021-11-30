@@ -16,7 +16,11 @@ public class RoomApiMapper {
   private static class Detail {
     String code;
   }
-  @Inject Gson gson;
+  Gson gson;
+
+  public RoomApiMapper(Gson gson) {
+    this.gson = gson;
+  }
 
   public Single<RoomResponse> map(Single<RoomResponse> roomResponse){
     return roomResponse

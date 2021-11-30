@@ -43,7 +43,6 @@ import javax.inject.Inject;
   private static final Long GET_ROOM_PERIOD_SECONDS = 3L;
   private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
 
-
   private ActivityFinishGameBinding binding;
   private FinishGameActivityViewModel viewModel;
   private final static int PARTY_POPPER_EMOJI_UNICODE = 0x1F389;
@@ -57,14 +56,8 @@ import javax.inject.Inject;
   @Inject SetFinalScoreUseCase setFinalScoreUseCase;
   @Inject LocalGameStatusRepository localGameStatusRepository;
 
-  public static Intent buildIntent(
-      Context context,
-      String session,
-      String walletAddress,
-      MatchDetails.Environment matchEnvironment,
-      long score,
-      RoomResponse.StatusCode statusCode
-  ) {
+  public static Intent buildIntent(Context context, String session, String walletAddress,
+      MatchDetails.Environment matchEnvironment, long score, RoomResponse.StatusCode statusCode) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
@@ -108,28 +101,34 @@ import javax.inject.Inject;
       startActivity(restartIntent);
     });
 
-    if(this.getIntent().getSerializableExtra(STATUS_CODE).equals(RoomResponse.StatusCode.SUCCESSFUL_RESPONSE)){
+    if (this.getIntent()
+        .getSerializableExtra(STATUS_CODE) == RoomResponse.StatusCode.REGION_NOT_SUPPORTED) {
       binding.geofencingErrorMessage.setVisibility(View.VISIBLE);
+      showErrorMessage();
+      binding.retryButton.setVisibility(View.GONE);
+      binding.rankingsButton.setVisibility(View.INVISIBLE);
+      binding.restartButton.setEnabled(true);
+      binding.restartButton.setVisibility(View.VISIBLE);
+    } else {
+      binding.retryButton.setOnClickListener(v -> disposables.add(viewModel.getRoomResult()
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .doOnSubscribe(disposable -> showLoading())
+          .doOnSuccess(this::setRoomResultDetails)
+          .doOnError(this::showErrorMessage)
+          .subscribe(roomResult -> {
+          }, Throwable::printStackTrace)));
+
+      disposables.add(viewModel.getRoomResult()
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .doOnSuccess(this::setRoomResultDetails)
+          .doOnError(this::showErrorMessage)
+          .subscribe(roomResult -> {
+          }, Throwable::printStackTrace));
+      findViewById(R.id.rankings_button).setOnClickListener(
+          view -> startActivity(RankingsActivity.create(this, walletAddress, matchEnvironment)));
     }
-
-    binding.retryButton.setOnClickListener(v -> disposables.add(viewModel.getRoomResult()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnSubscribe(disposable -> showLoading())
-        .doOnSuccess(this::setRoomResultDetails)
-        .doOnError(this::showErrorMessage)
-        .subscribe(roomResult -> {
-        }, Throwable::printStackTrace)));
-
-    disposables.add(viewModel.getRoomResult()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnSuccess(this::setRoomResultDetails)
-        .doOnError(this::showErrorMessage)
-        .subscribe(roomResult -> {
-        }, Throwable::printStackTrace));
-    findViewById(R.id.rankings_button).setOnClickListener(
-        view -> startActivity(RankingsActivity.create(this, walletAddress, matchEnvironment)));
   }
 
   private void buildRecyclerView() {
@@ -200,6 +199,10 @@ import javax.inject.Inject;
 
   private void showErrorMessage(Throwable throwable) {
     throwable.printStackTrace();
+    showErrorMessage();
+  }
+
+  private void showErrorMessage() {
     binding.lottieAnimation.setAnimation(R.raw.error_animation);
     binding.lottieAnimation.playAnimation();
     binding.animationDescriptionText.setText(getResources().getString(R.string.unknown_error));
