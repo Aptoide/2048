@@ -9,6 +9,12 @@ import retrofit2.HttpException;
 
 
 public class RoomApiMapper {
+  private final Gson gson;
+
+  public RoomApiMapper(Gson gson) {
+    this.gson = gson;
+  }
+
   private class Response {
     Detail detail;
   }
@@ -16,13 +22,8 @@ public class RoomApiMapper {
   private static class Detail {
     String code;
   }
-  Gson gson;
 
-  public RoomApiMapper(Gson gson) {
-    this.gson = gson;
-  }
-
-  public Single<RoomResponse> map(Single<RoomResponse> roomResponse){
+  public Single<RoomResponse> map(Single<RoomResponse> roomResponse) {
     return roomResponse
         .flatMap(response -> {
           response.setStatusCode(RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);

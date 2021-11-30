@@ -46,7 +46,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
         .create(RoomApi.class);
   }
 
-  @Singleton @Provides public RoomApiMapper provideRoomApiMapper(Gson gson){
+  @Singleton @Provides public RoomApiMapper provideRoomApiMapper(Gson gson) {
     return new RoomApiMapper(gson);
   }
 
