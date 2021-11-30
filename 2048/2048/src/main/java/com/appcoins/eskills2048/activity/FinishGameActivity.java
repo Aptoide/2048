@@ -198,8 +198,8 @@ import javax.inject.Inject;
   }
 
   private void showErrorMessage(Throwable throwable) {
-    throwable.printStackTrace();
     showErrorMessage();
+    throwable.printStackTrace();
   }
 
   private void showErrorMessage() {
