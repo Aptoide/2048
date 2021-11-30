@@ -1,19 +1,25 @@
 package com.appcoins.eskills2048;
 
 import android.content.Context;
+
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
+import com.appcoins.eskills2048.model.RoomApiMapper;
 import com.appcoins.eskills2048.model.RoomResponse;
+import com.appcoins.eskills2048.model.RoomResponseErrorCode;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -185,11 +191,17 @@ public class MainGame {
       grid.revertTiles();
       score = lastScore;
       disposable.add(viewModel.setScore(score)
-          .subscribe(roomResponse -> {
-          }, Throwable::printStackTrace));
+          .subscribe(this::onSuccess, Throwable::printStackTrace));
       gameState = lastGameState;
       mView.refreshLastTime = true;
       mView.invalidate();
+    }
+  }
+
+  private void onSuccess(RoomResponse roomResponse) {
+    if (roomResponse.getStatusCode()
+        .equals(RoomResponse.StatusCode.REGION_NOT_SUPPORTED)) {
+      endGame(false,roomResponse.getStatusCode());
     }
   }
 
@@ -248,8 +260,8 @@ public class MainGame {
             // Update the score
             score = score + merged.getValue();
             disposable.add(viewModel.setScore(score)
-                .subscribe(roomResponse -> {
-                }, Throwable::printStackTrace));
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onSuccess, Throwable::printStackTrace));
             highScore = Math.max(score, highScore);
 
             // The mighty 2048 tile
@@ -290,10 +302,10 @@ public class MainGame {
   }
 
   private void endGame() {
-    endGame(true);
+    endGame(true, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
   }
 
-  public void endGame(boolean setFinalScore) {
+  public void endGame(boolean setFinalScore, RoomResponse.StatusCode statusCode) {
     playing = false;
     aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
         NOTIFICATION_DELAY_TIME, null);
@@ -307,8 +319,14 @@ public class MainGame {
           }, Throwable::printStackTrace));
     }
 
-    mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession(),
-        viewModel.getWalletAddress(), viewModel.getMatchEnvironment(), score));
+    mContext.startActivity(FinishGameActivity.buildIntent(
+        mContext,
+        viewModel.getSession(),
+        viewModel.getWalletAddress(),
+        viewModel.getMatchEnvironment(),
+        score,
+        statusCode
+    ));
   }
 
   private Cell getVector(int direction) {
@@ -429,12 +447,10 @@ public class MainGame {
   }
 
   private void updateOpponentInfo(RoomResponse roomResponse) {
-    if (roomResponse.getStatus() == RoomStatus.COMPLETED) {
-      endGame(false);
-    }
-    if (roomResponse.getCurrentUser()
+    if (roomResponse.getStatus() == RoomStatus.COMPLETED
+        || roomResponse.getCurrentUser()
         .getStatus() == UserStatus.TIME_UP) {
-      endGame(false);
+      endGame(false, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
     }
     // if match environment is set to sandbox, the number of opponents can be 0
     try {

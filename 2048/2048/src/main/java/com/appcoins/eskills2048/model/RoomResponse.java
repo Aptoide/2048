@@ -8,6 +8,10 @@ import java.util.List;
 
 public class RoomResponse {
 
+  public enum StatusCode {
+    SUCCESSFUL_RESPONSE, REGION_NOT_SUPPORTED, GENERIC_ERROR
+  }
+
   @SerializedName("room_id") private String roomId;
   @SerializedName("room_result") private RoomResult roomResult;
   @SerializedName("current_user") private User currentUser;
@@ -15,6 +19,7 @@ public class RoomResponse {
   @SerializedName("status") private RoomStatus status;
   @SerializedName("usd_stake") private int stake;
   @SerializedName("users") private List<User> users;
+  private StatusCode statusCode;
 
   public RoomResult getRoomResult() {
     return roomResult;
@@ -36,6 +41,10 @@ public class RoomResponse {
     return sortUsers(users);
   }
 
+  public StatusCode getStatusCode(){
+    return statusCode;
+  }
+
   public List<User> getOpponents(String walletAddress) {
     List<User> sortedUsers = sortUsers(users);
     List<User> opponents = new ArrayList<>();
@@ -53,6 +62,10 @@ public class RoomResponse {
     Collections.sort(sortedUsers,
         (user1, user2) -> Integer.compare(user2.getScore(), user1.getScore()));
     return sortedUsers;
+  }
+
+  public void setStatusCode(StatusCode statusCode) {
+    this.statusCode = statusCode;
   }
 
   public int getUserRank(User user) {
