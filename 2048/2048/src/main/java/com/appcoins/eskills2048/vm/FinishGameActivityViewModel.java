@@ -41,7 +41,7 @@ public class FinishGameActivityViewModel {
             return Single.just(roomResponse);
           }
           return setFinalScore.setFinalScore(session, userScore)
-              .doOnError(throwable -> throwable.printStackTrace())
+              .doOnError(Throwable::printStackTrace)
               .onErrorReturnItem(roomResponse);
         })
         .toObservable()
@@ -55,10 +55,6 @@ public class FinishGameActivityViewModel {
     return roomResult.getWinner()
         .getWalletAddress()
         .equalsIgnoreCase(walletAddress);
-  }
-
-  public boolean isTimeUp(RoomResponse roomResponse) {
-    return roomResponse.getCurrentUser().getStatus() == UserStatus.TIME_UP;
   }
 
   private boolean isInProgress(RoomResponse roomResponse) {
