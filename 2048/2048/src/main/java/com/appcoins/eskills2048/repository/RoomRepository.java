@@ -1,11 +1,9 @@
 package com.appcoins.eskills2048.repository;
 
-import androidx.annotation.NonNull;
 import com.appcoins.eskills2048.api.RoomApi;
 import com.appcoins.eskills2048.model.PatchRoomRequest;
 import com.appcoins.eskills2048.model.RoomApiMapper;
 import com.appcoins.eskills2048.model.RoomResponse;
-import com.appcoins.eskills2048.model.RoomResponseErrorCode;
 import com.appcoins.eskills2048.model.UserStatus;
 import io.reactivex.Single;
 import javax.inject.Inject;

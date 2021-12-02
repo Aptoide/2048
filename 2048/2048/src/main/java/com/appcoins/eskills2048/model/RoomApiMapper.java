@@ -3,10 +3,7 @@ package com.appcoins.eskills2048.model;
 import androidx.annotation.NonNull;
 import com.google.gson.Gson;
 import io.reactivex.Single;
-import javax.inject.Inject;
 import retrofit2.HttpException;
-
-
 
 public class RoomApiMapper {
   private final Gson gson;
@@ -15,7 +12,7 @@ public class RoomApiMapper {
     this.gson = gson;
   }
 
-  private class Response {
+  private static class Response {
     Detail detail;
   }
 
@@ -24,38 +21,35 @@ public class RoomApiMapper {
   }
 
   public Single<RoomResponse> map(Single<RoomResponse> roomResponse) {
-    return roomResponse
-        .flatMap(response -> {
+    return roomResponse.flatMap(response -> {
           response.setStatusCode(RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
           return Single.just(response);
         })
-        .onErrorReturn(this::mapException);
+        .onErrorResumeNext(this::mapException);
   }
 
-
-  private RoomResponse mapException(@NonNull Throwable throwable){
+  private Single<RoomResponse> mapException(@NonNull Throwable throwable) {
 
     RoomResponse.StatusCode status = RoomResponse.StatusCode.GENERIC_ERROR;
-    if(throwable instanceof HttpException) {
+    if (throwable instanceof HttpException) {
       HttpException exception = (HttpException) throwable;
-      retrofit2.Response<?> errorResponse = exception.response();
-
-      try {
-        if (errorResponse !=null && errorResponse.errorBody()!=null) {
-          Response gsonResponse = this.gson.fromJson(
-              errorResponse.errorBody().charStream(),Response.class
-          );
-          status = RoomResponse.StatusCode.valueOf(gsonResponse.detail.code);
+      if (exception.code() == 403) {
+        retrofit2.Response<?> errorResponse = exception.response();
+        try {
+          if (errorResponse != null && errorResponse.errorBody() != null) {
+            Response gsonResponse = this.gson.fromJson(errorResponse.errorBody()
+                .charStream(), Response.class);
+            status = RoomResponse.StatusCode.valueOf(gsonResponse.detail.code);
+          }
+          RoomResponse roomResponse = new RoomResponse();
+          roomResponse.setStatusCode(status);
+          return Single.just(roomResponse);
+        } catch (Exception e) {
+          e.printStackTrace();
         }
       }
-      catch (Exception e){
-        e.printStackTrace();
-      }
     }
-    RoomResponse roomResponse = new RoomResponse();
-    roomResponse.setStatusCode(status);
-    return roomResponse;
+    return Single.error(throwable);
   }
-
 }
 
