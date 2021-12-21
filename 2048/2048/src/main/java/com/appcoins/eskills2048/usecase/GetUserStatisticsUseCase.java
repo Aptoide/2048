@@ -1,6 +1,7 @@
 package com.appcoins.eskills2048.usecase;
 
 import com.appcoins.eskills2048.model.GeneralPlayerStatsResponse;
+import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.repository.StatisticsRepository;
 import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
 import io.reactivex.Single;
@@ -16,8 +17,9 @@ import javax.inject.Singleton;
   }
 
   public Single<GeneralPlayerStatsResponse> execute(String applicationId, String userWalletAddress,
-      StatisticsTimeFrame timeFrame) {
-    return statisticsRepository.getUserStatistics(applicationId, userWalletAddress, timeFrame)
+      MatchDetails.Environment matchEnvironment, StatisticsTimeFrame timeFrame) {
+    return statisticsRepository.getUserStatistics(applicationId, userWalletAddress,
+        matchEnvironment, timeFrame)
         .subscribeOn(Schedulers.io());
   }
 }

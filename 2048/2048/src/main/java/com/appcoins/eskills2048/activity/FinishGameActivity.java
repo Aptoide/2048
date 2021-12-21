@@ -12,9 +12,12 @@ import com.appcoins.eskills2048.LaunchActivity;
 import com.appcoins.eskills2048.PlayerRankingAdapter;
 import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.databinding.ActivityFinishGameBinding;
+import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomResult;
 import com.appcoins.eskills2048.model.RoomStatus;
+import com.appcoins.eskills2048.model.User;
+import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.rankins.RankingsActivity;
 import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
@@ -36,12 +39,15 @@ import javax.inject.Inject;
   public static final String SESSION = "SESSION";
   public static final String WALLET_ADDRESS = "WALLET_ADDRESS";
   public static final String USER_SCORE = "USER_SCORE";
+  private static final String STATUS_CODE = "STATUS_CODE";
   private static final Long GET_ROOM_PERIOD_SECONDS = 3L;
+  private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
 
   private ActivityFinishGameBinding binding;
   private FinishGameActivityViewModel viewModel;
   private final static int PARTY_POPPER_EMOJI_UNICODE = 0x1F389;
   private final static int PENSIVE_FACE_EMOJI_UNICODE = 0x1F614;
+  private final static int ALARM_CLOCK_EMOJI_UNICODE = 0x23F0;
   private CompositeDisposable disposables;
   private RecyclerView recyclerView;
   private PlayerRankingAdapter adapter;
@@ -51,11 +57,13 @@ import javax.inject.Inject;
   @Inject LocalGameStatusRepository localGameStatusRepository;
 
   public static Intent buildIntent(Context context, String session, String walletAddress,
-      long score) {
+      MatchDetails.Environment matchEnvironment, long score, RoomResponse.StatusCode statusCode) {
     Intent intent = new Intent(context, FinishGameActivity.class);
     intent.putExtra(SESSION, session);
     intent.putExtra(WALLET_ADDRESS, walletAddress);
+    intent.putExtra(MATCH_ENVIRONMENT, matchEnvironment);
     intent.putExtra(USER_SCORE, score);
+    intent.putExtra(STATUS_CODE, statusCode);
     return intent;
   }
 
@@ -68,9 +76,12 @@ import javax.inject.Inject;
     localGameStatusRepository.removeLocalGameStatus();
 
     disposables = new CompositeDisposable();
-    String session = getIntent().getStringExtra(SESSION);
-    String walletAddress = getIntent().getStringExtra(WALLET_ADDRESS);
-    long userScore = getIntent().getLongExtra(USER_SCORE, -1);
+    Intent intent = getIntent();
+    String session = intent.getStringExtra(SESSION);
+    String walletAddress = intent.getStringExtra(WALLET_ADDRESS);
+    MatchDetails.Environment matchEnvironment =
+        (MatchDetails.Environment) intent.getSerializableExtra(MATCH_ENVIRONMENT);
+    long userScore = intent.getLongExtra(USER_SCORE, -1);
     viewModel = new FinishGameActivityViewModel(getRoomUseCase, setFinalScoreUseCase, session,
         walletAddress, userScore);
 
@@ -85,29 +96,39 @@ import javax.inject.Inject;
 
     binding.restartButton.setOnClickListener(view -> {
       DeviceScreenManager.stopKeepAwake(getWindow());
-      Intent intent = new Intent(this, LaunchActivity.class);
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-      startActivity(intent);
+      Intent restartIntent = new Intent(this, LaunchActivity.class);
+      restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      startActivity(restartIntent);
     });
 
-    binding.retryButton.setOnClickListener(v -> disposables.add(viewModel.getRoomResult()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnSubscribe(disposable -> showLoading())
-        .doOnSuccess(this::setRoomResultDetails)
-        .doOnError(this::showErrorMessage)
-        .subscribe(roomResult -> {
-        }, Throwable::printStackTrace)));
+    if (this.getIntent()
+        .getSerializableExtra(STATUS_CODE) == RoomResponse.StatusCode.REGION_NOT_SUPPORTED) {
+      binding.geofencingErrorMessage.setVisibility(View.VISIBLE);
+      showErrorMessage();
+      binding.retryButton.setVisibility(View.GONE);
+      binding.rankingsButton.setVisibility(View.INVISIBLE);
+      binding.restartButton.setEnabled(true);
+      binding.restartButton.setVisibility(View.VISIBLE);
+    } else {
+      binding.retryButton.setOnClickListener(v -> disposables.add(viewModel.getRoomResult()
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .doOnSubscribe(disposable -> showLoading())
+          .doOnSuccess(this::setRoomResultDetails)
+          .doOnError(this::showErrorMessage)
+          .subscribe(roomResult -> {
+          }, Throwable::printStackTrace)));
 
-    disposables.add(viewModel.getRoomResult()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnSuccess(this::setRoomResultDetails)
-        .doOnError(this::showErrorMessage)
-        .subscribe(roomResult -> {
-        }, Throwable::printStackTrace));
-    findViewById(R.id.rankings_button).setOnClickListener(
-        view -> startActivity(RankingsActivity.create(this, walletAddress)));
+      disposables.add(viewModel.getRoomResult()
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .doOnSuccess(this::setRoomResultDetails)
+          .doOnError(this::showErrorMessage)
+          .subscribe(roomResult -> {
+          }, Throwable::printStackTrace));
+      findViewById(R.id.rankings_button).setOnClickListener(
+          view -> startActivity(RankingsActivity.create(this, walletAddress, matchEnvironment)));
+    }
   }
 
   private void buildRecyclerView() {
@@ -130,15 +151,14 @@ import javax.inject.Inject;
     adapter.updateData(roomResponse.getUsersSortedByScore());
   }
 
-  private void setRoomResultDetails(RoomResult roomResult) {
+  private void setRoomResultDetails(RoomResponse room) {
     recyclerView.setVisibility(View.GONE);
     binding.lottieAnimation.setAnimation(R.raw.transact_credits_successful);
     binding.lottieAnimation.playAnimation();
-
-    if (viewModel.isWinner(roomResult)) {
-      handleRoomWinnerBehaviour(roomResult);
+    if (viewModel.isWinner(room.getRoomResult())) {
+      handleRoomWinnerBehaviour(room.getRoomResult());
     } else {
-      handleRoomLoserBehaviour(roomResult);
+      handleRoomLoserBehaviour(room);
     }
     binding.restartButton.setEnabled(true);
     binding.restartButton.setVisibility(View.VISIBLE);
@@ -156,21 +176,33 @@ import javax.inject.Inject;
     binding.secondaryMessage.setVisibility(View.VISIBLE);
   }
 
-  private void handleRoomLoserBehaviour(RoomResult roomResult) {
+  private void handleRoomLoserBehaviour(RoomResponse roomResponse) {
     String sadEmoji = EmojiUtils.getEmojiByUnicode(PENSIVE_FACE_EMOJI_UNICODE);
-    String descriptionText = getResources().getString(R.string.you_lost, sadEmoji);
+    String alarmEmoji = EmojiUtils.getEmojiByUnicode(ALARM_CLOCK_EMOJI_UNICODE);
+    String descriptionText;
+    if (roomResponse.getCurrentUser()
+        .getStatus() == UserStatus.TIME_UP) {
+      descriptionText = getResources().getString(R.string.you_lost_timeout, alarmEmoji);
+    } else {
+      descriptionText = getResources().getString(R.string.you_lost, sadEmoji);
+    }
     binding.animationDescriptionText.setText(descriptionText);
 
-    String opponentDetails = getResources().getString(R.string.opponent_details,
-        roomResult.getWinner()
-            .getUserName(), roomResult.getWinner()
-            .getScore());
+    User winner = roomResponse.getRoomResult()
+        .getWinner();
+    String opponentDetails =
+        getResources().getString(R.string.opponent_details, winner.getUserName(),
+            winner.getScore());
     binding.secondaryMessage.setText(opponentDetails);
     binding.secondaryMessage.setVisibility(View.VISIBLE);
   }
 
   private void showErrorMessage(Throwable throwable) {
+    showErrorMessage();
     throwable.printStackTrace();
+  }
+
+  private void showErrorMessage() {
     binding.lottieAnimation.setAnimation(R.raw.error_animation);
     binding.lottieAnimation.playAnimation();
     binding.animationDescriptionText.setText(getResources().getString(R.string.unknown_error));

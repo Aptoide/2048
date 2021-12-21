@@ -33,7 +33,7 @@ public class FinishGameActivityViewModel {
     return getRoomUseCase.getRoom(session);
   }
 
-  public Single<RoomResult> getRoomResult() {
+  public Single<RoomResponse> getRoomResult() {
     return getRoomUseCase.getRoom(session)
         .flatMap(roomResponse -> {
           if (roomResponse.getCurrentUser()
@@ -41,13 +41,12 @@ public class FinishGameActivityViewModel {
             return Single.just(roomResponse);
           }
           return setFinalScore.setFinalScore(session, userScore)
-              .doOnError(throwable -> throwable.printStackTrace())
+              .doOnError(Throwable::printStackTrace)
               .onErrorReturnItem(roomResponse);
         })
         .toObservable()
         .repeatWhen(objectFlowable -> objectFlowable.delay(3, TimeUnit.SECONDS))
         .skipWhile(this::isInProgress)
-        .map(RoomResponse::getRoomResult)
         .take(1)
         .singleOrError();
   }
