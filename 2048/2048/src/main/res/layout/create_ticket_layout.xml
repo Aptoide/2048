@@ -86,6 +86,7 @@
             android:maxLines="1"
             android:paddingStart="4dp"
             android:paddingEnd="64dp"
+            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_ "
             />
       </com.google.android.material.textfield.TextInputLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
