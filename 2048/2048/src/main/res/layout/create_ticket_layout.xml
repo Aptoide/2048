@@ -80,13 +80,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints="username"
+            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_ "
             android:hint="@string/user_name"
             android:imeOptions="actionUnspecified|flagNoFullscreen|flagNoExtractUi"
             android:inputType="text"
             android:maxLines="1"
             android:paddingStart="4dp"
             android:paddingEnd="64dp"
-            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_ "
             />
       </com.google.android.material.textfield.TextInputLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
