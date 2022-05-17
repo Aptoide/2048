@@ -33,4 +33,5 @@ project.ext {
   lottie_version = '3.7.0'
   material_version = '1.4.0'
   hilt_version = '2.40'
+  appsflyer_sdk_version = '6.6.0'
 }

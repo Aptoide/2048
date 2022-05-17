@@ -54,7 +54,7 @@ import javax.inject.Inject;
     super.onCreate(savedInstanceState);
     binding = ActivityLaunchBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
-
+    checkFirstRun();
     LocalGameStatus localGameStatus = getGameStatusLocallyUseCase.getGameStatus();
     if (localGameStatus != null) {
       Toast.makeText(this, "Restoring your game...", Toast.LENGTH_LONG)
@@ -75,6 +75,18 @@ import javax.inject.Inject;
     Bundle bundle = new Bundle();
     bundle.putLong("current_time", System.currentTimeMillis());
     firebaseAnalytics.logEvent("app_started", bundle);
+  }
+
+  private void checkFirstRun() {
+    boolean isFirstRun = getSharedPreferences("PREFERENCE", 0)
+        .getBoolean("isFirstRun", true);
+    if (isFirstRun) {
+      new ApkOriginVerification(this);
+      getSharedPreferences("PREFERENCE", 0)
+          .edit()
+          .putBoolean("isFirstRun", false)
+          .apply();
+    }
   }
 
   private void resumeGame(LocalGameStatus localGameStatus) {
@@ -130,7 +142,7 @@ import javax.inject.Inject;
   private MatchDetails getMatchDetails(MatchDetails.Environment environment) {
     int checkedId = binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId();
     if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
-      return new MatchDetails("1v1", 1f, "USD", environment, 2, 3600);
+      return new MatchDetails("1v1", 20f, "USD", environment, 2, 60);
     } else if (checkedId
         == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
       return new MatchDetails("multiplayer", 4f, "USD", environment, 3, 3600);
