@@ -35,6 +35,7 @@ android {
       buildConfigField 'String', 'BASE_HOST_SKILLS', project.BASE_HOST_SKILLS_PROD
       buildConfigField 'String', 'BASE_HOST_PAYMENT', project.BASE_HOST_PAYMENT_PROD
       buildConfigField 'String', 'WALLET_PACKAGE_NAME', project.WALLET_PACKAGE_NAME_PROD
+      buildConfigField 'String', 'APPSFLYER_KEY', project.APPSFLYER_KEY
     }
     debug {
       applicationIdSuffix ".dev"
@@ -43,6 +44,7 @@ android {
       buildConfigField 'String', 'BASE_HOST_SKILLS', project.BASE_HOST_SKILLS_DEV
       buildConfigField 'String', 'BASE_HOST_PAYMENT', project.BASE_HOST_PAYMENT_DEV
       buildConfigField 'String', 'WALLET_PACKAGE_NAME', project.WALLET_PACKAGE_NAME_DEV
+      buildConfigField 'String', 'APPSFLYER_KEY', project.APPSFLYER_KEY
     }
   }
   compileOptions {
@@ -52,6 +54,7 @@ android {
 }
 
 dependencies {
+  implementation "com.appsflyer:af-android-sdk:$project.appsflyer_sdk_version"
   implementation "com.android.support:appcompat-v7:$project.appcompat_v7_version"
   implementation "androidx.appcompat:appcompat:$project.appcompat_version"
   implementation "io.reactivex.rxjava2:rxjava:$project.rxjava_version"

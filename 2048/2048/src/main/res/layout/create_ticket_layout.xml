@@ -80,6 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints="username"
+            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_ "
             android:hint="@string/user_name"
             android:imeOptions="actionUnspecified|flagNoFullscreen|flagNoExtractUi"
             android:inputType="text"
