@@ -31,6 +31,10 @@ public class MainGame {
   public static final int MOVE_ANIMATION = 0;
   public static final int MERGE_ANIMATION = 1;
 
+
+  private static final int xorCode = 28762; // USE A DIFFERENT XOR VALUE THAN THIS!
+  private static final int scoreCheckXorCode = 98317; // USE A DIFFERENT XOR VALUE THAN THIS!
+
   public static final int FADE_GLOBAL_ANIMATION = 0;
   private static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
   private static final long SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
@@ -59,6 +63,7 @@ public class MainGame {
   public AnimationGrid aGrid;
   public boolean canUndo;
   public long score = 0;
+  public long scoreCheck = 0;
   public long highScore = 0;
   public long lastScore = 0;
   public int opponentRank = 1;
@@ -94,8 +99,9 @@ public class MainGame {
       grid.clearGrid();
     }
     highScore = getHighScore();
-    if (score >= highScore) {
-      highScore = score;
+    long currentScore = getScore();
+    if (currentScore >= highScore) {
+      highScore = currentScore;
       recordHighScore();
     }
     gameState = GAME_NORMAL;
@@ -111,6 +117,9 @@ public class MainGame {
     if (gameStatus == null) {
       grid = new Grid(numSquaresX, numSquaresY);
       score = 0;
+      score = score ^ xorCode;
+      scoreCheck = 0;
+      scoreCheck = scoreCheck ^ scoreCheckXorCode;
       addStartTiles();
     } else {
       grid = new Grid(gameStatus.getField());
@@ -118,6 +127,9 @@ public class MainGame {
     }
   }
 
+  public long getScore(){
+    return score^xorCode ;
+  }
   private void addStartTiles() {
     int startTiles = 2;
     for (int xx = 0; xx < startTiles; xx++) {
@@ -190,7 +202,9 @@ public class MainGame {
       aGrid.cancelAnimations();
       grid.revertTiles();
       score = lastScore;
-      disposable.add(viewModel.setScore(score)
+      scoreCheck = lastScore^xorCode;
+      scoreCheck ^= scoreCheckXorCode;
+      disposable.add(viewModel.setScore(getScore())
           .subscribe(this::onSuccess, Throwable::printStackTrace));
       gameState = lastGameState;
       mView.refreshLastTime = true;
@@ -258,8 +272,13 @@ public class MainGame {
                 SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null);
 
             // Update the score
+            score ^= xorCode;
             score = score + merged.getValue();
-            disposable.add(viewModel.setScore(score)
+            score ^= xorCode;
+            scoreCheck ^= scoreCheckXorCode;
+            scoreCheck = scoreCheck + merged.getValue();
+            scoreCheck ^= scoreCheckXorCode;
+            disposable.add(viewModel.setScore(getScore())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onSuccess, Throwable::printStackTrace));
             highScore = Math.max(score, highScore);
@@ -309,12 +328,13 @@ public class MainGame {
     playing = false;
     aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
         NOTIFICATION_DELAY_TIME, null);
-    if (score >= highScore) {
-      highScore = score;
+    long currentScore = getScore();
+    if (currentScore >= highScore) {
+      highScore = currentScore;
       recordHighScore();
     }
     if (setFinalScore) {
-      disposable.add(viewModel.setFinalScore(score)
+      disposable.add(viewModel.setFinalScore(getScore())
           .subscribe(roomResponse -> {
           }, Throwable::printStackTrace));
     }
@@ -439,14 +459,22 @@ public class MainGame {
     disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
         .flatMapSingle(aLong -> viewModel.getRoom()
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess(MainGame.this::updateOpponentInfo)
+            .doOnSuccess(MainGame.this::updateInfo)
             .doOnError(Throwable::printStackTrace)
             .onErrorReturnItem(new RoomResponse()))
         .takeWhile(roomResponse -> playing)
         .subscribe());
   }
 
-  private void updateOpponentInfo(RoomResponse roomResponse) {
+  private boolean confirmScoreValidity() {
+    return (score ^ xorCode) == (scoreCheck ^ scoreCheckXorCode);
+  }
+
+  private void updateInfo(RoomResponse roomResponse) {
+    if (!confirmScoreValidity()){
+      disposable.add(viewModel.setFinalScore(-1)
+          .subscribe(this::onSuccess, Throwable::printStackTrace));
+    }
     if (roomResponse.getStatus() == RoomStatus.COMPLETED
         || roomResponse.getCurrentUser()
         .getStatus() == UserStatus.TIME_UP) {
