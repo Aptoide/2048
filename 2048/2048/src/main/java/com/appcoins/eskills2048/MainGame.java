@@ -32,8 +32,8 @@ public class MainGame {
   public static final int MERGE_ANIMATION = 1;
 
 
-  private static final int xorCode = 28762; // USE A DIFFERENT XOR VALUE THAN THIS!
-  private static final int scoreCheckXorCode = 98317; // USE A DIFFERENT XOR VALUE THAN THIS!
+  private static final int xorCode = 12345; // USE A DIFFERENT XOR VALUE THAN THIS!
+  private static final int scoreCheckXorCode = 56789; // USE A DIFFERENT XOR VALUE THAN THIS!
 
   public static final int FADE_GLOBAL_ANIMATION = 0;
   private static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
@@ -281,7 +281,7 @@ public class MainGame {
             disposable.add(viewModel.setScore(getScore())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onSuccess, Throwable::printStackTrace));
-            highScore = Math.max(score, highScore);
+            highScore = Math.max(getScore(), highScore);
 
             // The mighty 2048 tile
             if (merged.getValue() >= winValue() && !gameWon()) {
