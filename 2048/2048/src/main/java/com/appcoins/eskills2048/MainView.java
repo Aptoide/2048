@@ -77,7 +77,7 @@ public class MainView extends View {
   private int titleWidthScore;
   private int titleWidthOpponentRank;
   private int titleWidthOpponentName;
-  private int titleWidthOpponentScore;
+  private int titleWidthOpponentStatus;
 
   public MainView(Context context, MainGameViewModel viewModel, UserDetailsHelper userDetailsHelper,
       UserDataStorage userDataStorage) {
@@ -166,17 +166,17 @@ public class MainView extends View {
     int bodyWidthScore = (int) (paint.measureText("" + game.getScore()));
     int bodyWidthOpponentRank = (int) (paint.measureText("" + game.opponentRank));
     int bodyWidthOpponentName = (int) (paint.measureText("" + game.opponentName));
-    int bodyWidthOpponentScore = (int) (paint.measureText("" + game.opponentScore));
+    int bodyWidthOpponentStatus = (int) (paint.measureText("" + game.opponentStatus));
 
     int textWidthHighScore =
         Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
     int textWidthScore = Math.max(titleWidthScore, bodyWidthScore) + textPaddingSize * 2;
     int textWidthOpponentRank =
-        Math.max(titleWidthOpponentRank, bodyWidthOpponentRank) + textPaddingSize * 2;
+        Math.max(titleWidthOpponentRank, bodyWidthOpponentRank) + textPaddingSize;
     int textWidthOpponentName =
-        Math.max(titleWidthOpponentName, bodyWidthOpponentName) + textPaddingSize * 2;
+        Math.max(titleWidthOpponentName, bodyWidthOpponentName) + textPaddingSize ;
     int textWidthOpponentScore =
-        Math.max(titleWidthOpponentScore, bodyWidthOpponentScore) + textPaddingSize * 2;
+        Math.max(titleWidthOpponentStatus, bodyWidthOpponentStatus) + textPaddingSize ;
 
     int textMiddleHighScore = textWidthHighScore / 2;
     int textMiddleScore = textWidthScore / 2;
@@ -256,7 +256,7 @@ public class MainView extends View {
         sXOpponentScore + textMiddleOpponentScore, sYOpponentDetails + iconPaddingSize * 2, paint);
     paint.setTextSize(bodyTextSize);
     paint.setColor(getResources().getColor(R.color.text_white));
-    canvas.drawText(String.valueOf(game.opponentScore), sXOpponentScore + textMiddleOpponentScore,
+    canvas.drawText(String.valueOf(game.opponentStatus), sXOpponentScore + textMiddleOpponentScore,
         sYOpponentDetails + iconPaddingSize * 5, paint);
   }
 
@@ -583,7 +583,7 @@ public class MainView extends View {
     titleWidthScore = (int) (paint.measureText(getResources().getString(R.string.score)));
     titleWidthOpponentRank = (int) (paint.measureText(getResources().getString(R.string.rank)));
     titleWidthOpponentName = (int) (paint.measureText(getResources().getString(R.string.opponent)));
-    titleWidthOpponentScore =
+    titleWidthOpponentStatus =
         (int) (paint.measureText(getResources().getString(R.string.opponent_score)));
     paint.setTextSize(bodyTextSize);
     textShiftYAll = centerText();

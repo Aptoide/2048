@@ -67,7 +67,7 @@ public class MainGame {
   public long highScore = 0;
   public long lastScore = 0;
   public int opponentRank = 1;
-  public long opponentScore = 0;
+  public String opponentStatus = UserStatus.PLAYING.toString();
   public String opponentName = "loading...";
   private long bufferScore = 0;
   private boolean playing = true;
@@ -486,7 +486,7 @@ public class MainGame {
       User opponent = userDetailsHelper.getNextOpponent(opponents);
       viewModel.notify(opponent);
       opponentRank = roomResponse.getUserRank(opponent);
-      opponentScore = opponent.getScore();
+      opponentStatus = opponent.getStatus().toString();
       opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
       mView.invalidate();
     } catch (Exception e) {
