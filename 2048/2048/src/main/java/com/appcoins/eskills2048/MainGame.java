@@ -123,7 +123,7 @@ public class MainGame {
       addStartTiles();
     } else {
       grid = new Grid(gameStatus.getField());
-      score = gameStatus.getScore();
+      setScore(gameStatus.getScore());
     }
   }
 
@@ -272,12 +272,7 @@ public class MainGame {
                 SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null);
 
             // Update the score
-            score ^= xorCode;
-            score = score + merged.getValue();
-            score ^= xorCode;
-            scoreCheck ^= scoreCheckXorCode;
-            scoreCheck = scoreCheck + merged.getValue();
-            scoreCheck ^= scoreCheckXorCode;
+            setScore(merged.getValue());
             disposable.add(viewModel.setScore(getScore())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onSuccess, Throwable::printStackTrace));
@@ -318,6 +313,15 @@ public class MainGame {
       gameState = GAME_LOST;
       endGame();
     }
+  }
+
+  private void setScore(long value){
+    score ^= xorCode;
+    score += value;
+    score ^= xorCode;
+    scoreCheck ^= scoreCheckXorCode;
+    scoreCheck += value;
+    scoreCheck ^= scoreCheckXorCode;
   }
 
   private void endGame() {
