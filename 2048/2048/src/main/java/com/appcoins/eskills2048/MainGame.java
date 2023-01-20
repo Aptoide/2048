@@ -111,10 +111,9 @@ public class MainGame {
   private void createOrRestoreGrid() {
     aGrid = new AnimationGrid(numSquaresX, numSquaresY);
     LocalGameStatus gameStatus = viewModel.getGameStatus();
-    initScore();
     if (gameStatus == null) {
+      initScore();
       grid = new Grid(numSquaresX, numSquaresY);
-      score = 0;
       addStartTiles();
     } else {
       grid = new Grid(gameStatus.getField());
