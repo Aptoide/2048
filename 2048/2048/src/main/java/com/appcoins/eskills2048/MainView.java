@@ -163,7 +163,7 @@ public class MainView extends View {
     paint.setTextAlign(Paint.Align.CENTER);
 
     int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
-    int bodyWidthScore = (int) (paint.measureText("" + game.score));
+    int bodyWidthScore = (int) (paint.measureText("" + game.getScore()));
     int bodyWidthOpponentRank = (int) (paint.measureText("" + game.opponentRank));
     int bodyWidthOpponentName = (int) (paint.measureText("" + game.opponentName));
     int bodyWidthOpponentStatus = (int) (paint.measureText("" + game.opponentStatus));
@@ -223,7 +223,7 @@ public class MainView extends View {
         titleStartYAll, paint);
     paint.setTextSize(bodyTextSize);
     paint.setColor(getResources().getColor(R.color.text_white));
-    canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, bodyStartYAll, paint);
+    canvas.drawText(String.valueOf(game.getScore()), sXScore + textMiddleScore, bodyStartYAll, paint);
 
     //Outputting opponent rank box
     backgroundRectangle.setBounds(sXOpponentRank, sYOpponentDetails, eXOpponentScore,
