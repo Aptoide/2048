@@ -1,7 +1,7 @@
 package com.appcoins.eskills2048.api;
 
-import com.appcoins.eskills2048.model.bonus.BonusHistory;
-import com.appcoins.eskills2048.model.bonus.NextPrizeSchedule;
+import com.appcoins.eskills2048.model.BonusHistory;
+import com.appcoins.eskills2048.model.NextPrizeSchedule;
 import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
 import io.reactivex.Single;
 import retrofit2.http.GET;

@@ -1,4 +1,4 @@
-package com.appcoins.eskills2048.model.bonus;
+package com.appcoins.eskills2048.model;
 
 import java.util.List;
 

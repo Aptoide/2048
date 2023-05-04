@@ -1,8 +1,8 @@
 package com.appcoins.eskills2048.repository;
 
 import com.appcoins.eskills2048.api.BonusPrizeApi;
-import com.appcoins.eskills2048.model.bonus.BonusHistory;
-import com.appcoins.eskills2048.model.bonus.NextPrizeSchedule;
+import com.appcoins.eskills2048.model.BonusHistory;
+import com.appcoins.eskills2048.model.NextPrizeSchedule;
 import io.reactivex.Single;
 import javax.inject.Inject;
 import javax.inject.Singleton;
