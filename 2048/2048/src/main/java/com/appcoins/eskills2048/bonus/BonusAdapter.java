@@ -51,7 +51,7 @@ public class BonusAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
   @Override public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
     int itemViewType = getItemViewType(position);
-    if (itemViewType == R.layout.player_rank_layout) {
+    if (itemViewType == R.layout.player_bonus_layout) {
       BonusRankingsItem player = (BonusRankingsItem) differ.getCurrentList()
           .get(position);
       ((PlayerStatsViewHolder) holder).setPlayerStats(player);

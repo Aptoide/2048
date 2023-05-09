@@ -5,6 +5,7 @@ import com.appcoins.eskills2048.repository.BonusRepository;
 import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -15,7 +16,7 @@ import javax.inject.Singleton;
     this.bonusRepository = bonusRepository;
   }
 
-  public Single<BonusHistory> execute(String packageName, String sku, StatisticsTimeFrame timeFrame) {
+  public Single<List<BonusHistory>> execute(String packageName, String sku, StatisticsTimeFrame timeFrame) {
     return bonusRepository.getBonusHistoryList(packageName, sku, timeFrame)
         .subscribeOn(Schedulers.io());
   }

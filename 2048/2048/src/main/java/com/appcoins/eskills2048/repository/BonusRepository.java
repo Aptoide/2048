@@ -4,6 +4,7 @@ import com.appcoins.eskills2048.api.BonusPrizeApi;
 import com.appcoins.eskills2048.model.BonusHistory;
 import com.appcoins.eskills2048.model.NextPrizeSchedule;
 import io.reactivex.Single;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -15,7 +16,7 @@ import javax.inject.Singleton;
     this.bonusPrizeApi = bonusPrizeApi;
   }
 
-  public Single<BonusHistory> getBonusHistoryList(String packageName, String sku, StatisticsTimeFrame timeFrame){
+  public Single<List<BonusHistory>> getBonusHistoryList(String packageName, String sku, StatisticsTimeFrame timeFrame){
     return bonusPrizeApi.getBonusHistoryList(packageName, sku, timeFrame);
   }
   public Single<NextPrizeSchedule> getNextBonusSchedule(StatisticsTimeFrame timeFrame) {

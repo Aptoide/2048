@@ -50,6 +50,7 @@
   <string name="rankings_week">WEEK</string>
   <string name="rankings_all_time">ALL TIME</string>
   <string name="rankings">RANKINGS</string>
+  <string name="ranking_rewards_button">RANKING REWARDS</string>
 
   <string name="entry_price_duel">1 USD</string>
   <string name="geofencing_message">Your game has ended because e-Skills games are not available in your location.</string>

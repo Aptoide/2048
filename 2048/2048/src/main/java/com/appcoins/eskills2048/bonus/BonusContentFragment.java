@@ -12,6 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.appcoins.eskills2048.BuildConfig;
 import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.model.BonusHistory;
+import com.appcoins.eskills2048.model.BonusRankingsItem;
+import com.appcoins.eskills2048.model.BonusUser;
+import com.appcoins.eskills2048.model.RankingsItem;
+import com.appcoins.eskills2048.model.RankingsTitle;
 import com.appcoins.eskills2048.model.UserRankings;
 import com.appcoins.eskills2048.model.UserRankingsItem;
 import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
@@ -52,6 +56,7 @@ import javax.inject.Inject;
     Bundle arguments = getArguments();
     if (arguments != null) {
       timeFrame = (StatisticsTimeFrame) arguments.getSerializable(TIME_FRAME_KEY);
+      sku = (String) arguments.getSerializable(SKU_KEY);
     }
   }
 
@@ -103,20 +108,26 @@ import javax.inject.Inject;
     recyclerView.setVisibility(View.GONE);
   }
 
-  private void updateBonusList(BonusHistory bonusHistory) {
-    // TODO
+  private void updateBonusList(List<BonusHistory> bonusHistory) {
+    BonusHistory currentBonus=bonusHistory.get(0);
+    List<RankingsItem> items = new ArrayList<>();
+    items.add(new RankingsTitle(
+        currentBonus.getDate()));
+    items.addAll(mapPlayers(currentBonus.getUsers()));
+    adapter.setRankings(items);
   }
 
-  private List<UserRankingsItem> mapPlayers(UserRankings[] players, String rankingWalletAddress) {
+  private List<BonusRankingsItem> mapPlayers(List<BonusUser> players) {
     // TODO
-    ArrayList<UserRankingsItem> playersList = new ArrayList<>();
-    for (UserRankings player : players) {
-      playersList.add(new UserRankingsItem(player.getRankingUsername(), player.getRankingScore(),
-          player.getRankPosition(),
-          rankingWalletAddress.equalsIgnoreCase(player.getRankingWalletAddress())));
+    ArrayList<BonusRankingsItem> playersList = new ArrayList<>();
+    for (BonusUser player : players) {
+      playersList.add(new BonusRankingsItem(player.getUserName(), player.getScore(),
+          player.getRank(),player.getBonusAmount(), false
+          ));
     }
     return playersList;
   }
+
 
   @Override public void onDestroyView() {
     disposables.clear();

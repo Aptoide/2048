@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.appcoins.eskills2048.LaunchActivity;
 import com.appcoins.eskills2048.PlayerRankingAdapter;
 import com.appcoins.eskills2048.R;
+import com.appcoins.eskills2048.bonus.BonusActivity;
 import com.appcoins.eskills2048.databinding.ActivityFinishGameBinding;
 import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.RoomResponse;
@@ -128,6 +129,8 @@ import javax.inject.Inject;
           }, Throwable::printStackTrace));
       findViewById(R.id.rankings_button).setOnClickListener(
           view -> startActivity(RankingsActivity.create(this, walletAddress, matchEnvironment)));
+      findViewById(R.id.rankings_rewards_button).setOnClickListener(
+          view -> startActivity(BonusActivity.create(this, "1v1")));
     }
   }
 

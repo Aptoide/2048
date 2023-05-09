@@ -2,7 +2,7 @@ package com.appcoins.eskills2048.model;
 
 import com.appcoins.eskills2048.R;
 
-public class BonusRankingsItem {
+public class BonusRankingsItem implements RankingsItem{
   private final String userName;
   private final double score;
   private final long rank;
@@ -18,6 +18,7 @@ public class BonusRankingsItem {
     this.isCurrentUser = isCurrentUser;
   }
 
+  @Override
   public int getItemType() {
     return R.layout.player_bonus_layout;
   }
