@@ -1,9 +1,11 @@
 package com.appcoins.eskills2048.bonus;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,10 +18,9 @@ import com.appcoins.eskills2048.model.BonusRankingsItem;
 import com.appcoins.eskills2048.model.BonusUser;
 import com.appcoins.eskills2048.model.RankingsItem;
 import com.appcoins.eskills2048.model.RankingsTitle;
-import com.appcoins.eskills2048.model.UserRankings;
-import com.appcoins.eskills2048.model.UserRankingsItem;
 import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
 import com.appcoins.eskills2048.usecase.GetBonusHistoryUseCase;
+import com.appcoins.eskills2048.usecase.GetNextBonusScheduleUseCase;
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -28,6 +29,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 @AndroidEntryPoint public class BonusContentFragment extends Fragment {
+
+  private static final long COUNTDOWN_INTERVAL = 1000;
 
   private static final String TIME_FRAME_KEY = "TIME_FRAME_KEY";
 
@@ -39,8 +42,10 @@ import javax.inject.Inject;
   private View loadingView;
   private RecyclerView recyclerView;
   private View errorView;
+  private View countdownView;
 
   @Inject GetBonusHistoryUseCase getBonusHistoryUseCase;
+  @Inject GetNextBonusScheduleUseCase getNextBonusScheduleUseCase;
 
   public static BonusContentFragment newInstance(String sku, StatisticsTimeFrame timeFrame) {
     Bundle args = new Bundle();
@@ -74,6 +79,7 @@ import javax.inject.Inject;
     recyclerView.setAdapter(adapter);
     loadingView = view.findViewById(R.id.loading);
     errorView = view.findViewById(R.id.error_view);
+    countdownView = view.findViewById(R.id.countdown_timer);
     showBonus();
     view.findViewById(R.id.retry_button)
         .setOnClickListener(view1 -> showBonus());
@@ -88,6 +94,39 @@ import javax.inject.Inject;
           throwable.printStackTrace();
           showErrorView();
         }));
+  }
+
+  private void showTime() {
+    if (timeFrame == StatisticsTimeFrame.TODAY) {
+      countdownView.findViewById(R.id.countdown_days_container)
+          .setVisibility(View.GONE);
+    }
+
+    TextView daysView = countdownView.findViewById(R.id.countdown_days);
+    TextView hoursView = countdownView.findViewById(R.id.countdown_hours);
+    TextView minutesView = countdownView.findViewById(R.id.countdown_minutes);
+    TextView secondsView = countdownView.findViewById(R.id.countdown_seconds);
+    disposables.add(getNextBonusScheduleUseCase.execute(timeFrame)
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnSuccess(nextSchedule -> new CountDownTimer(
+            nextSchedule.getNextSchedule() - System.currentTimeMillis(), COUNTDOWN_INTERVAL) {
+          @Override public void onTick(long millisUntilFinished) {
+            long seconds = millisUntilFinished / 1000;
+            long minutes = seconds / 60;
+            long hours = minutes / 60;
+            long days = hours / 24;
+
+            daysView.setText((int) days);
+            hoursView.setText((int) hours);
+            minutesView.setText((int) minutes);
+            secondsView.setText((int) seconds);
+          }
+
+          @Override public void onFinish() {
+            showTime();   // update schedule
+          }
+        }.start())
+        .subscribe());
   }
 
   private void showErrorView() {
@@ -109,10 +148,9 @@ import javax.inject.Inject;
   }
 
   private void updateBonusList(List<BonusHistory> bonusHistory) {
-    BonusHistory currentBonus=bonusHistory.get(0);
+    BonusHistory currentBonus = bonusHistory.get(0);
     List<RankingsItem> items = new ArrayList<>();
-    items.add(new RankingsTitle(
-        currentBonus.getDate()));
+    items.add(new RankingsTitle(currentBonus.getDate()));
     items.addAll(mapPlayers(currentBonus.getUsers()));
     adapter.setRankings(items);
   }
@@ -121,13 +159,12 @@ import javax.inject.Inject;
     // TODO
     ArrayList<BonusRankingsItem> playersList = new ArrayList<>();
     for (BonusUser player : players) {
-      playersList.add(new BonusRankingsItem(player.getUserName(), player.getScore(),
-          player.getRank(),player.getBonusAmount(), false
-          ));
+      playersList.add(
+          new BonusRankingsItem(player.getUserName(), player.getScore(), player.getRank(),
+              player.getBonusAmount(), false));
     }
     return playersList;
   }
-
 
   @Override public void onDestroyView() {
     disposables.clear();

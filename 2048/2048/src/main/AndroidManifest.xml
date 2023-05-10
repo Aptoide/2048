@@ -14,7 +14,8 @@
       android:theme="@style/AppTheme">
     <activity
         android:name=".rankins.RankingsActivity"
-        android:exported="true" /><activity
+        android:exported="true" />
+    <activity
         android:name=".bonus.BonusActivity"
         android:exported="true" />
     <activity

@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class NextPrizeSchedule {
   @SerializedName("next_schedule")
-  private int nextSchedule;
+  private long nextSchedule;
 
-  public int getNextSchedule() {
+  public long getNextSchedule() {
     return nextSchedule;
   }
 }

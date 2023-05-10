@@ -54,4 +54,8 @@
 
   <string name="entry_price_duel">1 USD</string>
   <string name="geofencing_message">Your game has ended because e-Skills games are not available in your location.</string>
+  <string name="seconds">Seconds</string>
+  <string name="minutes">Minutes</string>
+  <string name="hours">Hours</string>
+  <string name="days">Days</string>
 </resources>
