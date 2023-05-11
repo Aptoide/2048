@@ -10,13 +10,21 @@
   <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/rankingsRecyclerView"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
       android:layout_margin="10dp"
       android:visibility="gone"
-      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
+      />
+  <include
+      android:id="@+id/countdown_timer_included"
+      layout="@layout/countdown_timer_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="8dp"
+      android:layout_marginVertical="@dimen/big_margin"
+      app:layout_constraintTop_toBottomOf="@id/rankingsRecyclerView"
       />
   <ProgressBar
       android:id="@+id/loading"

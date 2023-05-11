@@ -26,6 +26,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 @AndroidEntryPoint public class BonusContentFragment extends Fragment {
@@ -43,6 +44,7 @@ import javax.inject.Inject;
   private RecyclerView recyclerView;
   private View errorView;
   private View countdownView;
+  private CountDownTimer countDownTimer;
 
   @Inject GetBonusHistoryUseCase getBonusHistoryUseCase;
   @Inject GetNextBonusScheduleUseCase getNextBonusScheduleUseCase;
@@ -79,10 +81,14 @@ import javax.inject.Inject;
     recyclerView.setAdapter(adapter);
     loadingView = view.findViewById(R.id.loading);
     errorView = view.findViewById(R.id.error_view);
-    countdownView = view.findViewById(R.id.countdown_timer);
+    countdownView = view.findViewById(R.id.countdown_timer_included);
     showBonus();
+    showCountdownTimer();
     view.findViewById(R.id.retry_button)
-        .setOnClickListener(view1 -> showBonus());
+        .setOnClickListener(view1 -> {
+          showBonus();
+          showCountdownTimer();
+        });
   }
 
   private void showBonus() {
@@ -96,37 +102,42 @@ import javax.inject.Inject;
         }));
   }
 
-  private void showTime() {
+  private void showCountdownTimer() {
     if (timeFrame == StatisticsTimeFrame.TODAY) {
       countdownView.findViewById(R.id.countdown_days_container)
           .setVisibility(View.GONE);
     }
+    disposables.add(getNextBonusScheduleUseCase.execute(timeFrame)
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnSuccess(nextSchedule -> {
+          long timeLeftMillis = nextSchedule.getNextSchedule() * 1000 - System.currentTimeMillis();
+          startCountDownTimer(timeLeftMillis);
+        })
+        .subscribe());
+  }
 
+  private void startCountDownTimer(long timeLeftMillis) {
     TextView daysView = countdownView.findViewById(R.id.countdown_days);
     TextView hoursView = countdownView.findViewById(R.id.countdown_hours);
     TextView minutesView = countdownView.findViewById(R.id.countdown_minutes);
     TextView secondsView = countdownView.findViewById(R.id.countdown_seconds);
-    disposables.add(getNextBonusScheduleUseCase.execute(timeFrame)
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnSuccess(nextSchedule -> new CountDownTimer(
-            nextSchedule.getNextSchedule() - System.currentTimeMillis(), COUNTDOWN_INTERVAL) {
-          @Override public void onTick(long millisUntilFinished) {
-            long seconds = millisUntilFinished / 1000;
-            long minutes = seconds / 60;
-            long hours = minutes / 60;
-            long days = hours / 24;
+    countDownTimer = new CountDownTimer(timeLeftMillis, COUNTDOWN_INTERVAL) {
+      @Override public void onTick(long millisUntilFinished) {
+        long days = TimeUnit.MILLISECONDS.toDays(millisUntilFinished);
+        long hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) % 24;
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60;
 
-            daysView.setText((int) days);
-            hoursView.setText((int) hours);
-            minutesView.setText((int) minutes);
-            secondsView.setText((int) seconds);
-          }
+        daysView.setText(String.valueOf(days));
+        hoursView.setText(String.valueOf(hours));
+        minutesView.setText(String.valueOf(minutes));
+        secondsView.setText(String.valueOf(seconds));
+      }
 
-          @Override public void onFinish() {
-            showTime();   // update schedule
-          }
-        }.start())
-        .subscribe());
+      @Override public void onFinish() {
+        showCountdownTimer();   // update schedule
+      }
+    }.start();
   }
 
   private void showErrorView() {
@@ -168,6 +179,9 @@ import javax.inject.Inject;
 
   @Override public void onDestroyView() {
     disposables.clear();
+    if (countDownTimer != null) {
+      countDownTimer.cancel();
+    }
     super.onDestroyView();
   }
 }
