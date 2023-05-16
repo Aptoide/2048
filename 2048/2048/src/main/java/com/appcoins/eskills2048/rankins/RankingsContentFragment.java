@@ -11,10 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.appcoins.eskills2048.BuildConfig;
 import com.appcoins.eskills2048.R;
-import com.appcoins.eskills2048.model.GeneralPlayerStatsResponse;
 import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.RankingsItem;
-import com.appcoins.eskills2048.model.RankingsTitle;
 import com.appcoins.eskills2048.model.UserRankings;
 import com.appcoins.eskills2048.model.UserRankingsItem;
 import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
@@ -83,7 +81,7 @@ import javax.inject.Inject;
 
   private void showRankings() {
     disposables.add(getUserStatisticsUseCase.execute(BuildConfig.APPLICATION_ID, walletAddress,
-        matchEnvironment, timeFrame)
+            matchEnvironment, timeFrame)
         .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe(disposable -> showLoadingView())
         .doOnSuccess(disposable -> showRecyclerView())
@@ -111,35 +109,17 @@ import javax.inject.Inject;
     recyclerView.setVisibility(View.GONE);
   }
 
-  private void updateRankingsList(GeneralPlayerStatsResponse generalPlayerStatsResponse) {
-    List<RankingsItem> items = new ArrayList<>();
-    items.add(new RankingsTitle(getString(R.string.rankings_top_3_title)));
-    items.addAll(mapPlayers(generalPlayerStatsResponse.getTop3(),
-        generalPlayerStatsResponse.getPlayer()
-            .getRankingWalletAddress()));
-    if (generalPlayerStatsResponse.getPlayer()
-        .getRankingScore() > 0) {
-      items.add(new RankingsTitle(getString(R.string.rankings_your_rank_title)));
-      items.addAll(mapPlayers(generalPlayerStatsResponse.getAboveUser(),
-          generalPlayerStatsResponse.getPlayer()
-              .getRankingWalletAddress()));
-      items.add(new UserRankingsItem(generalPlayerStatsResponse.getPlayer()
-          .getRankingUsername(), generalPlayerStatsResponse.getPlayer()
-          .getRankingScore(), generalPlayerStatsResponse.getPlayer()
-          .getRankPosition(), true));
-    }
-    items.addAll(mapPlayers(generalPlayerStatsResponse.getBelowUser(),
-        generalPlayerStatsResponse.getPlayer()
-            .getRankingWalletAddress()));
+  private void updateRankingsList(UserRankings[] rankings) {
+    List<RankingsItem> items = new ArrayList<>(mapPlayers(rankings));
     adapter.setRankings(items);
   }
 
-  private List<UserRankingsItem> mapPlayers(UserRankings[] players, String rankingWalletAddress) {
+  private List<UserRankingsItem> mapPlayers(UserRankings[] players) {
     ArrayList<UserRankingsItem> playersList = new ArrayList<>();
     for (UserRankings player : players) {
       playersList.add(new UserRankingsItem(player.getRankingUsername(), player.getRankingScore(),
           player.getRankPosition(),
-          rankingWalletAddress.equalsIgnoreCase(player.getRankingWalletAddress())));
+          walletAddress.equalsIgnoreCase(player.getRankingWalletAddress())));
     }
     return playersList;
   }
