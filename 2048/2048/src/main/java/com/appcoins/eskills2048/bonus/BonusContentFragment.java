@@ -75,7 +75,7 @@ import javax.inject.Inject;
 
   @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    recyclerView = view.findViewById(R.id.rankingsRecyclerView);
+    recyclerView = view.findViewById(R.id.bonusHistoryRecyclerView);
     adapter = new BonusAdapter(LayoutInflater.from(getContext()));
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     recyclerView.setAdapter(adapter);

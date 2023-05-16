@@ -17,12 +17,14 @@ public class RankingsFragment extends Fragment {
 
   private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
   private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
+  private static final String SKU_KEY = "SKU_KEY";
 
-  public static RankingsFragment newInstance(String userWalletAddress,
+  public static RankingsFragment newInstance(String userWalletAddress, String sku,
       MatchDetails.Environment matchEnvironment) {
     Bundle args = new Bundle();
     args.putString(WALLET_ADDRESS_KEY, userWalletAddress);
     args.putSerializable(MATCH_ENVIRONMENT, matchEnvironment);
+    args.putString(SKU_KEY, sku);
     RankingsFragment fragment = new RankingsFragment();
     fragment.setArguments(args);
     return fragment;
@@ -38,13 +40,17 @@ public class RankingsFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     String walletAddress = null;
     MatchDetails.Environment matchEnvironment = null;
+    String sku = null;
     if (getArguments() != null) {
       walletAddress = getArguments().getString(WALLET_ADDRESS_KEY);
       matchEnvironment =
           (MatchDetails.Environment) getArguments().getSerializable(MATCH_ENVIRONMENT);
+      sku = getArguments().getString(SKU_KEY);
     }
     RankingsPagerAdapter rankingsPagerAdapter =
         new RankingsPagerAdapter(this, walletAddress, matchEnvironment);
+    BonusPagerAdapter bonusPagerAdapter =
+        new BonusPagerAdapter(this, sku);  // TODO not sure
     ViewPager2 viewPager = view.findViewById(R.id.pager);
     viewPager.setAdapter(rankingsPagerAdapter);
     TabLayout tabLayout = view.findViewById(R.id.tab_layout);

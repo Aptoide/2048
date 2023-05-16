@@ -14,13 +14,15 @@ import io.reactivex.disposables.CompositeDisposable;
 
   private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
   private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
+  private static final String SKU_KEY = "SKU_KEY";
   private final CompositeDisposable disposables = new CompositeDisposable();
 
-  static public Intent create(Context context, String walletAddress,
+  static public Intent create(Context context, String walletAddress, String sku,
       MatchDetails.Environment matchEnvironment) {
     Intent intent = new Intent(context, RankingsActivity.class);
     intent.putExtra(WALLET_ADDRESS_KEY, walletAddress);
     intent.putExtra(MATCH_ENVIRONMENT, matchEnvironment);
+    intent.putExtra(SKU_KEY, sku);
     return intent;
   }
 
@@ -29,12 +31,14 @@ import io.reactivex.disposables.CompositeDisposable;
     setContentView(R.layout.activity_rankings);
     String userWalletAddress = getIntent().getExtras()
         .getString(WALLET_ADDRESS_KEY);
+    String sku = getIntent().getExtras()
+        .getString(SKU_KEY);
     MatchDetails.Environment matchEnvironment =
         (MatchDetails.Environment) getIntent().getSerializableExtra(MATCH_ENVIRONMENT);
     if (savedInstanceState == null) {
       getSupportFragmentManager().beginTransaction()
           .add(R.id.fragment_container,
-              RankingsFragment.newInstance(userWalletAddress, matchEnvironment))
+              RankingsFragment.newInstance(userWalletAddress, sku,  matchEnvironment))
           .commit();
     }
   }

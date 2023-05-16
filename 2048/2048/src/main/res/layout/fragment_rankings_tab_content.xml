@@ -17,6 +17,18 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       />
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/bonusHistoryRecyclerView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="10dp"
+      android:visibility="gone"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="@id/rankingsRecyclerView"
+      />
+
   <include
       android:id="@+id/countdown_timer_included"
       layout="@layout/countdown_timer_layout"
