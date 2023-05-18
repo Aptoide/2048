@@ -40,6 +40,7 @@ import javax.inject.Inject;
 
   private static final String ENTRY_PRICE_DUEL = "1 USD";
   private static final String ENTRY_PRICE_MULTIPLAYER = "4 USD";
+  private static final String ENTRY_SANDBOX = "0 USD";
 
   private final String userId = "string_user_id";
   private MatchDetails.Environment matchEnvironment;
@@ -68,9 +69,18 @@ import javax.inject.Inject;
         .setVisibility(View.VISIBLE);
 
     binding.startNewGameLayout.newGameButton.setOnClickListener(
-        view -> showCreateTicket(MatchDetails.Environment.LIVE));
+        view -> {
+          binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(R.string.game_type_duel);
+          binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(R.string.game_type_multiplayer);
+          showCreateTicket(MatchDetails.Environment.LIVE);
+        });
     binding.startNewGameLayout.sandboxGameButton.setOnClickListener(
-        view -> showCreateTicket(MatchDetails.Environment.SANDBOX));
+        view -> {
+          binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_SANDBOX);
+          binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(R.string.game_type_duel_sandbox);
+          binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(R.string.game_type_multiplayer_sandbox);
+          showCreateTicket(MatchDetails.Environment.SANDBOX);
+        });
     FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     Bundle bundle = new Bundle();
     bundle.putLong("current_time", System.currentTimeMillis());
@@ -113,7 +123,13 @@ import javax.inject.Inject;
     binding.createTicketLayout.getRoot()
         .setVisibility(View.VISIBLE);
     binding.createTicketLayout.userName.setText(userDataStorage.getString(PREFERENCES_USER_NAME));
-    setGamePrice();
+    if(environment == MatchDetails.Environment.SANDBOX) {
+      binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener(null);
+    }
+    else {
+      setGamePrice();
+    }
+
 
     binding.createTicketLayout.findRoomButton.setOnClickListener(view -> {
       String userName = binding.createTicketLayout.userName.getText()
@@ -127,6 +143,10 @@ import javax.inject.Inject;
   }
 
   private void setGamePrice() {
+    if(binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId() == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId())
+      binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_DUEL);
+    else
+      binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_MULTIPLAYER);
     binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener(
         (group, checkedId) -> {
           if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
