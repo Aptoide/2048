@@ -7,4 +7,6 @@
     <dimen name="big_margin">16dp</dimen>
     <dimen name="small_margin">8dp</dimen>
     <dimen name="list_item_height">88dp</dimen>
+    <dimen name="countdown_timer_spacing">12dp</dimen>
+    <dimen name="countdown_timer_padding">6dp</dimen>
 </resources>

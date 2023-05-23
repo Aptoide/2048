@@ -53,10 +53,8 @@
       app:layout_constraintTop_toBottomOf="@id/first_username"
       app:layout_constraintStart_toStartOf="@id/gold_medal"
       app:layout_constraintEnd_toEndOf="@id/gold_medal"
-      android:text="5$"
-      style="@style/LastWinners.Text.Title"
-      android:textSize="14sp"
-      android:textColor="#3DC642"
+      android:text="5.00$"
+      style="@style/LastWinners.Text.winnings"
       android:layout_marginBottom="@dimen/small_margin"
       />
 
@@ -92,10 +90,8 @@
       app:layout_constraintTop_toBottomOf="@id/second_username"
       app:layout_constraintStart_toStartOf="@id/silver_medal"
       app:layout_constraintEnd_toEndOf="@id/silver_medal"
-      android:text="3$"
-      style="@style/LastWinners.Text.Title"
-      android:textSize="14sp"
-      android:textColor="#3DC642"
+      android:text="3.00$"
+      style="@style/LastWinners.Text.winnings"
       android:layout_marginBottom="@dimen/small_margin"
       />
 
@@ -130,10 +126,8 @@
       app:layout_constraintTop_toBottomOf="@id/third_username"
       app:layout_constraintStart_toStartOf="@id/bronze_medal"
       app:layout_constraintEnd_toEndOf="@id/bronze_medal"
-      android:text="1$"
-      style="@style/LastWinners.Text.Title"
-      android:textSize="14sp"
-      android:textColor="#3DC642"
+      android:text="1.00$"
+      style="@style/LastWinners.Text.winnings"
       android:layout_marginBottom="@dimen/small_margin"
       />
 
