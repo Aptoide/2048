@@ -128,7 +128,7 @@ import javax.inject.Inject;
           .subscribe(roomResult -> {
           }, Throwable::printStackTrace));
       findViewById(R.id.rankings_button).setOnClickListener(
-          view -> startActivity(RankingsActivity.create(this, walletAddress, matchEnvironment)));
+          view -> startActivity(RankingsActivity.create(this, walletAddress, "1v1", matchEnvironment)));
       findViewById(R.id.rankings_rewards_button).setOnClickListener(
           view -> startActivity(BonusActivity.create(this, "1v1")));
     }

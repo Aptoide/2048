@@ -73,7 +73,7 @@
       android:layout_marginBottom="4dp"
       />
   <include
-      android:id="@+id/countdown_timer_container"
+      android:id="@+id/second_player_row"
       layout="@layout/second_row_layout"
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
@@ -82,7 +82,7 @@
       android:layout_marginVertical="4dp"
       />
   <include
-      android:id="@+id/countdown_timer_container"
+      android:id="@+id/third_player_row"
       layout="@layout/third_row_layout"
       android:layout_weight="1"
       android:layout_height="wrap_content"
