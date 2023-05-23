@@ -46,6 +46,20 @@
       android:layout_marginBottom="@dimen/small_margin"
       />
 
+  <TextView
+      android:id="@+id/first_winnings"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/first_username"
+      app:layout_constraintStart_toStartOf="@id/gold_medal"
+      app:layout_constraintEnd_toEndOf="@id/gold_medal"
+      android:text="5$"
+      style="@style/LastWinners.Text.Title"
+      android:textSize="14sp"
+      android:textColor="#3DC642"
+      android:layout_marginBottom="@dimen/small_margin"
+      />
+
   <ImageView
       android:id="@+id/silver_medal"
       android:layout_width="78dp"
@@ -71,6 +85,20 @@
       android:layout_marginBottom="@dimen/small_margin"
       />
 
+  <TextView
+      android:id="@+id/second_winnings"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/second_username"
+      app:layout_constraintStart_toStartOf="@id/silver_medal"
+      app:layout_constraintEnd_toEndOf="@id/silver_medal"
+      android:text="3$"
+      style="@style/LastWinners.Text.Title"
+      android:textSize="14sp"
+      android:textColor="#3DC642"
+      android:layout_marginBottom="@dimen/small_margin"
+      />
+
   <ImageView
       android:id="@+id/bronze_medal"
       android:layout_width="78dp"
@@ -86,7 +114,7 @@
       android:id="@+id/third_username"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      app:layout_constraintTop_toBottomOf="@id/silver_medal"
+      app:layout_constraintTop_toBottomOf="@id/bronze_medal"
       app:layout_constraintStart_toStartOf="@id/bronze_medal"
       app:layout_constraintEnd_toEndOf="@id/bronze_medal"
       android:text="Username3"
@@ -95,5 +123,20 @@
       android:layout_marginTop="18dp"
       android:layout_marginBottom="@dimen/small_margin"
       />
+  <TextView
+      android:id="@+id/third_winnings"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/third_username"
+      app:layout_constraintStart_toStartOf="@id/bronze_medal"
+      app:layout_constraintEnd_toEndOf="@id/bronze_medal"
+      android:text="1$"
+      style="@style/LastWinners.Text.Title"
+      android:textSize="14sp"
+      android:textColor="#3DC642"
+      android:layout_marginBottom="@dimen/small_margin"
+      />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
