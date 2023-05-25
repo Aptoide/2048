@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.model.RankingsItem;
-import com.appcoins.eskills2048.model.RankingsTitle;
 import com.appcoins.eskills2048.model.UserRankingsItem;
 import java.util.List;
 
@@ -55,10 +54,6 @@ public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
       UserRankingsItem player = (UserRankingsItem) differ.getCurrentList()
           .get(position);
       ((PlayerStatsViewHolder) holder).setPlayerStats(player);
-    } else if (itemViewType == R.layout.rankings_title) {
-      RankingsTitle title = (RankingsTitle) differ.getCurrentList()
-          .get(position);
-      ((RankingTitleViewHolder) holder).setTitle(title);
     } else {
       throw new RuntimeException("Invalid view type " + itemViewType);
     }
@@ -95,18 +90,23 @@ public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     void setPlayerStats(UserRankingsItem player) {
       username.setText(player.getUserName());
       score.setText(String.valueOf(player.getScore()));
-      rank.setText(String.valueOf(player.getRank()));
-      int color;
-      if (player.isCurrentUser()) {
-        color = itemView.getResources()
-            .getColor(R.color.icon_background);
+
+      if (player.getRank() == 1) {
+        rank.setBackgroundResource(R.drawable.gold_medal);
+      } else if (player.getRank() == 2) {
+        rank.setBackgroundResource(R.drawable.silver_medal);
+      } else if (player.getRank() == 3) {
+        rank.setBackgroundResource(R.drawable.bronze_medal);
       } else {
-        color = itemView.getResources()
-            .getColor(R.color.rankings_text_color);
+        rank.setText(String.valueOf(player.getRank()));
       }
-      username.setTextColor(color);
-      rank.setTextColor(color);
-      score.setTextColor(color);
+      if (player.isCurrentUser()) {
+        int color = itemView.getResources()
+            .getColor(R.color.icon_background);
+        username.setTextColor(color);
+        rank.setTextColor(color);
+        score.setTextColor(color);
+      }
     }
   }
 
@@ -117,10 +117,6 @@ public class RankingsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     RankingTitleViewHolder(@NonNull View itemView) {
       super(itemView);
       rankingTitle = itemView.findViewById(R.id.rankingTitle);
-    }
-
-    void setTitle(RankingsTitle title) {
-      rankingTitle.setText(title.getTitle());
     }
   }
 }

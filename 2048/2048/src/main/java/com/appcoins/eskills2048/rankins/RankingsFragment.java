@@ -48,9 +48,7 @@ public class RankingsFragment extends Fragment {
       sku = getArguments().getString(SKU_KEY);
     }
     RankingsPagerAdapter rankingsPagerAdapter =
-        new RankingsPagerAdapter(this, walletAddress, matchEnvironment);
-    BonusPagerAdapter bonusPagerAdapter =
-        new BonusPagerAdapter(this, sku);  // TODO not sure
+        new RankingsPagerAdapter(this, walletAddress, sku, matchEnvironment);
     ViewPager2 viewPager = view.findViewById(R.id.pager);
     viewPager.setAdapter(rankingsPagerAdapter);
     TabLayout tabLayout = view.findViewById(R.id.tab_layout);

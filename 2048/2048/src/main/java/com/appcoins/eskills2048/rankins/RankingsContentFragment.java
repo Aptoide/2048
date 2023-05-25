@@ -12,12 +12,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.appcoins.eskills2048.BuildConfig;
-import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.databinding.CountdownTimerLayoutBinding;
 import com.appcoins.eskills2048.databinding.CurrentTop3Binding;
 import com.appcoins.eskills2048.databinding.FirstRowLayoutBinding;
+import com.appcoins.eskills2048.databinding.FragmentRankingsTabContentBinding;
 import com.appcoins.eskills2048.databinding.SecondRowLayoutBinding;
 import com.appcoins.eskills2048.databinding.ThirdRowLayoutBinding;
+import com.appcoins.eskills2048.model.BonusHistory;
 import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.RankingsItem;
 import com.appcoins.eskills2048.model.TopRankings;
@@ -39,30 +40,35 @@ import javax.inject.Inject;
   private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
   private static final String TIME_FRAME_KEY = "TIME_FRAME_KEY";
   private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
+  private static final String SKU_KEY = "SKU_KEY";
   private static final long COUNTDOWN_INTERVAL = 1000;
 
   private StatisticsTimeFrame timeFrame;
   private MatchDetails.Environment matchEnvironment;
   private String walletAddress;
+  private String sku;
   private RankingsAdapter adapter;
   private final CompositeDisposable disposables = new CompositeDisposable();
   private View loadingView;
   private RecyclerView recyclerView;
   private View errorView;
-  private View currentTop3View;
-  private View countdownView;
+  private CurrentTop3Binding currentTop3View;
+  private CountdownTimerLayoutBinding countdownBinding;
   private CountDownTimer countDownTimer;
+
+  private FragmentRankingsTabContentBinding binding;
 
   @Inject GetUserStatisticsUseCase getUserStatisticsUseCase;
   @Inject GetBonusHistoryUseCase getBonusHistoryUseCase;
   @Inject GetNextBonusScheduleUseCase getNextBonusScheduleUseCase;
 
-  public static RankingsContentFragment newInstance(String walletAddress,
+  public static RankingsContentFragment newInstance(String walletAddress, String sku,
       MatchDetails.Environment matchEnvironment, StatisticsTimeFrame timeFrame) {
     Bundle args = new Bundle();
     args.putString(WALLET_ADDRESS_KEY, walletAddress);
     args.putSerializable(MATCH_ENVIRONMENT, matchEnvironment);
     args.putSerializable(TIME_FRAME_KEY, timeFrame);
+    args.putSerializable(SKU_KEY, sku);
     RankingsContentFragment fragment = new RankingsContentFragment();
     fragment.setArguments(args);
     return fragment;
@@ -75,31 +81,38 @@ import javax.inject.Inject;
       timeFrame = (StatisticsTimeFrame) arguments.getSerializable(TIME_FRAME_KEY);
       walletAddress = arguments.getString(WALLET_ADDRESS_KEY);
       matchEnvironment = (MatchDetails.Environment) arguments.getSerializable(MATCH_ENVIRONMENT);
+      sku = arguments.getString(SKU_KEY);
     }
   }
 
   @Nullable @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.fragment_rankings_tab_content, container, false);
+    binding = FragmentRankingsTabContentBinding.inflate(inflater, container, false);
+    return binding.getRoot();
   }
 
   @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    recyclerView = view.findViewById(R.id.rankingsRecyclerView);
+    recyclerView = binding.rankingsRecyclerView;
     adapter = new RankingsAdapter(LayoutInflater.from(getContext()));
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     recyclerView.setAdapter(adapter);
-    currentTop3View = CurrentTop3Binding.inflate(getLayoutInflater())
-        .getRoot();
-    countdownView = CountdownTimerLayoutBinding.inflate(getLayoutInflater())
-        .getRoot();
-    loadingView = view.findViewById(R.id.loading);
-    errorView = view.findViewById(R.id.error_view);
+    currentTop3View = binding.currentTop3Container;
+    countdownBinding = binding.currentTop3Container.countdownTimerContainer;
+    loadingView = binding.loading;
+    errorView = binding.errorView;
     showRankings();
-    showCountdownTimer();
-    view.findViewById(R.id.retry_button)
-        .setOnClickListener(view1 -> showRankings());
+
+    if(timeFrame == StatisticsTimeFrame.ALL_TIME) {
+      binding.lastWinnersContainer.getRoot().setVisibility(View.GONE);
+      binding.currentTop3Container.getRoot().setVisibility(View.GONE);
+    }
+    else {
+      showLastBonusWinners();
+      showCountdownTimer();
+    }
+    binding.retryButton.setOnClickListener(view1 -> showRankings());
   }
 
   private void showRankings() {
@@ -108,7 +121,21 @@ import javax.inject.Inject;
         .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe(disposable -> showLoadingView())
         .doOnSuccess(disposable -> showRecyclerView())
-        .subscribe(topRankings -> updateRankingsList(processTop3(topRankings)), throwable -> {
+        .subscribe(topRankings -> {
+          updateCurrentRanking(topRankings.getCurrentUser());
+          updateRankingsList(processTop3(topRankings.getUserList()));
+        }, throwable -> {
+          throwable.printStackTrace();
+          showErrorView();
+        }));
+  }
+
+  private void showLastBonusWinners() {
+    disposables.add(getBonusHistoryUseCase.execute(BuildConfig.APPLICATION_ID, sku, timeFrame)
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnSubscribe(disposable -> showLoadingView())
+        .doOnSuccess(disposable -> showRecyclerView())
+        .subscribe(this::updateLastBonusWinners, throwable -> {
           throwable.printStackTrace();
           showErrorView();
         }));
@@ -116,41 +143,36 @@ import javax.inject.Inject;
 
   // process top 3 and return the original list minus that 3 players
   private TopRankings[] processTop3(TopRankings[] players_score) {
-    if (players_score.length < 3) {
-      currentTop3View.setVisibility(View.GONE);
+    if (players_score.length < 3 || timeFrame == StatisticsTimeFrame.ALL_TIME) {
+      currentTop3View.getRoot()
+          .setVisibility(View.GONE);
       return players_score;
     }
     TopRankings player1 = players_score[0];
     TopRankings player2 = players_score[1];
     TopRankings player3 = players_score[2];
-    View row1 = FirstRowLayoutBinding.inflate(getLayoutInflater())
-        .getRoot()
-        .findViewById(R.id.ranking_container);
-    View row2 = SecondRowLayoutBinding.inflate(getLayoutInflater())
-        .getRoot()
-        .findViewById(R.id.ranking_container);
-    View row3 = ThirdRowLayoutBinding.inflate(getLayoutInflater())
-        .getRoot()
-        .findViewById(R.id.ranking_container);
+    FirstRowLayoutBinding firstPlayerRowBinding = binding.currentTop3Container.firstPlayerRow;
+    SecondRowLayoutBinding secondPlayerRowBinding = binding.currentTop3Container.secondPlayerRow;
+    ThirdRowLayoutBinding thirdRowLayoutBinding = binding.currentTop3Container.thirdPlayerRow;
 
-    populateTop3row(player1, row1);
-    populateTop3row(player2, row2);
-    populateTop3row(player3, row3);
+    populateTop3row(player1, firstPlayerRowBinding.rankingUsername,
+        firstPlayerRowBinding.rankingScore);
+    populateTop3row(player2, secondPlayerRowBinding.rankingUsername,
+        secondPlayerRowBinding.rankingScore);
+    populateTop3row(player3, thirdRowLayoutBinding.rankingUsername,
+        thirdRowLayoutBinding.rankingScore);
 
     return Arrays.copyOfRange(players_score, 3, players_score.length);
   }
 
-  private void populateTop3row(TopRankings player, View row) {
-    TextView username = row.findViewById(R.id.rankingUsername);
-    TextView score = row.findViewById(R.id.rankingScore);
+  private void populateTop3row(TopRankings player, TextView username, TextView score) {
     username.setText(player.getUsername());
     score.setText(String.valueOf(player.getScore()));
   }
 
   private void showCountdownTimer() {
     if (timeFrame == StatisticsTimeFrame.TODAY) {
-      countdownView.findViewById(R.id.countdown_days_container)
-          .setVisibility(View.GONE);
+      countdownBinding.countdownDaysContainer.setVisibility(View.GONE);
     }
     disposables.add(getNextBonusScheduleUseCase.execute(timeFrame)
         .observeOn(AndroidSchedulers.mainThread())
@@ -161,12 +183,21 @@ import javax.inject.Inject;
         .subscribe());
   }
 
+  private void updateLastBonusWinners(List<BonusHistory> bonusHistoryList) {
+    // TODO
+  }
+
+  private void updateCurrentRanking(TopRankings currentRanking) {
+    binding.currentRankingContainer.rankingScore.setText(String.valueOf(currentRanking.getScore()));
+    binding.currentRankingContainer.rankingPosition.setText(
+        String.valueOf(currentRanking.getRankPosition()));
+  }
+
   private void startCountDownTimer(long timeLeftMillis) {
-    View daysContainer = countdownView.findViewById(R.id.countdown_days_container);
-    TextView daysView = daysContainer.findViewById(R.id.countdown_days);
-    TextView hoursView = countdownView.findViewById(R.id.countdown_hours);
-    TextView minutesView = countdownView.findViewById(R.id.countdown_minutes);
-    TextView secondsView = countdownView.findViewById(R.id.countdown_seconds);
+    TextView daysView = countdownBinding.countdownDays;
+    TextView hoursView = countdownBinding.countdownHours;
+    TextView minutesView = countdownBinding.countdownMinutes;
+    TextView secondsView = countdownBinding.countdownSeconds;
     countDownTimer = new CountDownTimer(timeLeftMillis, COUNTDOWN_INTERVAL) {
       @Override public void onTick(long millisUntilFinished) {
         long days = TimeUnit.MILLISECONDS.toDays(millisUntilFinished);
@@ -214,7 +245,7 @@ import javax.inject.Inject;
     for (TopRankings player : players) {
       playersList.add(
           new UserRankingsItem(player.getUsername(), player.getScore(), player.getRankPosition(),
-              false)  // TODO
+              false)
       );
     }
     return playersList;
@@ -226,5 +257,6 @@ import javax.inject.Inject;
       countDownTimer.cancel();
     }
     super.onDestroyView();
+    binding = null;
   }
 }

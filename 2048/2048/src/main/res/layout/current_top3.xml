@@ -10,7 +10,7 @@
   <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/next_reward_container"
       android:layout_width="match_parent"
-      android:layout_height="70dp"
+      android:layout_height="wrap_content"
       app:layout_constraintTop_toTopOf="parent"
       android:paddingTop="16dp"
       android:paddingBottom="14dp"

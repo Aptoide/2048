@@ -15,9 +15,9 @@ import javax.inject.Singleton;
     this.api = api;
   }
 
-  public Single<TopNPlayersResponse> getTopNPlayers(String applicationId, String sku,
-      MatchDetails.Environment matchEnvironment, StatisticsTimeFrame timeFrame) {
-    return api.getTopNPlayers(applicationId, sku, matchEnvironment, timeFrame.name(),
+  public Single<TopNPlayersResponse> getTopNPlayers(String applicationId, String walletAddress,
+      String sku, MatchDetails.Environment matchEnvironment, StatisticsTimeFrame timeFrame) {
+    return api.getTopNPlayers(applicationId, walletAddress, sku, matchEnvironment, timeFrame.name(),
         RANKINGS_LIMIT);
   }
 }

@@ -2,7 +2,6 @@ package com.appcoins.eskills2048.usecase;
 
 import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.TopNPlayersResponse;
-import com.appcoins.eskills2048.model.TopRankings;
 import com.appcoins.eskills2048.repository.StatisticsRepository;
 import com.appcoins.eskills2048.repository.StatisticsTimeFrame;
 import io.reactivex.Single;
@@ -17,11 +16,10 @@ import javax.inject.Singleton;
     this.statisticsRepository = statisticsRepository;
   }
 
-  public Single<TopRankings[]> execute(String applicationId, String userWalletAddress,
+  public Single<TopNPlayersResponse> execute(String applicationId, String userWalletAddress,
       MatchDetails.Environment matchEnvironment, StatisticsTimeFrame timeFrame) {
-    return statisticsRepository.getTopNPlayers(applicationId, "1v1",  // TODO
+    return statisticsRepository.getTopNPlayers(applicationId, userWalletAddress,"1v1",  // TODO
             matchEnvironment, timeFrame)
-        .subscribeOn(Schedulers.io())
-        .map(TopNPlayersResponse::getUserScores);
+        .subscribeOn(Schedulers.io());
   }
 }

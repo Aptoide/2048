@@ -8,8 +8,9 @@ import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 public interface GeneralPlayerStats {
-  @Headers("accept: application/json") @GET("room/statistics/top_n_players")
+  @Headers("accept: application/json") @GET("room/statistics/v2/top_n_players")
   Single<TopNPlayersResponse> getTopNPlayers(@Query("package_name") String packageName,
+      @Query("wallet_address") String wallet_address,
       @Query("product") String sku,
       @Query("match_environment") MatchDetails.Environment matchEnvironment,
       @Query("time_frame") String timeframe, @Query("limit") int limit);

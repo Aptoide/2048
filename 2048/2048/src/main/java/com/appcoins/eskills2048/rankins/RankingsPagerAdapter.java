@@ -12,16 +12,18 @@ class RankingsPagerAdapter extends FragmentStateAdapter {
 
   private final String walletAddress;
   private final MatchDetails.Environment matchEnvironment;
+  private final String sku;
 
-  public RankingsPagerAdapter(@NonNull Fragment fragment, String walletAddress,
+  public RankingsPagerAdapter(@NonNull Fragment fragment, String walletAddress, String sku,
       MatchDetails.Environment matchEnvironment) {
     super(fragment);
     this.walletAddress = walletAddress;
     this.matchEnvironment = matchEnvironment;
+    this.sku = sku;
   }
 
   @NonNull @Override public Fragment createFragment(int position) {
-    return RankingsContentFragment.newInstance(walletAddress, matchEnvironment,
+    return RankingsContentFragment.newInstance(walletAddress, sku, matchEnvironment,
         getTimeFrame(position));
   }
 
