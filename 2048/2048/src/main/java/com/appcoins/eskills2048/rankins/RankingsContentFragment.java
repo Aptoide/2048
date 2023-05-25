@@ -13,6 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.appcoins.eskills2048.BuildConfig;
 import com.appcoins.eskills2048.R;
+import com.appcoins.eskills2048.databinding.CountdownTimerLayoutBinding;
+import com.appcoins.eskills2048.databinding.CurrentTop3Binding;
+import com.appcoins.eskills2048.databinding.FirstRowLayoutBinding;
+import com.appcoins.eskills2048.databinding.SecondRowLayoutBinding;
+import com.appcoins.eskills2048.databinding.ThirdRowLayoutBinding;
 import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.RankingsItem;
 import com.appcoins.eskills2048.model.TopRankings;
@@ -25,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -43,6 +49,7 @@ import javax.inject.Inject;
   private View loadingView;
   private RecyclerView recyclerView;
   private View errorView;
+  private View currentTop3View;
   private View countdownView;
   private CountDownTimer countDownTimer;
 
@@ -83,10 +90,10 @@ import javax.inject.Inject;
     adapter = new RankingsAdapter(LayoutInflater.from(getContext()));
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     recyclerView.setAdapter(adapter);
-    View scrollView = view.findViewById(R.id.scroll_view_rankings);
-    View currentTop3View = scrollView.findViewById(R.id.current_top3_container);
-    View next_reward_container = currentTop3View.findViewById(R.id.next_reward_container);
-    countdownView = next_reward_container.findViewById(R.id.countdown_timer_container);
+    currentTop3View = CurrentTop3Binding.inflate(getLayoutInflater())
+        .getRoot();
+    countdownView = CountdownTimerLayoutBinding.inflate(getLayoutInflater())
+        .getRoot();
     loadingView = view.findViewById(R.id.loading);
     errorView = view.findViewById(R.id.error_view);
     showRankings();
@@ -101,10 +108,43 @@ import javax.inject.Inject;
         .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe(disposable -> showLoadingView())
         .doOnSuccess(disposable -> showRecyclerView())
-        .subscribe(this::updateRankingsList, throwable -> {
+        .subscribe(topRankings -> updateRankingsList(processTop3(topRankings)), throwable -> {
           throwable.printStackTrace();
           showErrorView();
         }));
+  }
+
+  // process top 3 and return the original list minus that 3 players
+  private TopRankings[] processTop3(TopRankings[] players_score) {
+    if (players_score.length < 3) {
+      currentTop3View.setVisibility(View.GONE);
+      return players_score;
+    }
+    TopRankings player1 = players_score[0];
+    TopRankings player2 = players_score[1];
+    TopRankings player3 = players_score[2];
+    View row1 = FirstRowLayoutBinding.inflate(getLayoutInflater())
+        .getRoot()
+        .findViewById(R.id.ranking_container);
+    View row2 = SecondRowLayoutBinding.inflate(getLayoutInflater())
+        .getRoot()
+        .findViewById(R.id.ranking_container);
+    View row3 = ThirdRowLayoutBinding.inflate(getLayoutInflater())
+        .getRoot()
+        .findViewById(R.id.ranking_container);
+
+    populateTop3row(player1, row1);
+    populateTop3row(player2, row2);
+    populateTop3row(player3, row3);
+
+    return Arrays.copyOfRange(players_score, 3, players_score.length);
+  }
+
+  private void populateTop3row(TopRankings player, View row) {
+    TextView username = row.findViewById(R.id.rankingUsername);
+    TextView score = row.findViewById(R.id.rankingScore);
+    username.setText(player.getUsername());
+    score.setText(String.valueOf(player.getScore()));
   }
 
   private void showCountdownTimer() {
@@ -165,7 +205,6 @@ import javax.inject.Inject;
   }
 
   private void updateRankingsList(TopRankings[] rankings) {
-
     List<RankingsItem> items = new ArrayList<>(mapPlayers(rankings));
     adapter.setRankings(items);
   }

@@ -17,6 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingHorizontal="@dimen/big_padding"
+        android:id="@+id/ranking_container"
+        >
         >
 
         <ImageView
