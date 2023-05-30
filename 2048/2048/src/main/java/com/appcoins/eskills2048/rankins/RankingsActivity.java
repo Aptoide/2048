@@ -33,12 +33,10 @@ import io.reactivex.disposables.CompositeDisposable;
         .getString(WALLET_ADDRESS_KEY);
     String sku = getIntent().getExtras()
         .getString(SKU_KEY);
-    MatchDetails.Environment matchEnvironment =
-        (MatchDetails.Environment) getIntent().getSerializableExtra(MATCH_ENVIRONMENT);
     if (savedInstanceState == null) {
       getSupportFragmentManager().beginTransaction()
           .add(R.id.fragment_container,
-              RankingsFragment.newInstance(userWalletAddress, sku,  matchEnvironment))
+              RankingsFragment.newInstance(userWalletAddress, sku))
           .commit();
     }
   }

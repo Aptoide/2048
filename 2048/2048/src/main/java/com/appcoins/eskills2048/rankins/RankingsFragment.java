@@ -9,21 +9,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 import com.appcoins.eskills2048.R;
-import com.appcoins.eskills2048.model.MatchDetails;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class RankingsFragment extends Fragment {
 
   private static final String WALLET_ADDRESS_KEY = "WALLET_ADDRESS_KEY";
-  private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
   private static final String SKU_KEY = "SKU_KEY";
 
-  public static RankingsFragment newInstance(String userWalletAddress, String sku,
-      MatchDetails.Environment matchEnvironment) {
+  public static RankingsFragment newInstance(String userWalletAddress, String sku) {
     Bundle args = new Bundle();
     args.putString(WALLET_ADDRESS_KEY, userWalletAddress);
-    args.putSerializable(MATCH_ENVIRONMENT, matchEnvironment);
     args.putString(SKU_KEY, sku);
     RankingsFragment fragment = new RankingsFragment();
     fragment.setArguments(args);
@@ -39,16 +35,12 @@ public class RankingsFragment extends Fragment {
   @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     String walletAddress = null;
-    MatchDetails.Environment matchEnvironment = null;
     String sku = null;
     if (getArguments() != null) {
       walletAddress = getArguments().getString(WALLET_ADDRESS_KEY);
-      matchEnvironment =
-          (MatchDetails.Environment) getArguments().getSerializable(MATCH_ENVIRONMENT);
       sku = getArguments().getString(SKU_KEY);
     }
-    RankingsPagerAdapter rankingsPagerAdapter =
-        new RankingsPagerAdapter(this, walletAddress, sku, matchEnvironment);
+    RankingsPagerAdapter rankingsPagerAdapter = new RankingsPagerAdapter(this, walletAddress, sku);
     ViewPager2 viewPager = view.findViewById(R.id.pager);
     viewPager.setAdapter(rankingsPagerAdapter);
     TabLayout tabLayout = view.findViewById(R.id.tab_layout);

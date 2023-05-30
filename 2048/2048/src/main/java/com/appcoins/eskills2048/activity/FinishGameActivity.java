@@ -42,7 +42,7 @@ import javax.inject.Inject;
   private static final String STATUS_CODE = "STATUS_CODE";
   private static final Long GET_ROOM_PERIOD_SECONDS = 3L;
   private static final String MATCH_ENVIRONMENT = "MATCH_ENVIRONMENT";
-
+  private static final String APTOIDE_GLOBAL_LEADERBOARD_SKU = "APTOIDE_GLOBAL_LEADERBOARD_SKU";
   private ActivityFinishGameBinding binding;
   private FinishGameActivityViewModel viewModel;
   private final static int PARTY_POPPER_EMOJI_UNICODE = 0x1F389;
@@ -126,8 +126,9 @@ import javax.inject.Inject;
           .doOnError(this::showErrorMessage)
           .subscribe(roomResult -> {
           }, Throwable::printStackTrace));
-      findViewById(R.id.rankings_button).setOnClickListener(
-          view -> startActivity(RankingsActivity.create(this, walletAddress, "1v1", matchEnvironment)));
+      findViewById(R.id.rankings_button).setOnClickListener(view -> startActivity(
+          RankingsActivity.create(this, walletAddress, APTOIDE_GLOBAL_LEADERBOARD_SKU,
+              matchEnvironment)));
     }
   }
 

@@ -1,12 +1,13 @@
 package com.appcoins.eskills2048.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class BonusHistory {
 
-  private String date;
-  private List<BonusUser> users;
-
+  @SerializedName("date") @Expose private String date;
+  @SerializedName("users") @Expose private List<BonusUser> users;
 
   public String getDate() {
     return date;
