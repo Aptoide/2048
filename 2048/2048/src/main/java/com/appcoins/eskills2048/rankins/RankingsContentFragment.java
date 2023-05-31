@@ -138,7 +138,7 @@ import javax.inject.Inject;
         .subscribe(response -> updateLastBonusWinners(response.get(0)
             .getUsers()), throwable -> {
           throwable.printStackTrace();
-          showErrorView();
+          updateLastBonusWinners(new ArrayList<>());
         }));
   }
 
@@ -173,7 +173,12 @@ import javax.inject.Inject;
     } else {
       showNotAttributed(thirdRowLayoutBinding.rankingUsername);
     }
-    return Arrays.copyOfRange(players_score, 3, players_score.length);
+    try{
+      return Arrays.copyOfRange(players_score, 3, players_score.length);
+    }
+    catch(IllegalArgumentException e){
+      return new TopRankings[0];
+    }
   }
 
   private void populateTop3row(TopRankings player, TextView username, TextView score) {
@@ -225,7 +230,7 @@ import javax.inject.Inject;
   }
 
   private void updateCurrentRanking(TopRankings currentRanking) {
-    if (currentRanking == null) {
+    if (currentRanking == null || currentRanking.getRankPosition() < 0) {
       binding.currentRankingContainer.getRoot()
           .setVisibility(View.GONE);
     } else {
