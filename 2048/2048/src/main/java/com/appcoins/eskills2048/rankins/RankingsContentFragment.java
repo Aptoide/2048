@@ -201,22 +201,22 @@ import javax.inject.Inject;
 
   private void updateLastBonusWinners(List<BonusUser> users) {
     if (users.size() >= 1) {
-      binding.lastWinnersContainer.secondUsername.setText(users.get(0)
+      binding.lastWinnersContainer.firstUsername.setText(users.get(0)
           .getUserName());
-      binding.lastWinnersContainer.secondWinnings.setText(
+      binding.lastWinnersContainer.firstWinnings.setText(
           String.format(Locale.getDefault(), "%.2f$", users.get(0)
               .getBonusAmount()));
     } else {
-      showNotAttributed(binding.lastWinnersContainer.secondUsername);
+      showNotAttributed(binding.lastWinnersContainer.firstUsername);
     }
     if (users.size() >= 2) {
-      binding.lastWinnersContainer.firstUsername.setText(users.get(1)
+      binding.lastWinnersContainer.secondUsername.setText(users.get(1)
           .getUserName());
-      binding.lastWinnersContainer.firstWinnings.setText(String.format(Locale.getDefault(), "%.2f$",
+      binding.lastWinnersContainer.secondWinnings.setText(String.format(Locale.getDefault(), "%.2f$",
           users.get(1)
               .getBonusAmount()));
     } else {
-      showNotAttributed(binding.lastWinnersContainer.firstUsername);
+      showNotAttributed(binding.lastWinnersContainer.secondUsername);
     }
     if (users.size() >= 3) {
       binding.lastWinnersContainer.thirdUsername.setText(users.get(2)
