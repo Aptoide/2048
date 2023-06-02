@@ -2,19 +2,18 @@ package com.appcoins.eskills2048;
 
 import android.content.Context;
 
+import android.util.Log;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
-import com.appcoins.eskills2048.model.RoomApiMapper;
 import com.appcoins.eskills2048.model.RoomResponse;
-import com.appcoins.eskills2048.model.RoomResponseErrorCode;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
+import com.appcoins.eskills2048.model.ScoreHandler;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -40,6 +39,7 @@ public class MainGame {
   //Odd state = game is not active
   //Even state = game is active
   //Win state = active state + 1
+
   private static final int GAME_WIN = 1;
   private static final int GAME_LOST = -1;
   private static final int GAME_NORMAL = 0;
@@ -58,7 +58,7 @@ public class MainGame {
   public Grid grid = null;
   public AnimationGrid aGrid;
   public boolean canUndo;
-  public long score = 0;
+  protected final ScoreHandler scoreHandler;
   public long highScore = 0;
   public long lastScore = 0;
   public int opponentRank = 1;
@@ -75,7 +75,7 @@ public class MainGame {
   private static final String HIGH_SCORE = "high score";
 
   public MainGame(Context context, MainView view, MainGameViewModel viewModel,
-      UserDetailsHelper userDetailsHelper, UserDataStorage userDataStorage) {
+      UserDetailsHelper userDetailsHelper, UserDataStorage userDataStorage, ScoreHandler scoreHandler) {
     mContext = context;
     mView = view;
     endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
@@ -83,6 +83,7 @@ public class MainGame {
     this.disposable = new CompositeDisposable();
     this.userDetailsHelper = userDetailsHelper;
     this.userDataStorage = userDataStorage;
+    this.scoreHandler = scoreHandler;
   }
 
   public void newGame() {
@@ -94,8 +95,9 @@ public class MainGame {
       grid.clearGrid();
     }
     highScore = getHighScore();
-    if (score >= highScore) {
-      highScore = score;
+    long currentScore = scoreHandler.getScore();
+    if (currentScore >= highScore) {
+      highScore = currentScore;
       recordHighScore();
     }
     gameState = GAME_NORMAL;
@@ -109,12 +111,13 @@ public class MainGame {
     aGrid = new AnimationGrid(numSquaresX, numSquaresY);
     LocalGameStatus gameStatus = viewModel.getGameStatus();
     if (gameStatus == null) {
+      scoreHandler.initScore(0);
       grid = new Grid(numSquaresX, numSquaresY);
-      score = 0;
       addStartTiles();
     } else {
       grid = new Grid(gameStatus.getField());
-      score = gameStatus.getScore();
+      Log.d("RESTART_ERROR", "gameStatus score:"+gameStatus.getScore());
+      scoreHandler.initScore(gameStatus.getScore());
     }
   }
 
@@ -180,7 +183,7 @@ public class MainGame {
 
   private void prepareUndoState() {
     grid.prepareSaveTiles();
-    bufferScore = score;
+    bufferScore = scoreHandler.getScore();
     bufferGameState = gameState;
   }
 
@@ -189,8 +192,8 @@ public class MainGame {
       canUndo = false;
       aGrid.cancelAnimations();
       grid.revertTiles();
-      score = lastScore;
-      disposable.add(viewModel.setScore(score)
+      scoreHandler.initScore(lastScore);
+      disposable.add(viewModel.setScore(scoreHandler.getScore())
           .subscribe(this::onSuccess, Throwable::printStackTrace));
       gameState = lastGameState;
       mView.refreshLastTime = true;
@@ -258,14 +261,15 @@ public class MainGame {
                 SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null);
 
             // Update the score
-            score = score + merged.getValue();
-            disposable.add(viewModel.setScore(score)
+            scoreHandler.setScore(merged.getValue());
+            disposable.add(viewModel.setScore(scoreHandler.getScore())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onSuccess, Throwable::printStackTrace));
-            highScore = Math.max(score, highScore);
+            highScore = Math.max(scoreHandler.getScore(), highScore);
 
             // The mighty 2048 tile
             if (merged.getValue() >= winValue() && !gameWon()) {
+              scoreHandler.setScore(merged.getValue());
               gameState = gameState + GAME_WIN; // Set win state
               endGame();
             }
@@ -289,7 +293,7 @@ public class MainGame {
       checkLose();
     }
 
-    viewModel.setGameStatus(grid.field, score);
+    viewModel.setGameStatus(grid.field, scoreHandler.getScore());
     mView.resyncTime();
     mView.invalidate();
   }
@@ -301,6 +305,7 @@ public class MainGame {
     }
   }
 
+
   private void endGame() {
     endGame(true, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
   }
@@ -309,12 +314,13 @@ public class MainGame {
     playing = false;
     aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
         NOTIFICATION_DELAY_TIME, null);
-    if (score >= highScore) {
-      highScore = score;
+    long currentScore = scoreHandler.getScore();
+    if (currentScore >= highScore) {
+      highScore = currentScore;
       recordHighScore();
     }
     if (setFinalScore) {
-      disposable.add(viewModel.setFinalScore(score)
+      disposable.add(viewModel.setFinalScore(scoreHandler.getScore())
           .subscribe(roomResponse -> {
           }, Throwable::printStackTrace));
     }
@@ -324,7 +330,7 @@ public class MainGame {
         viewModel.getSession(),
         viewModel.getWalletAddress(),
         viewModel.getMatchEnvironment(),
-        score,
+        scoreHandler.getScore(),
         statusCode
     ));
   }
@@ -439,14 +445,18 @@ public class MainGame {
     disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
         .flatMapSingle(aLong -> viewModel.getRoom()
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess(MainGame.this::updateOpponentInfo)
+            .doOnSuccess(MainGame.this::updateInfo)
             .doOnError(Throwable::printStackTrace)
             .onErrorReturnItem(new RoomResponse()))
         .takeWhile(roomResponse -> playing)
         .subscribe());
   }
 
-  private void updateOpponentInfo(RoomResponse roomResponse) {
+  private void updateInfo(RoomResponse roomResponse) {
+    if (!scoreHandler.confirmScoreValidity()){
+      disposable.add(viewModel.setFinalScore(-1)
+          .subscribe(this::onSuccess, Throwable::printStackTrace));
+    }
     if (roomResponse.getStatus() == RoomStatus.COMPLETED
         || roomResponse.getCurrentUser()
         .getStatus() == UserStatus.TIME_UP) {
