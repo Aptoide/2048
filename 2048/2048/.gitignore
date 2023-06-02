@@ -1,2 +1,4 @@
 /build
 *.iml
+/2048/google-services.json
+*.keystore
