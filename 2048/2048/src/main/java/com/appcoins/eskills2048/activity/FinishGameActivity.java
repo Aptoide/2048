@@ -109,6 +109,7 @@ import javax.inject.Inject;
       binding.rankingsButton.setVisibility(View.INVISIBLE);
       binding.restartButton.setEnabled(true);
       binding.restartButton.setVisibility(View.VISIBLE);
+      binding.leaderboardConstraint.setVisibility(View.VISIBLE);
     } else {
       binding.retryButton.setOnClickListener(v -> disposables.add(viewModel.getRoomResult()
           .subscribeOn(Schedulers.io())
@@ -145,6 +146,7 @@ import javax.inject.Inject;
     binding.animationDescriptionText.setText(R.string.waiting_for_opponents_to_finish);
     binding.restartButton.setEnabled(false);
     binding.restartButton.setVisibility(View.VISIBLE);
+    binding.leaderboardConstraint.setVisibility(View.VISIBLE);
     binding.retryButton.setVisibility(View.GONE);
   }
 
@@ -162,6 +164,7 @@ import javax.inject.Inject;
       handleRoomLoserBehaviour(room);
     }
     binding.restartButton.setEnabled(true);
+    binding.leaderboardConstraint.setVisibility(View.VISIBLE);
     binding.restartButton.setVisibility(View.VISIBLE);
     binding.retryButton.setVisibility(View.GONE);
   }
@@ -209,6 +212,7 @@ import javax.inject.Inject;
     binding.animationDescriptionText.setText(getResources().getString(R.string.unknown_error));
     binding.retryButton.setVisibility(View.VISIBLE);
     binding.restartButton.setVisibility(View.GONE);
+    binding.leaderboardConstraint.setVisibility(View.INVISIBLE);
     binding.restartButton.setEnabled(true);
   }
 }
