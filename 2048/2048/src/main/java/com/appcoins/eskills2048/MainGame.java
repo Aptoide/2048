@@ -1,25 +1,19 @@
 package com.appcoins.eskills2048;
 
 import android.content.Context;
-
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
-import com.appcoins.eskills2048.model.RoomApiMapper;
 import com.appcoins.eskills2048.model.RoomResponse;
-import com.appcoins.eskills2048.model.RoomResponseErrorCode;
 import com.appcoins.eskills2048.model.RoomStatus;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -201,7 +195,7 @@ public class MainGame {
   private void onSuccess(RoomResponse roomResponse) {
     if (roomResponse.getStatusCode()
         .equals(RoomResponse.StatusCode.REGION_NOT_SUPPORTED)) {
-      endGame(false,roomResponse.getStatusCode());
+      endGame(false, roomResponse.getStatusCode());
     }
   }
 
@@ -318,16 +312,13 @@ public class MainGame {
           .subscribe(roomResponse -> {
           }, Throwable::printStackTrace));
     }
-
     mContext.startActivity(FinishGameActivity.buildIntent(
         mContext,
-        viewModel.getSession(),
-        viewModel.getWalletAddress(),
-        viewModel.getMatchEnvironment(),
-        score,
-        statusCode
+        viewModel.getSession()
     ));
   }
+
+
 
   private Cell getVector(int direction) {
     Cell[] map = {
@@ -458,7 +449,8 @@ public class MainGame {
       User opponent = userDetailsHelper.getNextOpponent(opponents);
       viewModel.notify(opponent);
       opponentRank = roomResponse.getUserRank(opponent);
-      opponentStatus = opponent.getStatus().toString();
+      opponentStatus = opponent.getStatus()
+          .toString();
       opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
       mView.invalidate();
     } catch (Exception e) {
@@ -476,7 +468,7 @@ public class MainGame {
 
   public void onOpponentFinished(User opponent) {
     Toast.makeText(mView.getContext(), "Opponent " + opponent.getUserName() + " has finished.",
-        Toast.LENGTH_LONG)
+            Toast.LENGTH_LONG)
         .show();
   }
 }
