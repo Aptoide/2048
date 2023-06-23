@@ -9,19 +9,12 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.BuildConfig;
-import com.appcoins.eskills2048.repository.LocalGameStatusRepository;
-import com.appcoins.eskills2048.usecase.GetRoomUseCase;
-import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import dagger.hilt.android.AndroidEntryPoint;
 import java.util.List;
-import javax.inject.Inject;
 
 @AndroidEntryPoint public class FinishGameActivity extends AppCompatActivity {
   private static final int REQUEST_CODE = 123;
   public static final String SESSION = "SESSION";
-  @Inject GetRoomUseCase getRoomUseCase;
-  @Inject SetFinalScoreUseCase setFinalScoreUseCase;
-  @Inject LocalGameStatusRepository localGameStatusRepository;
 
   public static Intent buildIntent(Context context, String session) {
     Intent intent = new Intent(context, FinishGameActivity.class);
@@ -36,8 +29,12 @@ import javax.inject.Inject;
   }
 
   private void launchEskillsEndgameFlow(String session) {
-    String url =
-        BuildConfig.BASE_HOST_PAYMENT + "/transaction/eskills/endgame?" + "session=" + session;
+    String url = BuildConfig.BASE_HOST_PAYMENT
+        + "/transaction/eskills/endgame?"
+        + "session="
+        + session
+        + "&domain="
+        + BuildConfig.APPLICATION_ID;
 
     Intent intent = buildTargetIntent(url);
     try {
