@@ -1,8 +1,6 @@
 package com.appcoins.eskills2048.di;
 
 import com.appcoins.eskills2048.BuildConfig;
-import com.appcoins.eskills2048.api.BonusPrizeApi;
-import com.appcoins.eskills2048.api.GeneralPlayerStats;
 import com.appcoins.eskills2048.api.RoomApi;
 import com.appcoins.eskills2048.model.RoomApiMapper;
 import com.appcoins.eskills2048.util.LogInterceptor;
@@ -33,7 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
   @Singleton @Provides public OkHttpClient provideOkHttp() {
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
     if (BuildConfig.DEBUG) {
-      builder = builder.addInterceptor(new LogInterceptor());
+      builder.addInterceptor(new LogInterceptor());
     }
     return builder.build();
   }
@@ -49,24 +47,5 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
   @Singleton @Provides public RoomApiMapper provideRoomApiMapper(Gson gson) {
     return new RoomApiMapper(gson);
-  }
-
-  @Singleton @Provides
-  public GeneralPlayerStats provideGeneralPlayerStats(OkHttpClient okHttpClient, Gson gson) {
-    return new Retrofit.Builder().baseUrl(BASE_HOST_SKILLS)
-        .client(okHttpClient)
-        .addConverterFactory(GsonConverterFactory.create(gson))
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .build()
-        .create(GeneralPlayerStats.class);
-  }
-
-  @Singleton @Provides public BonusPrizeApi provideBonusPrizeApi(OkHttpClient okHttpClient, Gson gson) {
-    return new Retrofit.Builder().baseUrl(BASE_HOST_SKILLS)
-        .client(okHttpClient)
-        .addConverterFactory(GsonConverterFactory.create(gson))
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .build()
-        .create(BonusPrizeApi.class);
   }
 }

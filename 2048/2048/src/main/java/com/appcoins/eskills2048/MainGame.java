@@ -195,7 +195,7 @@ public class MainGame {
   private void onSuccess(RoomResponse roomResponse) {
     if (roomResponse.getStatusCode()
         .equals(RoomResponse.StatusCode.REGION_NOT_SUPPORTED)) {
-      endGame(false, roomResponse.getStatusCode());
+      endGame(false);
     }
   }
 
@@ -296,10 +296,10 @@ public class MainGame {
   }
 
   private void endGame() {
-    endGame(true, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
+    endGame(true);
   }
 
-  public void endGame(boolean setFinalScore, RoomResponse.StatusCode statusCode) {
+  public void endGame(boolean setFinalScore) {
     playing = false;
     aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
         NOTIFICATION_DELAY_TIME, null);
@@ -312,6 +312,7 @@ public class MainGame {
           .subscribe(roomResponse -> {
           }, Throwable::printStackTrace));
     }
+    // mView.setVisibility(View.GONE);  // TODO commented for debugging
     mContext.startActivity(FinishGameActivity.buildIntent(
         mContext,
         viewModel.getSession()
@@ -441,7 +442,7 @@ public class MainGame {
     if (roomResponse.getStatus() == RoomStatus.COMPLETED
         || roomResponse.getCurrentUser()
         .getStatus() == UserStatus.TIME_UP) {
-      endGame(false, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
+      endGame(false);
     }
     // if match environment is set to sandbox, the number of opponents can be 0
     try {

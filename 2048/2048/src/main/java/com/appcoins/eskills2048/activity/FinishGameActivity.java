@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.BuildConfig;
@@ -13,8 +15,16 @@ import dagger.hilt.android.AndroidEntryPoint;
 import java.util.List;
 
 @AndroidEntryPoint public class FinishGameActivity extends AppCompatActivity {
-  private static final int REQUEST_CODE = 123;
+  //result codes for endgame activity
+  private static final int RESULT_OK = 0;
+  private static final int RESULT_RESTART = 1;
+  private static final int RESULT_SERVICE_UNAVAILABLE = 2;
+  private static final int RESULT_ERROR = 3;
+  private static final int RESULT_INVALID_URL = 4;
   public static final String SESSION = "SESSION";
+
+  // activity result launcher
+  private ActivityResultLauncher<Intent> mLauncher;
 
   public static Intent buildIntent(Context context, String session) {
     Intent intent = new Intent(context, FinishGameActivity.class);
@@ -25,7 +35,38 @@ import java.util.List;
   @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     String session = getIntent().getStringExtra(SESSION);
+    createLauncher();
     launchEskillsEndgameFlow(session);
+  }
+
+  private void createLauncher() {
+    mLauncher =
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+          switch (result.getResultCode()) {
+            case RESULT_OK:
+              /*DeviceScreenManager.stopKeepAwake(getWindow());
+              Intent restartIntent = new Intent(this, LaunchActivity.class);
+              restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+              startActivity(restartIntent);
+              finish();*/
+              break;
+            case RESULT_RESTART:
+              // TODO
+              break;
+            case RESULT_SERVICE_UNAVAILABLE:
+              // TODO
+              break;
+            case RESULT_ERROR:
+              // TODO
+              break;
+            case RESULT_INVALID_URL:
+              // TODO
+              break;
+            default:
+              // TODO
+              break;
+          }
+        });
   }
 
   private void launchEskillsEndgameFlow(String session) {
@@ -38,7 +79,7 @@ import java.util.List;
 
     Intent intent = buildTargetIntent(url);
     try {
-      startActivityForResult(intent, REQUEST_CODE);
+      mLauncher.launch(intent);
     } catch (Exception e) {
       e.printStackTrace();
     }
