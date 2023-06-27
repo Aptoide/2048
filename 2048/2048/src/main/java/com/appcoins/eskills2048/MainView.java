@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
@@ -174,9 +173,9 @@ public class MainView extends View {
     int textWidthOpponentRank =
         Math.max(titleWidthOpponentRank, bodyWidthOpponentRank) + textPaddingSize;
     int textWidthOpponentName =
-        Math.max(titleWidthOpponentName, bodyWidthOpponentName) + textPaddingSize ;
+        Math.max(titleWidthOpponentName, bodyWidthOpponentName) + textPaddingSize;
     int textWidthOpponentScore =
-        Math.max(titleWidthOpponentStatus, bodyWidthOpponentStatus) + textPaddingSize ;
+        Math.max(titleWidthOpponentStatus, bodyWidthOpponentStatus) + textPaddingSize;
 
     int textMiddleHighScore = textWidthHighScore / 2;
     int textMiddleScore = textWidthScore / 2;
@@ -558,8 +557,8 @@ public class MainView extends View {
     instructionsTextSize = Math.min(1000f * (widthWithPadding / (paint.measureText(
         getResources().getString(R.string.instructions)))), textSize / 1.5f);
     gameOverTextSize = Math.min(Math.min(
-        1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(
-            getResources().getString(R.string.game_over)))), textSize * 2),
+            1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(
+                getResources().getString(R.string.game_over)))), textSize * 2),
         1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(
             getResources().getString(R.string.you_win)))));
 
@@ -626,7 +625,7 @@ public class MainView extends View {
   }
 
   private void handleQuitGame() {
-    game.endGame(true, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
+    game.endGame(true);
   }
 
   public void onResume() {

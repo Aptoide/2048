@@ -1,6 +1,7 @@
 package com.appcoins.eskills2048;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.Toast;
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
@@ -312,7 +313,7 @@ public class MainGame {
           .subscribe(roomResponse -> {
           }, Throwable::printStackTrace));
     }
-    // mView.setVisibility(View.GONE);  // TODO commented for debugging
+    mView.setVisibility(View.GONE);
     mContext.startActivity(FinishGameActivity.buildIntent(
         mContext,
         viewModel.getSession()

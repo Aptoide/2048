@@ -11,6 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.BuildConfig;
+import com.appcoins.eskills2048.LaunchActivity;
+import com.appcoins.eskills2048.util.DeviceScreenManager;
 import dagger.hilt.android.AndroidEntryPoint;
 import java.util.List;
 
@@ -44,11 +46,7 @@ import java.util.List;
         registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
           switch (result.getResultCode()) {
             case RESULT_OK:
-              /*DeviceScreenManager.stopKeepAwake(getWindow());
-              Intent restartIntent = new Intent(this, LaunchActivity.class);
-              restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-              startActivity(restartIntent);
-              finish();*/
+              launchInitialActivity();
               break;
             case RESULT_RESTART:
               // TODO
@@ -63,10 +61,18 @@ import java.util.List;
               // TODO
               break;
             default:
-              // TODO
+              launchInitialActivity();
               break;
           }
         });
+  }
+
+  private void launchInitialActivity() {
+    DeviceScreenManager.stopKeepAwake(getWindow());
+    Intent restartIntent = new Intent(this, LaunchActivity.class);
+    restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    startActivity(restartIntent);
+    finish();
   }
 
   private void launchEskillsEndgameFlow(String session) {
