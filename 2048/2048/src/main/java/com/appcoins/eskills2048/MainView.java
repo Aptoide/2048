@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import com.appcoins.eskills2048.model.ScoreHandler;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
@@ -79,12 +80,12 @@ public class MainView extends View {
   private int titleWidthOpponentStatus;
 
   public MainView(Context context, MainGameViewModel viewModel, UserDetailsHelper userDetailsHelper,
-      UserDataStorage userDataStorage) {
+      UserDataStorage userDataStorage, ScoreHandler scoreHandler) {
     super(context);
 
     Resources resources = context.getResources();
     //Loading resources
-    game = new MainGame(context, this, viewModel, userDetailsHelper, userDataStorage);
+    game = new MainGame(context, this, viewModel, userDetailsHelper, userDataStorage, scoreHandler);
     try {
       //Getting assets
       backgroundRectangle = resources.getDrawable(R.drawable.background_rectangle);
@@ -162,7 +163,7 @@ public class MainView extends View {
     paint.setTextAlign(Paint.Align.CENTER);
 
     int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
-    int bodyWidthScore = (int) (paint.measureText("" + game.score));
+    int bodyWidthScore = (int) (paint.measureText("" + game.scoreHandler.getScore()));
     int bodyWidthOpponentRank = (int) (paint.measureText("" + game.opponentRank));
     int bodyWidthOpponentName = (int) (paint.measureText("" + game.opponentName));
     int bodyWidthOpponentStatus = (int) (paint.measureText("" + game.opponentStatus));
@@ -222,7 +223,7 @@ public class MainView extends View {
         titleStartYAll, paint);
     paint.setTextSize(bodyTextSize);
     paint.setColor(getResources().getColor(R.color.text_white));
-    canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, bodyStartYAll, paint);
+    canvas.drawText(String.valueOf(game.scoreHandler.getScore()), sXScore + textMiddleScore, bodyStartYAll, paint);
 
     //Outputting opponent rank box
     backgroundRectangle.setBounds(sXOpponentRank, sYOpponentDetails, eXOpponentScore,
@@ -557,8 +558,8 @@ public class MainView extends View {
     instructionsTextSize = Math.min(1000f * (widthWithPadding / (paint.measureText(
         getResources().getString(R.string.instructions)))), textSize / 1.5f);
     gameOverTextSize = Math.min(Math.min(
-            1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(
-                getResources().getString(R.string.game_over)))), textSize * 2),
+        1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(
+            getResources().getString(R.string.game_over)))), textSize * 2),
         1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(
             getResources().getString(R.string.you_win)))));
 
