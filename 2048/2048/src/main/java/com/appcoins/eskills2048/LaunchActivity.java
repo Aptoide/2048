@@ -22,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.inject.Inject;
 
 @AndroidEntryPoint public class LaunchActivity extends AppCompatActivity {
@@ -40,6 +41,7 @@ import javax.inject.Inject;
 
   private static final String ENTRY_PRICE_DUEL = "1 USD";
   private static final String ENTRY_PRICE_MULTIPLAYER = "4 USD";
+  private static final String ENTRY_SANDBOX = "0 USD";
 
   private final String userId = "string_user_id";
   private MatchDetails.Environment matchEnvironment;
@@ -67,10 +69,20 @@ import javax.inject.Inject;
     binding.startNewGameLayout.getRoot()
         .setVisibility(View.VISIBLE);
 
-    binding.startNewGameLayout.newGameButton.setOnClickListener(
-        view -> showCreateTicket(MatchDetails.Environment.LIVE));
-    binding.startNewGameLayout.sandboxGameButton.setOnClickListener(
-        view -> showCreateTicket(MatchDetails.Environment.SANDBOX));
+    binding.startNewGameLayout.newGameButton.setOnClickListener(view -> {
+      binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(R.string.game_type_duel);
+      binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(
+          R.string.game_type_multiplayer);
+      showCreateTicket(MatchDetails.Environment.LIVE);
+    });
+    binding.startNewGameLayout.sandboxGameButton.setOnClickListener(view -> {
+      binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_SANDBOX);
+      binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(
+          R.string.game_type_duel_sandbox);
+      binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(
+          R.string.game_type_multiplayer_sandbox);
+      showCreateTicket(MatchDetails.Environment.SANDBOX);
+    });
     FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     Bundle bundle = new Bundle();
     bundle.putLong("current_time", System.currentTimeMillis());
@@ -78,12 +90,10 @@ import javax.inject.Inject;
   }
 
   private void checkFirstRun() {
-    boolean isFirstRun = getSharedPreferences("PREFERENCE", 0)
-        .getBoolean("isFirstRun", true);
+    boolean isFirstRun = getSharedPreferences("PREFERENCE", 0).getBoolean("isFirstRun", true);
     if (isFirstRun) {
       new ApkOriginVerification(this);
-      getSharedPreferences("PREFERENCE", 0)
-          .edit()
+      getSharedPreferences("PREFERENCE", 0).edit()
           .putBoolean("isFirstRun", false)
           .apply();
     }
@@ -113,7 +123,11 @@ import javax.inject.Inject;
     binding.createTicketLayout.getRoot()
         .setVisibility(View.VISIBLE);
     binding.createTicketLayout.userName.setText(userDataStorage.getString(PREFERENCES_USER_NAME));
-    setGamePrice();
+    if (environment == MatchDetails.Environment.SANDBOX) {
+      binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener(null);
+    } else {
+      setGamePrice();
+    }
 
     binding.createTicketLayout.findRoomButton.setOnClickListener(view -> {
       String userName = binding.createTicketLayout.userName.getText()
@@ -122,11 +136,17 @@ import javax.inject.Inject;
       KeyboardUtils.hideKeyboard(view);
       DeviceScreenManager.keepAwake(getWindow());
 
-      launchEskillsFlow(userName, getMatchDetails(environment));
+      launchEskillsFlow(userName, Objects.requireNonNull(getMatchDetails(environment)));
     });
   }
 
   private void setGamePrice() {
+    if (binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId()
+        == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
+      binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_DUEL);
+    } else {
+      binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_PRICE_MULTIPLAYER);
+    }
     binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener(
         (group, checkedId) -> {
           if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
@@ -222,7 +242,6 @@ import javax.inject.Inject;
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-
     if (requestCode == REQUEST_CODE) {
       switch (resultCode) {
         case RESULT_OK:

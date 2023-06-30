@@ -18,18 +18,6 @@
       app:layout_constraintTop_toTopOf="parent"
       >
 
-    <TextView
-        android:id="@+id/game_name"
-        style="@style/TextAppearance.AppCompat.Headline.Roboto.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:maxLines="1"
-        android:text="@string/app_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -42,7 +30,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/game_name"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
 

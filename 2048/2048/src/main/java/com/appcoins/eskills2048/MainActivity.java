@@ -7,6 +7,7 @@ import android.view.KeyEvent;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.MatchDetails;
+import com.appcoins.eskills2048.model.ScoreHandler;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
 import com.appcoins.eskills2048.usecase.NotifyOpponentFinishedUseCase;
@@ -34,6 +35,7 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
   @Inject SetFinalScoreUseCase setFinalScoreUseCase;
   @Inject SetGameStatusLocallyUseCase setGameStatusLocallyUseCase;
   @Inject UserDetailsHelper userDetailsHelper;
+  @Inject ScoreHandler scoreHandler;
 
   public static Intent newIntent(Context context, String userId, String walletAddress,
       MatchDetails.Environment matchEnvironment, String session, LocalGameStatus localGameStatus) {
@@ -52,7 +54,7 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
         new MainGameViewModel(setScoreUseCase, setFinalScoreUseCase, buildViewModelData(),
             getRoomUseCase, setGameStatusLocallyUseCase,
             new NotifyOpponentFinishedUseCase(opponent -> view.game.onOpponentFinished(opponent))),
-        userDetailsHelper, userDataStorage);
+        userDetailsHelper, userDataStorage, scoreHandler);
     setContentView(view);
   }
 
