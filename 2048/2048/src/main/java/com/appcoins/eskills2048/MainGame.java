@@ -3,6 +3,7 @@ package com.appcoins.eskills2048;
 import android.content.Context;
 
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
@@ -18,7 +19,6 @@ import com.appcoins.eskills2048.model.ScoreHandler;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +39,6 @@ public class MainGame {
   //Odd state = game is not active
   //Even state = game is active
   //Win state = active state + 1
-
   private static final int GAME_WIN = 1;
   private static final int GAME_LOST = -1;
   private static final int GAME_NORMAL = 0;
@@ -204,7 +203,7 @@ public class MainGame {
   private void onSuccess(RoomResponse roomResponse) {
     if (roomResponse.getStatusCode()
         .equals(RoomResponse.StatusCode.REGION_NOT_SUPPORTED)) {
-      endGame(false,roomResponse.getStatusCode());
+      endGame(false);
     }
   }
 
@@ -305,12 +304,11 @@ public class MainGame {
     }
   }
 
-
   private void endGame() {
-    endGame(true, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
+    endGame(true);
   }
 
-  public void endGame(boolean setFinalScore, RoomResponse.StatusCode statusCode) {
+  public void endGame(boolean setFinalScore) {
     playing = false;
     aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
         NOTIFICATION_DELAY_TIME, null);
@@ -324,14 +322,10 @@ public class MainGame {
           .subscribe(roomResponse -> {
           }, Throwable::printStackTrace));
     }
-
+    mView.setVisibility(View.GONE);
     mContext.startActivity(FinishGameActivity.buildIntent(
         mContext,
-        viewModel.getSession(),
-        viewModel.getWalletAddress(),
-        viewModel.getMatchEnvironment(),
-        scoreHandler.getScore(),
-        statusCode
+        viewModel.getSession()
     ));
   }
 
@@ -460,7 +454,7 @@ public class MainGame {
     if (roomResponse.getStatus() == RoomStatus.COMPLETED
         || roomResponse.getCurrentUser()
         .getStatus() == UserStatus.TIME_UP) {
-      endGame(false, RoomResponse.StatusCode.SUCCESSFUL_RESPONSE);
+      endGame(false);
     }
     // if match environment is set to sandbox, the number of opponents can be 0
     try {
@@ -486,7 +480,7 @@ public class MainGame {
 
   public void onOpponentFinished(User opponent) {
     Toast.makeText(mView.getContext(), "Opponent " + opponent.getUserName() + " has finished.",
-        Toast.LENGTH_LONG)
+            Toast.LENGTH_LONG)
         .show();
   }
 }

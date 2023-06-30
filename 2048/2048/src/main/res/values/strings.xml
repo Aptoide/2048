@@ -37,7 +37,9 @@
   <string name="find_room">Find a Room</string>
   <string name="challenge_your_friends">Challenge your friends!</string>
   <string name="game_type_duel">Duel (1 on 1)\nYou can win 1.5$</string>
+  <string name="game_type_duel_sandbox">Duel (1 on 1)</string>
   <string name="game_type_multiplayer">Multiplayer (3 players)\nYou can win 9$</string>
+  <string name="game_type_multiplayer_sandbox">Multiplayer (3 players)</string>
   <string name="canceled_ticket_title">We\'re sorry to see you go</string>
   <string name="canceled_ticket_message">But don\'t worry, \nno funds were taken from your wallet.</string>
   <string name="close">Close</string>
@@ -50,7 +52,17 @@
   <string name="rankings_week">WEEK</string>
   <string name="rankings_all_time">ALL TIME</string>
   <string name="rankings">RANKINGS</string>
+  <string name="ranking_rewards_button">RANKING REWARDS</string>
 
   <string name="entry_price_duel">1 USD</string>
   <string name="geofencing_message">Your game has ended because e-Skills games are not available in your location.</string>
+  <string name="seconds">Seconds</string>
+  <string name="minutes">Minutes</string>
+  <string name="hours">Hours</string>
+  <string name="days">Days</string>
+  <string name="last_winners_title">Last winners</string>
+  <string name="next_reward_text">Next reward attributed in</string>
+  <string name="current_top_3">Current top 3</string>
+  <string name="your_ranking_title">Your ranking</string>
+  <string name="not_attributed_place_holder">Not attributed</string>
 </resources>
