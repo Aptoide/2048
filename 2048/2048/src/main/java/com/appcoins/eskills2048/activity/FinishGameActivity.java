@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.BuildConfig;
 import com.appcoins.eskills2048.LaunchActivity;
+import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
 import dagger.hilt.android.AndroidEntryPoint;
 import java.util.List;
@@ -38,6 +39,7 @@ import java.util.List;
     super.onCreate(savedInstanceState);
     String session = getIntent().getStringExtra(SESSION);
     createLauncher();
+    setContentView(R.layout.finish_game_activity);
     launchEskillsEndgameFlow(session);
   }
 
