@@ -41,7 +41,6 @@ import javax.inject.Inject;
 
   private static final String ENTRY_PRICE_DUEL = "1 USD";
   private static final String ENTRY_PRICE_MULTIPLAYER = "4 USD";
-  private static final String ENTRY_SANDBOX = "0 USD";
 
   private final String userId = "string_user_id";
   private MatchDetails.Environment matchEnvironment;
@@ -70,18 +69,12 @@ import javax.inject.Inject;
         .setVisibility(View.VISIBLE);
 
     binding.startNewGameLayout.newGameButton.setOnClickListener(view -> {
-      binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(R.string.game_type_duel);
-      binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(
-          R.string.game_type_multiplayer);
-      showCreateTicket(MatchDetails.Environment.LIVE);
+      matchEnvironment = MatchDetails.Environment.LIVE;
+      showCreateTicket();
     });
     binding.startNewGameLayout.sandboxGameButton.setOnClickListener(view -> {
-      binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_SANDBOX);
-      binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(
-          R.string.game_type_duel_sandbox);
-      binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(
-          R.string.game_type_multiplayer_sandbox);
-      showCreateTicket(MatchDetails.Environment.SANDBOX);
+      matchEnvironment = MatchDetails.Environment.SANDBOX;
+      launchSandboxGame();
     });
     FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     Bundle bundle = new Bundle();
@@ -116,27 +109,23 @@ import javax.inject.Inject;
         .setVisibility(View.GONE);
   }
 
-  private void showCreateTicket(MatchDetails.Environment environment) {
-    matchEnvironment = environment;
+  private void showCreateTicket() {
+    binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(R.string.game_type_duel);
+    binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(
+        R.string.game_type_multiplayer);
     binding.startNewGameLayout.getRoot()
         .setVisibility(View.GONE);
     binding.createTicketLayout.getRoot()
         .setVisibility(View.VISIBLE);
     binding.createTicketLayout.userName.setText(userDataStorage.getString(PREFERENCES_USER_NAME));
-    if (environment == MatchDetails.Environment.SANDBOX) {
-      binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener(null);
-    } else {
-      setGamePrice();
-    }
-
+    setGamePrice();
     binding.createTicketLayout.findRoomButton.setOnClickListener(view -> {
       String userName = binding.createTicketLayout.userName.getText()
           .toString();
       userDataStorage.putString(PREFERENCES_USER_NAME, userName);
       KeyboardUtils.hideKeyboard(view);
       DeviceScreenManager.keepAwake(getWindow());
-
-      launchEskillsFlow(userName, Objects.requireNonNull(getMatchDetails(environment)));
+      launchEskillsFlow(userName, Objects.requireNonNull(getMatchDetails()));
     });
   }
 
@@ -159,15 +148,23 @@ import javax.inject.Inject;
         });
   }
 
-  private MatchDetails getMatchDetails(MatchDetails.Environment environment) {
+  private MatchDetails getMatchDetails() {
     int checkedId = binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId();
     if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
-      return new MatchDetails("1v1", 1f, "USD", environment, 2, 3600);
+      return new MatchDetails("1v1", 1f, "USD", MatchDetails.Environment.LIVE, 2, 3600);
     } else if (checkedId
         == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
-      return new MatchDetails("multiplayer", 4f, "USD", environment, 3, 3600);
+      return new MatchDetails("multiplayer", 4f, "USD", MatchDetails.Environment.LIVE, 3, 3600);
     }
     return null;
+  }
+
+  private void launchSandboxGame() {
+    Intent intent =
+        MainActivity.newIntent(this, userId, "",
+            matchEnvironment, "", null);
+    startActivity(intent);
+    finish();
   }
 
   private void launchEskillsFlow(String userName, MatchDetails matchDetails) {

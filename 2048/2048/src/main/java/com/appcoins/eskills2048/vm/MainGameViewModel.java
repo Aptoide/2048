@@ -49,6 +49,10 @@ public class MainGameViewModel {
     return data.getMatchEnvironment();
   }
 
+  public boolean isLiveEnv() {
+    return data.getMatchEnvironment() == MatchDetails.Environment.LIVE;
+  }
+
   public String getSession() {
     return data.getSession();
   }

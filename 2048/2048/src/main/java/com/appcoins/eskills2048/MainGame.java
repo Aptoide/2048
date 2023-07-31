@@ -1,7 +1,7 @@
 package com.appcoins.eskills2048;
 
 import android.content.Context;
-
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -9,13 +9,12 @@ import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomStatus;
+import com.appcoins.eskills2048.model.ScoreHandler;
 import com.appcoins.eskills2048.model.User;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
-import com.appcoins.eskills2048.model.ScoreHandler;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -74,7 +73,8 @@ public class MainGame {
   private static final String HIGH_SCORE = "high score";
 
   public MainGame(Context context, MainView view, MainGameViewModel viewModel,
-      UserDetailsHelper userDetailsHelper, UserDataStorage userDataStorage, ScoreHandler scoreHandler) {
+      UserDetailsHelper userDetailsHelper, UserDataStorage userDataStorage,
+      ScoreHandler scoreHandler) {
     mContext = context;
     mView = view;
     endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
@@ -115,7 +115,7 @@ public class MainGame {
       addStartTiles();
     } else {
       grid = new Grid(gameStatus.getField());
-      Log.d("RESTART_ERROR", "gameStatus score:"+gameStatus.getScore());
+      Log.d("RESTART_ERROR", "gameStatus score:" + gameStatus.getScore());
       scoreHandler.initScore(gameStatus.getScore());
     }
   }
@@ -192,8 +192,10 @@ public class MainGame {
       aGrid.cancelAnimations();
       grid.revertTiles();
       scoreHandler.initScore(lastScore);
-      disposable.add(viewModel.setScore(scoreHandler.getScore())
-          .subscribe(this::onSuccess, Throwable::printStackTrace));
+      if (viewModel.isLiveEnv()) {
+        disposable.add(viewModel.setScore(scoreHandler.getScore())
+            .subscribe(this::onSuccess, Throwable::printStackTrace));
+      }
       gameState = lastGameState;
       mView.refreshLastTime = true;
       mView.invalidate();
@@ -261,9 +263,11 @@ public class MainGame {
 
             // Update the score
             scoreHandler.setScore(merged.getValue());
-            disposable.add(viewModel.setScore(scoreHandler.getScore())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onSuccess, Throwable::printStackTrace));
+            if (viewModel.isLiveEnv()) {
+              disposable.add(viewModel.setScore(scoreHandler.getScore())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(this::onSuccess, Throwable::printStackTrace));
+            }
             highScore = Math.max(scoreHandler.getScore(), highScore);
 
             // The mighty 2048 tile
@@ -317,16 +321,20 @@ public class MainGame {
       highScore = currentScore;
       recordHighScore();
     }
-    if (setFinalScore) {
-      disposable.add(viewModel.setFinalScore(scoreHandler.getScore())
-          .subscribe(roomResponse -> {
-          }, Throwable::printStackTrace));
+    if (viewModel.isLiveEnv()) {
+      if (setFinalScore) {
+        disposable.add(viewModel.setFinalScore(scoreHandler.getScore())
+            .subscribe(roomResponse -> {
+            }, Throwable::printStackTrace));
+      }
+      mView.setVisibility(View.GONE);
+      mContext.startActivity(FinishGameActivity.buildIntent(mContext, viewModel.getSession()));
+    } else {
+      Toast.makeText(mView.getContext(), "Exiting...", Toast.LENGTH_SHORT)
+          .show();
+      mView.postDelayed(() -> mContext.startActivity(new Intent(mContext, LaunchActivity.class)),
+          2000);
     }
-    mView.setVisibility(View.GONE);
-    mContext.startActivity(FinishGameActivity.buildIntent(
-        mContext,
-        viewModel.getSession()
-    ));
   }
 
   private Cell getVector(int direction) {
@@ -432,7 +440,7 @@ public class MainGame {
   }
 
   public void resume() {
-    startPeriodicOpponentUpdate();
+    if (viewModel.isLiveEnv()) startPeriodicOpponentUpdate();
   }
 
   private void startPeriodicOpponentUpdate() {
@@ -447,7 +455,7 @@ public class MainGame {
   }
 
   private void updateInfo(RoomResponse roomResponse) {
-    if (!scoreHandler.confirmScoreValidity()){
+    if (!scoreHandler.confirmScoreValidity()) {
       disposable.add(viewModel.setFinalScore(-1)
           .subscribe(this::onSuccess, Throwable::printStackTrace));
     }
@@ -462,7 +470,8 @@ public class MainGame {
       User opponent = userDetailsHelper.getNextOpponent(opponents);
       viewModel.notify(opponent);
       opponentRank = roomResponse.getUserRank(opponent);
-      opponentStatus = opponent.getStatus().toString();
+      opponentStatus = opponent.getStatus()
+          .toString();
       opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
       mView.invalidate();
     } catch (Exception e) {

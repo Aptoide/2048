@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.ScoreHandler;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.util.UserDataStorage;
@@ -78,6 +79,7 @@ public class MainView extends View {
   private int titleWidthOpponentRank;
   private int titleWidthOpponentName;
   private int titleWidthOpponentStatus;
+  private MatchDetails.Environment matchEnvironment;
 
   public MainView(Context context, MainGameViewModel viewModel, UserDetailsHelper userDetailsHelper,
       UserDataStorage userDataStorage, ScoreHandler scoreHandler) {
@@ -86,6 +88,7 @@ public class MainView extends View {
     Resources resources = context.getResources();
     //Loading resources
     game = new MainGame(context, this, viewModel, userDetailsHelper, userDataStorage, scoreHandler);
+    matchEnvironment = viewModel.getMatchEnvironment();
     try {
       //Getting assets
       backgroundRectangle = resources.getDrawable(R.drawable.background_rectangle);
@@ -164,43 +167,83 @@ public class MainView extends View {
 
     int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
     int bodyWidthScore = (int) (paint.measureText("" + game.scoreHandler.getScore()));
-    int bodyWidthOpponentRank = (int) (paint.measureText("" + game.opponentRank));
-    int bodyWidthOpponentName = (int) (paint.measureText("" + game.opponentName));
-    int bodyWidthOpponentStatus = (int) (paint.measureText("" + game.opponentStatus));
+    if (matchEnvironment == MatchDetails.Environment.LIVE) {
+      int bodyWidthOpponentRank = (int) (paint.measureText("" + game.opponentRank));
+      int bodyWidthOpponentName = (int) (paint.measureText("" + game.opponentName));
+      int bodyWidthOpponentStatus = (int) (paint.measureText("" + game.opponentStatus));
+
+      int textWidthOpponentRank =
+          Math.max(titleWidthOpponentRank, bodyWidthOpponentRank) + textPaddingSize;
+      int textWidthOpponentName =
+          Math.max(titleWidthOpponentName, bodyWidthOpponentName) + textPaddingSize;
+      int textWidthOpponentScore =
+          Math.max(titleWidthOpponentStatus, bodyWidthOpponentStatus) + textPaddingSize;
+
+      int textMiddleOpponentRank = textWidthOpponentRank / 2;
+      int textMiddleOpponentName = textWidthOpponentName / 2;
+      int textMiddleOpponentScore = textWidthOpponentScore / 2;
+
+      int sYOpponentDetails = sYIcons;
+      int eYOpponentDetails = sYIcons + iconSize;
+
+      int sXOpponentRank = startingX;
+      int eXOpponentRank = sXOpponentRank + textWidthOpponentRank;
+
+      int sXOpponentName = eXOpponentRank + textPaddingSize;
+      int eXOpponentName = sXOpponentName + textWidthOpponentName;
+
+      int sXOpponentScore = eXOpponentName + textPaddingSize;
+      int eXOpponentScore = sXOpponentScore + textWidthOpponentScore;
+
+      //Outputting opponent rank box
+      backgroundRectangle.setBounds(sXOpponentRank, sYOpponentDetails, eXOpponentScore,
+          eYOpponentDetails);
+      backgroundRectangle.draw(canvas);
+
+      paint.setTextSize(titleTextSize);
+      paint.setColor(getResources().getColor(R.color.text_brown));
+      canvas.drawText(getResources().getString(R.string.rank),
+          sXOpponentRank + textMiddleOpponentRank, sYOpponentDetails + iconPaddingSize * 2, paint);
+      paint.setTextSize(bodyTextSize);
+      paint.setColor(getResources().getColor(R.color.text_white));
+      canvas.drawText(String.valueOf(game.opponentRank), sXOpponentRank + textMiddleOpponentRank,
+          sYOpponentDetails + iconPaddingSize * 5, paint);
+
+      //Outputting opponent name box
+      paint.setTextSize(titleTextSize);
+      paint.setColor(getResources().getColor(R.color.text_brown));
+      canvas.drawText(getResources().getString(R.string.opponent),
+          sXOpponentName + textMiddleOpponentName, sYOpponentDetails + iconPaddingSize * 2, paint);
+      paint.setTextSize(bodyTextSize);
+      paint.setColor(getResources().getColor(R.color.text_white));
+      canvas.drawText(String.valueOf(game.opponentName), sXOpponentName + textMiddleOpponentName,
+          sYOpponentDetails + iconPaddingSize * 5, paint);
+
+      //Outputting opponent score box
+      paint.setTextSize(titleTextSize);
+      paint.setColor(getResources().getColor(R.color.text_brown));
+      canvas.drawText(getResources().getString(R.string.opponent_score),
+          sXOpponentScore + textMiddleOpponentScore, sYOpponentDetails + iconPaddingSize * 2,
+          paint);
+      paint.setTextSize(bodyTextSize);
+      paint.setColor(getResources().getColor(R.color.text_white));
+      canvas.drawText(String.valueOf(game.opponentStatus),
+          sXOpponentScore + textMiddleOpponentScore, sYOpponentDetails + iconPaddingSize * 5,
+          paint);
+    }
 
     int textWidthHighScore =
         Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
     int textWidthScore = Math.max(titleWidthScore, bodyWidthScore) + textPaddingSize * 2;
-    int textWidthOpponentRank =
-        Math.max(titleWidthOpponentRank, bodyWidthOpponentRank) + textPaddingSize;
-    int textWidthOpponentName =
-        Math.max(titleWidthOpponentName, bodyWidthOpponentName) + textPaddingSize;
-    int textWidthOpponentScore =
-        Math.max(titleWidthOpponentStatus, bodyWidthOpponentStatus) + textPaddingSize;
 
     int textMiddleHighScore = textWidthHighScore / 2;
     int textMiddleScore = textWidthScore / 2;
-    int textMiddleOpponentRank = textWidthOpponentRank / 2;
-    int textMiddleOpponentName = textWidthOpponentName / 2;
-    int textMiddleOpponentScore = textWidthOpponentScore / 2;
 
     int eXHighScore = endingX;
     int sXHighScore = eXHighScore - textWidthHighScore;
 
     int eXScore = sXHighScore - textPaddingSize;
     int sXScore = eXScore - textWidthScore;
-
-    int sYOpponentDetails = sYIcons;
-    int eYOpponentDetails = sYIcons + iconSize;
-
-    int sXOpponentRank = startingX;
-    int eXOpponentRank = sXOpponentRank + textWidthOpponentRank;
-
-    int sXOpponentName = eXOpponentRank + textPaddingSize;
-    int eXOpponentName = sXOpponentName + textWidthOpponentName;
-
-    int sXOpponentScore = eXOpponentName + textPaddingSize;
-    int eXOpponentScore = sXOpponentScore + textWidthOpponentScore;
 
     //Outputting high-scores box
     backgroundRectangle.setBounds(sXHighScore, sYAll, eXHighScore, eYAll);
@@ -223,41 +266,8 @@ public class MainView extends View {
         titleStartYAll, paint);
     paint.setTextSize(bodyTextSize);
     paint.setColor(getResources().getColor(R.color.text_white));
-    canvas.drawText(String.valueOf(game.scoreHandler.getScore()), sXScore + textMiddleScore, bodyStartYAll, paint);
-
-    //Outputting opponent rank box
-    backgroundRectangle.setBounds(sXOpponentRank, sYOpponentDetails, eXOpponentScore,
-        eYOpponentDetails);
-    backgroundRectangle.draw(canvas);
-
-    paint.setTextSize(titleTextSize);
-    paint.setColor(getResources().getColor(R.color.text_brown));
-    canvas.drawText(getResources().getString(R.string.rank),
-        sXOpponentRank + textMiddleOpponentRank, sYOpponentDetails + iconPaddingSize * 2, paint);
-    paint.setTextSize(bodyTextSize);
-    paint.setColor(getResources().getColor(R.color.text_white));
-    canvas.drawText(String.valueOf(game.opponentRank), sXOpponentRank + textMiddleOpponentRank,
-        sYOpponentDetails + iconPaddingSize * 5, paint);
-
-    //Outputting opponent name box
-    paint.setTextSize(titleTextSize);
-    paint.setColor(getResources().getColor(R.color.text_brown));
-    canvas.drawText(getResources().getString(R.string.opponent),
-        sXOpponentName + textMiddleOpponentName, sYOpponentDetails + iconPaddingSize * 2, paint);
-    paint.setTextSize(bodyTextSize);
-    paint.setColor(getResources().getColor(R.color.text_white));
-    canvas.drawText(String.valueOf(game.opponentName), sXOpponentName + textMiddleOpponentName,
-        sYOpponentDetails + iconPaddingSize * 5, paint);
-
-    //Outputting opponent score box
-    paint.setTextSize(titleTextSize);
-    paint.setColor(getResources().getColor(R.color.text_brown));
-    canvas.drawText(getResources().getString(R.string.opponent_score),
-        sXOpponentScore + textMiddleOpponentScore, sYOpponentDetails + iconPaddingSize * 2, paint);
-    paint.setTextSize(bodyTextSize);
-    paint.setColor(getResources().getColor(R.color.text_white));
-    canvas.drawText(String.valueOf(game.opponentStatus), sXOpponentScore + textMiddleOpponentScore,
-        sYOpponentDetails + iconPaddingSize * 5, paint);
+    canvas.drawText(String.valueOf(game.scoreHandler.getScore()), sXScore + textMiddleScore,
+        bodyStartYAll, paint);
   }
 
   private void drawUndoButton(Canvas canvas) {
@@ -558,8 +568,8 @@ public class MainView extends View {
     instructionsTextSize = Math.min(1000f * (widthWithPadding / (paint.measureText(
         getResources().getString(R.string.instructions)))), textSize / 1.5f);
     gameOverTextSize = Math.min(Math.min(
-        1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(
-            getResources().getString(R.string.game_over)))), textSize * 2),
+            1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(
+                getResources().getString(R.string.game_over)))), textSize * 2),
         1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(
             getResources().getString(R.string.you_win)))));
 
