@@ -5,10 +5,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
 import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.MatchDetails;
@@ -42,6 +44,8 @@ import javax.inject.Inject;
   private static final String ENTRY_PRICE_DUEL = "1 USD";
   private static final String ENTRY_PRICE_MULTIPLAYER = "4 USD";
   private static final String ENTRY_SANDBOX = "0 USD";
+
+  private static final String PLAY_APP_VIEW_URL = "market://details?id=%s";
 
   private final String userId = "string_user_id";
   private MatchDetails.Environment matchEnvironment;
@@ -113,6 +117,8 @@ import javax.inject.Inject;
     binding.createTicketLayout.getRoot()
         .setVisibility(View.GONE);
     binding.canceledTicketLayout.getRoot()
+        .setVisibility(View.GONE);
+    binding.installWalletLayout.getRoot()
         .setVisibility(View.GONE);
   }
 
@@ -197,7 +203,17 @@ import javax.inject.Inject;
 
     Intent intent = buildTargetIntent(url);
     try {
-      startActivityForResult(intent, REQUEST_CODE);
+      if (intent.getPackage() == null) {
+        showInstallWalletDialog();
+        binding.installWalletLayout.installButton.setOnClickListener(view -> {
+          String market = String.format(PLAY_APP_VIEW_URL, BuildConfig.WALLET_PACKAGE_NAME);
+          Log.d("Url market", market);
+          intent.setData(Uri.parse(market));
+          startActivity(intent);
+        });
+      } else {
+        startActivityForResult(intent, REQUEST_CODE);
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -235,6 +251,7 @@ import javax.inject.Inject;
         // If Aptoide is not installed and wallet is installed then choose Wallet
         // as default to open url
         intent.setPackage(app.activityInfo.packageName);
+        break;
       }
     }
     return intent;
@@ -274,5 +291,14 @@ import javax.inject.Inject;
       binding.createTicketLayout.getRoot()
           .setVisibility(View.VISIBLE);
     });
+  }
+
+  private void showInstallWalletDialog() {
+    binding.createTicketLayout.getRoot()
+        .setVisibility(View.GONE);
+    binding.canceledTicketLayout.getRoot()
+        .setVisibility(View.GONE);
+    binding.installWalletLayout.getRoot()
+        .setVisibility(View.VISIBLE);
   }
 }
