@@ -203,19 +203,16 @@ import javax.inject.Inject;
 
     Intent intent = buildTargetIntent(url);
     try {
-      if (intent.getPackage() == null) {
-        showInstallWalletDialog();
-        binding.installWalletLayout.installButton.setOnClickListener(view -> {
-          String market = String.format(PLAY_APP_VIEW_URL, BuildConfig.WALLET_PACKAGE_NAME);
-          Log.d("Url market", market);
-          intent.setData(Uri.parse(market));
-          startActivity(intent);
-        });
-      } else {
-        startActivityForResult(intent, REQUEST_CODE);
-      }
+      startActivityForResult(intent, REQUEST_CODE);
     } catch (Exception e) {
       e.printStackTrace();
+      showInstallWalletDialog();
+      binding.installWalletLayout.installButton.setOnClickListener(view -> {
+        String market = String.format(PLAY_APP_VIEW_URL, BuildConfig.WALLET_PACKAGE_NAME);
+        intent.setData(Uri.parse(market));
+        intent.setPackage(null);
+        startActivity(intent);
+      });
     }
   }
 
@@ -236,24 +233,9 @@ import javax.inject.Inject;
   private Intent buildTargetIntent(String url) {
     Intent intent = new Intent(Intent.ACTION_VIEW);
     intent.setData(Uri.parse(url));
+    intent.setPackage(BuildConfig.WALLET_PACKAGE_NAME);
 
-    // Check if there is an application that can process the AppCoins Billing
-    // flow
-    PackageManager packageManager = getApplicationContext().getPackageManager();
-    List<ResolveInfo> appsList =
-        packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-    for (ResolveInfo app : appsList) {
-      if (app.activityInfo.packageName.equals("cm.aptoide.pt")) {
-        // If there's aptoide installed always choose Aptoide as default to open url
-        intent.setPackage(app.activityInfo.packageName);
-        break;
-      } else if (app.activityInfo.packageName.equals(BuildConfig.WALLET_PACKAGE_NAME)) {
-        // If Aptoide is not installed and wallet is installed then choose Wallet
-        // as default to open url
-        intent.setPackage(app.activityInfo.packageName);
-        break;
-      }
-    }
+
     return intent;
   }
 
