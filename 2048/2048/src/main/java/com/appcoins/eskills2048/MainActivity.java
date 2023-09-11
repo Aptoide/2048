@@ -50,12 +50,20 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    view = new MainView(this,
-        new MainGameViewModel(setScoreUseCase, setFinalScoreUseCase, buildViewModelData(),
-            getRoomUseCase, setGameStatusLocallyUseCase,
-            new NotifyOpponentFinishedUseCase(opponent -> view.game.onOpponentFinished(opponent))),
-        userDetailsHelper, userDataStorage, scoreHandler);
+    view = new MainView(this, buildMainGame());
     setContentView(view);
+  }
+
+  private MainGame buildMainGame() {
+    if (buildViewModelData().getMatchEnvironment() == MatchDetails.Environment.LIVE) {
+      return new LiveGame(view,
+          new MainGameViewModel(setScoreUseCase, setFinalScoreUseCase, buildViewModelData(),
+              getRoomUseCase, setGameStatusLocallyUseCase, new NotifyOpponentFinishedUseCase(
+              opponent -> ((LiveGame) view.game).onOpponentFinished(opponent))), userDetailsHelper,
+          userDataStorage, scoreHandler);
+    } else {
+      return new MainGame(view, userDataStorage, scoreHandler);
+    }
   }
 
   private MainGameViewModelData buildViewModelData() {

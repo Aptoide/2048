@@ -1,28 +1,11 @@
 package com.appcoins.eskills2048;
 
-import android.content.Context;
-
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-import com.appcoins.eskills2048.activity.FinishGameActivity;
-import com.appcoins.eskills2048.model.LocalGameStatus;
-import com.appcoins.eskills2048.model.RoomResponse;
-import com.appcoins.eskills2048.model.RoomStatus;
-import com.appcoins.eskills2048.model.User;
-import com.appcoins.eskills2048.model.UserDetailsHelper;
+import com.appcoins.eskills2048.model.ScoreHandler;
 import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.util.UserDataStorage;
-import com.appcoins.eskills2048.vm.MainGameViewModel;
-import com.appcoins.eskills2048.model.ScoreHandler;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MainGame {
 
@@ -50,10 +33,7 @@ public class MainGame {
   private static int endingMaxValue;
   final int numSquaresX = 4;
   final int numSquaresY = 4;
-  private final Context mContext;
-  private final MainView mView;
-  private final MainGameViewModel viewModel;
-  private final CompositeDisposable disposable;
+  protected final MainView mView;
   public Grid grid = null;
   public AnimationGrid aGrid;
   public boolean canUndo;
@@ -64,30 +44,22 @@ public class MainGame {
   public String opponentStatus = UserStatus.PLAYING.toString();
   public String opponentName = "loading...";
   private long bufferScore = 0;
-  private boolean playing = true;
-  private static final int MAX_CHAR_DISPLAY_USERNAME = 11;
-  private final UserDetailsHelper userDetailsHelper;
 
   // shared preferences related
   private final UserDataStorage userDataStorage;
   private static final String FIRST_RUN = "first run";
   private static final String HIGH_SCORE = "high score";
 
-  public MainGame(Context context, MainView view, MainGameViewModel viewModel,
-      UserDetailsHelper userDetailsHelper, UserDataStorage userDataStorage, ScoreHandler scoreHandler) {
-    mContext = context;
+  public MainGame(MainView view, UserDataStorage userDataStorage, ScoreHandler scoreHandler) {
     mView = view;
     endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
-    this.viewModel = viewModel;
-    this.disposable = new CompositeDisposable();
-    this.userDetailsHelper = userDetailsHelper;
     this.userDataStorage = userDataStorage;
     this.scoreHandler = scoreHandler;
   }
 
   public void newGame() {
     if (grid == null) {
-      createOrRestoreGrid();
+      createGrid();
     } else {
       prepareUndoState();
       saveUndoState();
@@ -106,18 +78,11 @@ public class MainGame {
     mView.invalidate();
   }
 
-  private void createOrRestoreGrid() {
+  protected void createGrid() {
     aGrid = new AnimationGrid(numSquaresX, numSquaresY);
-    LocalGameStatus gameStatus = viewModel.getGameStatus();
-    if (gameStatus == null) {
-      scoreHandler.initScore(0);
-      grid = new Grid(numSquaresX, numSquaresY);
-      addStartTiles();
-    } else {
-      grid = new Grid(gameStatus.getField());
-      Log.d("RESTART_ERROR", "gameStatus score:"+gameStatus.getScore());
-      scoreHandler.initScore(gameStatus.getScore());
-    }
+    scoreHandler.initScore(0);
+    grid = new Grid(numSquaresX, numSquaresY);
+    addStartTiles();
   }
 
   private void addStartTiles() {
@@ -192,18 +157,9 @@ public class MainGame {
       aGrid.cancelAnimations();
       grid.revertTiles();
       scoreHandler.initScore(lastScore);
-      disposable.add(viewModel.setScore(scoreHandler.getScore())
-          .subscribe(this::onSuccess, Throwable::printStackTrace));
       gameState = lastGameState;
       mView.refreshLastTime = true;
       mView.invalidate();
-    }
-  }
-
-  private void onSuccess(RoomResponse roomResponse) {
-    if (roomResponse.getStatusCode()
-        .equals(RoomResponse.StatusCode.REGION_NOT_SUPPORTED)) {
-      endGame(false);
     }
   }
 
@@ -260,11 +216,7 @@ public class MainGame {
                 SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null);
 
             // Update the score
-            scoreHandler.setScore(merged.getValue());
-            disposable.add(viewModel.setScore(scoreHandler.getScore())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onSuccess, Throwable::printStackTrace));
-            highScore = Math.max(scoreHandler.getScore(), highScore);
+            updateScore(merged.getValue());
 
             // The mighty 2048 tile
             if (merged.getValue() >= winValue() && !gameWon()) {
@@ -292,9 +244,13 @@ public class MainGame {
       checkLose();
     }
 
-    viewModel.setGameStatus(grid.field, scoreHandler.getScore());
     mView.resyncTime();
     mView.invalidate();
+  }
+
+  protected void updateScore(int score) {
+    scoreHandler.setScore(score);
+    highScore = Math.max(scoreHandler.getScore(), highScore);
   }
 
   private void checkLose() {
@@ -309,7 +265,6 @@ public class MainGame {
   }
 
   public void endGame(boolean setFinalScore) {
-    playing = false;
     aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME,
         NOTIFICATION_DELAY_TIME, null);
     long currentScore = scoreHandler.getScore();
@@ -317,16 +272,6 @@ public class MainGame {
       highScore = currentScore;
       recordHighScore();
     }
-    if (setFinalScore) {
-      disposable.add(viewModel.setFinalScore(scoreHandler.getScore())
-          .subscribe(roomResponse -> {
-          }, Throwable::printStackTrace));
-    }
-    mView.setVisibility(View.GONE);
-    mContext.startActivity(FinishGameActivity.buildIntent(
-        mContext,
-        viewModel.getSession()
-    ));
   }
 
   private Cell getVector(int direction) {
@@ -427,60 +372,7 @@ public class MainGame {
     return !(gameState == GAME_ENDLESS || gameState == GAME_ENDLESS_WON);
   }
 
-  public void stop() {
-    disposable.clear();
-  }
+  public void stop() {}
 
-  public void resume() {
-    startPeriodicOpponentUpdate();
-  }
-
-  private void startPeriodicOpponentUpdate() {
-    disposable.add(Observable.interval(0, 3L, TimeUnit.SECONDS)
-        .flatMapSingle(aLong -> viewModel.getRoom()
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess(MainGame.this::updateInfo)
-            .doOnError(Throwable::printStackTrace)
-            .onErrorReturnItem(new RoomResponse()))
-        .takeWhile(roomResponse -> playing)
-        .subscribe());
-  }
-
-  private void updateInfo(RoomResponse roomResponse) {
-    if (!scoreHandler.confirmScoreValidity()){
-      disposable.add(viewModel.setFinalScore(-1)
-          .subscribe(this::onSuccess, Throwable::printStackTrace));
-    }
-    if (roomResponse.getStatus() == RoomStatus.COMPLETED
-        || roomResponse.getCurrentUser()
-        .getStatus() == UserStatus.TIME_UP) {
-      endGame(false);
-    }
-    // if match environment is set to sandbox, the number of opponents can be 0
-    try {
-      List<User> opponents = roomResponse.getOpponents(viewModel.getWalletAddress());
-      User opponent = userDetailsHelper.getNextOpponent(opponents);
-      viewModel.notify(opponent);
-      opponentRank = roomResponse.getUserRank(opponent);
-      opponentStatus = opponent.getStatus().toString();
-      opponentName = truncate(opponent.getUserName(), MAX_CHAR_DISPLAY_USERNAME);
-      mView.invalidate();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public String truncate(String str, int len) {
-    if (str.length() > len) {
-      return str.substring(0, len) + "...";
-    } else {
-      return str;
-    }
-  }
-
-  public void onOpponentFinished(User opponent) {
-    Toast.makeText(mView.getContext(), "Opponent " + opponent.getUserName() + " has finished.",
-            Toast.LENGTH_LONG)
-        .show();
-  }
+  public void resume() {}
 }
