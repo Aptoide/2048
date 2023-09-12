@@ -1,7 +1,8 @@
 package com.appcoins.eskills2048;
 
+import android.content.Intent;
+import android.widget.Toast;
 import com.appcoins.eskills2048.model.ScoreHandler;
-import com.appcoins.eskills2048.model.UserStatus;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,9 +41,6 @@ public class MainGame {
   protected final ScoreHandler scoreHandler;
   public long highScore = 0;
   public long lastScore = 0;
-  public int opponentRank = 1;
-  public String opponentStatus = UserStatus.PLAYING.toString();
-  public String opponentName = "loading...";
   private long bufferScore = 0;
 
   // shared preferences related
@@ -272,6 +270,14 @@ public class MainGame {
       highScore = currentScore;
       recordHighScore();
     }
+    exitGame();
+  }
+
+  protected void exitGame() {
+    Toast.makeText(mView.getContext(), "Exiting...", Toast.LENGTH_SHORT)
+        .show();
+    mView.postDelayed(() -> mView.getContext().startActivity(new Intent(mView.getContext(), LaunchActivity.class)),
+        2000);
   }
 
   private Cell getVector(int direction) {

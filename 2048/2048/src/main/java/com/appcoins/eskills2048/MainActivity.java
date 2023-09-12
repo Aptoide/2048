@@ -10,12 +10,10 @@ import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.ScoreHandler;
 import com.appcoins.eskills2048.model.UserDetailsHelper;
 import com.appcoins.eskills2048.usecase.GetRoomUseCase;
-import com.appcoins.eskills2048.usecase.NotifyOpponentFinishedUseCase;
 import com.appcoins.eskills2048.usecase.SetFinalScoreUseCase;
 import com.appcoins.eskills2048.usecase.SetGameStatusLocallyUseCase;
 import com.appcoins.eskills2048.usecase.SetScoreUseCase;
 import com.appcoins.eskills2048.util.UserDataStorage;
-import com.appcoins.eskills2048.vm.MainGameViewModel;
 import com.appcoins.eskills2048.vm.MainGameViewModelData;
 import dagger.hilt.android.AndroidEntryPoint;
 import javax.inject.Inject;
@@ -50,20 +48,18 @@ import static com.appcoins.eskills2048.LaunchActivity.WALLET_ADDRESS;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    view = new MainView(this, buildMainGame());
+    view = buildMainView();
     setContentView(view);
   }
 
-  private MainGame buildMainGame() {
-    if (buildViewModelData().getMatchEnvironment() == MatchDetails.Environment.LIVE) {
-      return new LiveGame(view,
-          new MainGameViewModel(setScoreUseCase, setFinalScoreUseCase, buildViewModelData(),
-              getRoomUseCase, setGameStatusLocallyUseCase, new NotifyOpponentFinishedUseCase(
-              opponent -> ((LiveGame) view.game).onOpponentFinished(opponent))), userDetailsHelper,
-          userDataStorage, scoreHandler);
-    } else {
-      return new MainGame(view, userDataStorage, scoreHandler);
+  private MainView buildMainView() {
+    MainGameViewModelData mainGameViewModelData = buildViewModelData();
+    if (mainGameViewModelData.getMatchEnvironment() == MatchDetails.Environment.LIVE) {
+      return new MainViewLive(this, buildViewModelData(), userDataStorage, getRoomUseCase,
+          setScoreUseCase, setFinalScoreUseCase, setGameStatusLocallyUseCase, userDetailsHelper,
+          scoreHandler);
     }
+    else return new MainView(this, userDataStorage, scoreHandler);
   }
 
   private MainGameViewModelData buildViewModelData() {

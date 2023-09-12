@@ -1,9 +1,9 @@
 package com.appcoins.eskills2048;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
+import com.appcoins.eskills2048.activity.FinishGameActivity;
 import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.RoomResponse;
 import com.appcoins.eskills2048.model.RoomStatus;
@@ -86,14 +86,12 @@ public class LiveGame extends MainGame {
           .subscribe(roomResponse -> {
           }, Throwable::printStackTrace));
     }
-    // handle end of game
-    Toast.makeText(mView.getContext(), "Exiting...", Toast.LENGTH_SHORT)
-        .show();
-    mView.postDelayed(() -> {
-      mView.getContext()
-          .startActivity(new Intent(mView.getContext(), LaunchActivity.class));
-      ((Activity) mView.getContext()).finish();
-    }, 2000);
+    super.endGame(setFinalScore);
+  }
+
+  @Override protected void exitGame() {
+    mView.setVisibility(View.GONE);
+    mView.getContext().startActivity(FinishGameActivity.buildIntent(mView.getContext(), viewModel.getSession()));
   }
 
   @Override public void stop() {
