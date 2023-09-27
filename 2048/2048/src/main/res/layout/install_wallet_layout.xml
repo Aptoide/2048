@@ -28,7 +28,7 @@
         android:text="You need the AppCoins Wallet to complete this purchase."
         android:textColor="@color/black_87_alpha"
         android:textSize="24sp"
-        app:fontFamily="sans-serif-black"
+        app:fontFamily="@font/roboto_bold"
         />
 
     <TextView
@@ -38,10 +38,11 @@
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:drawableStart="@drawable/trusted"
         android:drawablePadding="10dp"
         android:text="Trusted Payment Method"
+        android:fontFamily="@font/roboto_medium"
         android:textColor="@color/grey_alpha_active_54"
+        app:drawableStartCompat="@drawable/trusted"
         />
 
     <Button

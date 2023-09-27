@@ -1,16 +1,12 @@
 package com.appcoins.eskills2048;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
 import com.appcoins.eskills2048.model.LocalGameStatus;
 import com.appcoins.eskills2048.model.MatchDetails;
@@ -22,7 +18,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import dagger.hilt.android.AndroidEntryPoint;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.inject.Inject;
@@ -234,8 +229,6 @@ import javax.inject.Inject;
     Intent intent = new Intent(Intent.ACTION_VIEW);
     intent.setData(Uri.parse(url));
     intent.setPackage(BuildConfig.WALLET_PACKAGE_NAME);
-
-
     return intent;
   }
 
