@@ -1,7 +1,10 @@
 package com.appcoins.eskills2048;
 
 import android.content.Intent;
+import android.view.View;
 import android.widget.Toast;
+import com.appcoins.eskills2048.activity.FinishGameActivity;
+import com.appcoins.eskills2048.model.MatchDetails;
 import com.appcoins.eskills2048.model.ScoreHandler;
 import com.appcoins.eskills2048.util.UserDataStorage;
 import java.util.ArrayList;
@@ -274,10 +277,12 @@ public class MainGame {
   }
 
   protected void exitGame() {
-    Toast.makeText(mView.getContext(), "Exiting...", Toast.LENGTH_SHORT)
-        .show();
-    mView.postDelayed(() -> mView.getContext().startActivity(new Intent(mView.getContext(), LaunchActivity.class)),
-        2000);
+    mView.setVisibility(View.GONE);
+
+    Intent intent =
+        FinishSandboxGameActivity.buildIntent(mView.getContext(),lastScore);
+    Intent finishIntent = new Intent(intent);
+    mView.getContext().startActivity(finishIntent);
   }
 
   private Cell getVector(int direction) {

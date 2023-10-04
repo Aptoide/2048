@@ -13,12 +13,6 @@
       android:label="@string/app_name"
       android:theme="@style/AppTheme">
     <activity
-        android:name=".rankins.RankingsActivity"
-        android:exported="true" />
-    <activity
-        android:name=".bonus.BonusActivity"
-        android:exported="true" />
-    <activity
         android:name=".LaunchActivity"
         android:exported="true"
         android:label="@string/app_name"
@@ -35,6 +29,10 @@
         android:screenOrientation="portrait" />
     <activity
         android:name=".activity.FinishGameActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/Theme.AppCompat.Transparent.FitAppWindow" />
+    <activity
+        android:name="FinishSandboxGameActivity"
         android:screenOrientation="portrait"
         android:theme="@style/Theme.AppCompat.Transparent.FitAppWindow" />
     <meta-data android:name="AF_STORE" android:value="aptoide"/>
