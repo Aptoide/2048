@@ -5,6 +5,7 @@
   <string name="instructions">Swipe to move. 2 + 2 = 4. Reach 2048.</string>
   <string name="you_win">You Win!</string>
   <string name="game_over">Game Over!</string>
+  <string name="game_over_icon" translatable="false">Game Over! %1$s</string>
   <string name="go_on">Tap to Continue</string>
   <string name="for_now">For now…</string>
   <string name="endless">"Endless" Mode</string>
@@ -19,7 +20,7 @@
 
   <string name="rank_score_details">%1$d points</string>
   <string name="waiting_for_opponents_to_finish">Waiting for opponents to finish game.</string>
-  <string name="opponent_details">(%1$s did %2$d points)</string>
+  <string name="opponent_details">(%1$s did %2$s points)</string>
 
   <string name="amount_won_details">(your wallet is now %1$.2f$ heavier)</string>
   <string name="you_won">You Won! %1$s</string>
