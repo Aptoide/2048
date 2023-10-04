@@ -72,16 +72,9 @@ import javax.inject.Inject;
       binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(R.string.game_type_duel);
       binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(
           R.string.game_type_multiplayer);
-      showCreateTicket(MatchDetails.Environment.LIVE);
+      showCreateTicket();
     });
-    binding.startNewGameLayout.sandboxGameButton.setOnClickListener(view -> {
-      binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_SANDBOX);
-      binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(
-          R.string.game_type_duel_sandbox);
-      binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(
-          R.string.game_type_multiplayer_sandbox);
-      showCreateTicket(MatchDetails.Environment.SANDBOX);
-    });
+    binding.startNewGameLayout.sandboxGameButton.setOnClickListener(view -> launchSandboxGame());
     FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     Bundle bundle = new Bundle();
     bundle.putLong("current_time", System.currentTimeMillis());
@@ -100,7 +93,7 @@ import javax.inject.Inject;
 
   private void resumeGame(LocalGameStatus localGameStatus) {
     Intent intent =
-        MainActivity.newIntent(this, userId, localGameStatus.getWalletAddress(), matchEnvironment,
+        MainActivity.newIntent(this, userId, localGameStatus.getWalletAddress(), MatchDetails.Environment.LIVE,
             localGameStatus.getSession(), localGameStatus);
     startActivity(intent);
     finish();
@@ -117,18 +110,13 @@ import javax.inject.Inject;
         .setVisibility(View.GONE);
   }
 
-  private void showCreateTicket(MatchDetails.Environment environment) {
-    matchEnvironment = environment;
+  private void showCreateTicket() {
     binding.startNewGameLayout.getRoot()
         .setVisibility(View.GONE);
     binding.createTicketLayout.getRoot()
         .setVisibility(View.VISIBLE);
     binding.createTicketLayout.userName.setText(userDataStorage.getString(PREFERENCES_USER_NAME));
-    if (environment == MatchDetails.Environment.SANDBOX) {
-      binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener(null);
-    } else {
-      setGamePrice();
-    }
+    setGamePrice();
 
     binding.createTicketLayout.findRoomButton.setOnClickListener(view -> {
       String userName = binding.createTicketLayout.userName.getText()
@@ -137,7 +125,7 @@ import javax.inject.Inject;
       KeyboardUtils.hideKeyboard(view);
       DeviceScreenManager.keepAwake(getWindow());
 
-      launchEskillsFlow(userName, Objects.requireNonNull(getMatchDetails(environment)));
+      launchEskillsFlow(userName, Objects.requireNonNull(getMatchDetails()));
     });
   }
 
@@ -160,15 +148,22 @@ import javax.inject.Inject;
         });
   }
 
-  private MatchDetails getMatchDetails(MatchDetails.Environment environment) {
+  private MatchDetails getMatchDetails() {
     int checkedId = binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId();
     if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
-      return new MatchDetails("1v1", 1f, "USD", environment, 2, 3600);
+      return new MatchDetails("1v1", 1f, "USD", 2, 3600);
     } else if (checkedId
         == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
-      return new MatchDetails("multiplayer", 4f, "USD", environment, 3, 3600);
+      return new MatchDetails("multiplayer", 4f, "USD", 3, 3600);
     }
     return null;
+  }
+
+  private void launchSandboxGame() {
+    Intent intent =
+        MainActivity.newIntent(this, userId, "", MatchDetails.Environment.SANDBOX, "", null);
+    startActivity(intent);
+    finish();
   }
 
   private void launchEskillsFlow(String userName, MatchDetails matchDetails) {
@@ -187,8 +182,7 @@ import javax.inject.Inject;
         + "&domain="
         + getPackageName()
         + "&environment="
-        + matchDetails.getEnvironment()
-        .name()
+        + MatchDetails.Environment.LIVE.name()
         + "&metadata="
         + buildMetaData()
         + "&number_of_users="
@@ -240,7 +234,7 @@ import javax.inject.Inject;
           if (data != null) {
             Intent intent =
                 MainActivity.newIntent(this, userId, data.getStringExtra(WALLET_ADDRESS),
-                    matchEnvironment, data.getStringExtra(SESSION), null);
+                    MatchDetails.Environment.LIVE, data.getStringExtra(SESSION), null);
             startActivity(intent);
             finish();
           } else {
