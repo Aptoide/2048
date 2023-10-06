@@ -201,6 +201,7 @@ import javax.inject.Inject;
         intent.setData(Uri.parse(market));
         intent.setPackage(null);
         startActivity(intent);
+        showCreateTicketLayout();
       });
     }
   }
@@ -268,6 +269,14 @@ import javax.inject.Inject;
     binding.canceledTicketLayout.getRoot()
         .setVisibility(View.GONE);
     binding.installWalletLayout.getRoot()
+        .setVisibility(View.VISIBLE);
+  }
+
+  private void showCreateTicketLayout(){
+    binding.installWalletLayout.getRoot().setVisibility(View.GONE);
+    binding.canceledTicketLayout.getRoot()
+        .setVisibility(View.GONE);
+    binding.createTicketLayout.getRoot()
         .setVisibility(View.VISIBLE);
   }
 }
