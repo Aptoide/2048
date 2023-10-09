@@ -1,8 +1,6 @@
 package com.appcoins.eskills2048;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -20,7 +18,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import dagger.hilt.android.AndroidEntryPoint;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.inject.Inject;
@@ -42,6 +39,8 @@ import javax.inject.Inject;
   private static final String ENTRY_PRICE_DUEL = "1 USD";
   private static final String ENTRY_PRICE_MULTIPLAYER = "4 USD";
   private static final String ENTRY_SANDBOX = "0 USD";
+
+  private static final String PLAY_APP_VIEW_URL = "market://details?id=%s";
 
   private final String userId = "string_user_id";
   private MatchDetails.Environment matchEnvironment;
@@ -73,16 +72,9 @@ import javax.inject.Inject;
       binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(R.string.game_type_duel);
       binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(
           R.string.game_type_multiplayer);
-      showCreateTicket(MatchDetails.Environment.LIVE);
+      showCreateTicket();
     });
-    binding.startNewGameLayout.sandboxGameButton.setOnClickListener(view -> {
-      binding.createTicketLayout.createTicketHeader.fiatPrice.setText(ENTRY_SANDBOX);
-      binding.createTicketLayout.gameTypeLayout.radioButtonDuel.setText(
-          R.string.game_type_duel_sandbox);
-      binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.setText(
-          R.string.game_type_multiplayer_sandbox);
-      showCreateTicket(MatchDetails.Environment.SANDBOX);
-    });
+    binding.startNewGameLayout.sandboxGameButton.setOnClickListener(view -> launchSandboxGame());
     FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
     Bundle bundle = new Bundle();
     bundle.putLong("current_time", System.currentTimeMillis());
@@ -101,7 +93,7 @@ import javax.inject.Inject;
 
   private void resumeGame(LocalGameStatus localGameStatus) {
     Intent intent =
-        MainActivity.newIntent(this, userId, localGameStatus.getWalletAddress(), matchEnvironment,
+        MainActivity.newIntent(this, userId, localGameStatus.getWalletAddress(), MatchDetails.Environment.LIVE,
             localGameStatus.getSession(), localGameStatus);
     startActivity(intent);
     finish();
@@ -114,20 +106,17 @@ import javax.inject.Inject;
         .setVisibility(View.GONE);
     binding.canceledTicketLayout.getRoot()
         .setVisibility(View.GONE);
+    binding.installWalletLayout.getRoot()
+        .setVisibility(View.GONE);
   }
 
-  private void showCreateTicket(MatchDetails.Environment environment) {
-    matchEnvironment = environment;
+  private void showCreateTicket() {
     binding.startNewGameLayout.getRoot()
         .setVisibility(View.GONE);
     binding.createTicketLayout.getRoot()
         .setVisibility(View.VISIBLE);
     binding.createTicketLayout.userName.setText(userDataStorage.getString(PREFERENCES_USER_NAME));
-    if (environment == MatchDetails.Environment.SANDBOX) {
-      binding.createTicketLayout.gameTypeLayout.radioGroup.setOnCheckedChangeListener(null);
-    } else {
-      setGamePrice();
-    }
+    setGamePrice();
 
     binding.createTicketLayout.findRoomButton.setOnClickListener(view -> {
       String userName = binding.createTicketLayout.userName.getText()
@@ -136,7 +125,7 @@ import javax.inject.Inject;
       KeyboardUtils.hideKeyboard(view);
       DeviceScreenManager.keepAwake(getWindow());
 
-      launchEskillsFlow(userName, Objects.requireNonNull(getMatchDetails(environment)));
+      launchEskillsFlow(userName, Objects.requireNonNull(getMatchDetails()));
     });
   }
 
@@ -159,15 +148,22 @@ import javax.inject.Inject;
         });
   }
 
-  private MatchDetails getMatchDetails(MatchDetails.Environment environment) {
+  private MatchDetails getMatchDetails() {
     int checkedId = binding.createTicketLayout.gameTypeLayout.radioGroup.getCheckedRadioButtonId();
     if (checkedId == binding.createTicketLayout.gameTypeLayout.radioButtonDuel.getId()) {
-      return new MatchDetails("1v1", 1f, "USD", environment, 2, 3600);
+      return new MatchDetails("1v1", 1f, "USD", 2, 3600);
     } else if (checkedId
         == binding.createTicketLayout.gameTypeLayout.radioButtonMultiplayer.getId()) {
-      return new MatchDetails("multiplayer", 4f, "USD", environment, 3, 3600);
+      return new MatchDetails("multiplayer", 4f, "USD", 3, 3600);
     }
     return null;
+  }
+
+  private void launchSandboxGame() {
+    Intent intent =
+        MainActivity.newIntent(this, userId, "", MatchDetails.Environment.SANDBOX, "", null);
+    startActivity(intent);
+    finish();
   }
 
   private void launchEskillsFlow(String userName, MatchDetails matchDetails) {
@@ -186,8 +182,7 @@ import javax.inject.Inject;
         + "&domain="
         + getPackageName()
         + "&environment="
-        + matchDetails.getEnvironment()
-        .name()
+        + MatchDetails.Environment.LIVE.name()
         + "&metadata="
         + buildMetaData()
         + "&number_of_users="
@@ -200,6 +195,14 @@ import javax.inject.Inject;
       startActivityForResult(intent, REQUEST_CODE);
     } catch (Exception e) {
       e.printStackTrace();
+      showInstallWalletDialog();
+      binding.installWalletLayout.installButton.setOnClickListener(view -> {
+        String market = String.format(PLAY_APP_VIEW_URL, BuildConfig.WALLET_PACKAGE_NAME);
+        intent.setData(Uri.parse(market));
+        intent.setPackage(null);
+        startActivity(intent);
+        showCreateTicketLayout();
+      });
     }
   }
 
@@ -220,23 +223,7 @@ import javax.inject.Inject;
   private Intent buildTargetIntent(String url) {
     Intent intent = new Intent(Intent.ACTION_VIEW);
     intent.setData(Uri.parse(url));
-
-    // Check if there is an application that can process the AppCoins Billing
-    // flow
-    PackageManager packageManager = getApplicationContext().getPackageManager();
-    List<ResolveInfo> appsList =
-        packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-    for (ResolveInfo app : appsList) {
-      if (app.activityInfo.packageName.equals("cm.aptoide.pt")) {
-        // If there's aptoide installed always choose Aptoide as default to open url
-        intent.setPackage(app.activityInfo.packageName);
-        break;
-      } else if (app.activityInfo.packageName.equals(BuildConfig.WALLET_PACKAGE_NAME)) {
-        // If Aptoide is not installed and wallet is installed then choose Wallet
-        // as default to open url
-        intent.setPackage(app.activityInfo.packageName);
-      }
-    }
+    intent.setPackage(BuildConfig.WALLET_PACKAGE_NAME);
     return intent;
   }
 
@@ -248,7 +235,7 @@ import javax.inject.Inject;
           if (data != null) {
             Intent intent =
                 MainActivity.newIntent(this, userId, data.getStringExtra(WALLET_ADDRESS),
-                    matchEnvironment, data.getStringExtra(SESSION), null);
+                    MatchDetails.Environment.LIVE, data.getStringExtra(SESSION), null);
             startActivity(intent);
             finish();
           } else {
@@ -274,5 +261,22 @@ import javax.inject.Inject;
       binding.createTicketLayout.getRoot()
           .setVisibility(View.VISIBLE);
     });
+  }
+
+  private void showInstallWalletDialog() {
+    binding.createTicketLayout.getRoot()
+        .setVisibility(View.GONE);
+    binding.canceledTicketLayout.getRoot()
+        .setVisibility(View.GONE);
+    binding.installWalletLayout.getRoot()
+        .setVisibility(View.VISIBLE);
+  }
+
+  private void showCreateTicketLayout(){
+    binding.installWalletLayout.getRoot().setVisibility(View.GONE);
+    binding.canceledTicketLayout.getRoot()
+        .setVisibility(View.GONE);
+    binding.createTicketLayout.getRoot()
+        .setVisibility(View.VISIBLE);
   }
 }
