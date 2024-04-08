@@ -2,8 +2,6 @@ package com.appcoins.eskills2048.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
@@ -15,7 +13,6 @@ import com.appcoins.eskills2048.LaunchActivity;
 import com.appcoins.eskills2048.R;
 import com.appcoins.eskills2048.util.DeviceScreenManager;
 import dagger.hilt.android.AndroidEntryPoint;
-import java.util.List;
 
 @AndroidEntryPoint public class FinishGameActivity extends AppCompatActivity {
   //result codes for endgame activity
@@ -104,22 +101,7 @@ import java.util.List;
   private Intent buildTargetIntent(String url) {
     Intent intent = new Intent(Intent.ACTION_VIEW);
     intent.setData(Uri.parse(url));
-    // Check if there is an application that can process the AppCoins Billing
-    // flow
-    PackageManager packageManager = getApplicationContext().getPackageManager();
-    List<ResolveInfo> appsList =
-        packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-    for (ResolveInfo app : appsList) {
-      if (app.activityInfo.packageName.equals("cm.aptoide.pt")) {
-        // If there's aptoide installed always choose Aptoide as default to open url
-        intent.setPackage(app.activityInfo.packageName);
-        break;
-      } else if (app.activityInfo.packageName.equals(BuildConfig.WALLET_PACKAGE_NAME)) {
-        // If Aptoide is not installed and wallet is installed then choose Wallet
-        // as default to open url
-        intent.setPackage(app.activityInfo.packageName);
-      }
-    }
+    intent.setPackage(BuildConfig.WALLET_PACKAGE_NAME);
     return intent;
   }
 }
