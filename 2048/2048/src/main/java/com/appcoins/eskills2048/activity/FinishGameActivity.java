@@ -86,6 +86,7 @@ import dagger.hilt.android.AndroidEntryPoint;
     try {
       mLauncher.launch(intent);
     } catch (Exception e) {
+      launchInitialActivity();
       e.printStackTrace();
     }
   }
