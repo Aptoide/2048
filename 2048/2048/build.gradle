@@ -5,13 +5,13 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'dagger.hilt.android.plugin'
 
 android {
-  compileSdkVersion 30
 
   viewBinding {
     enabled = true
   }
 
   defaultConfig {
+    compileSdk 30
     minSdkVersion 21
     targetSdkVersion 30
     versionCode 37
@@ -36,15 +36,20 @@ android {
       buildConfigField 'String', 'BASE_HOST_PAYMENT', project.BASE_HOST_PAYMENT_PROD
       buildConfigField 'String', 'WALLET_PACKAGE_NAME', project.WALLET_PACKAGE_NAME_PROD
       buildConfigField 'String', 'APPSFLYER_KEY', project.APPSFLYER_KEY
+      resValue "string", "app_name", "2048"
+      resValue "string", "header", "2048"
     }
     debug {
       applicationIdSuffix ".dev"
+      versionNameSuffix "-dev"
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
       buildConfigField 'String', 'BASE_HOST_SKILLS', project.BASE_HOST_SKILLS_DEV
       buildConfigField 'String', 'BASE_HOST_PAYMENT', project.BASE_HOST_PAYMENT_DEV
       buildConfigField 'String', 'WALLET_PACKAGE_NAME', project.WALLET_PACKAGE_NAME_DEV
       buildConfigField 'String', 'APPSFLYER_KEY', project.APPSFLYER_KEY
+      resValue "string", "app_name", "2048 DEV"
+      resValue "string", "header", "2048 DEV"
     }
   }
   compileOptions {
