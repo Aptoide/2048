@@ -1,10 +1,14 @@
 package com.appcoins.eskills2048;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.appcoins.eskills2048.databinding.ActivityLaunchBinding;
@@ -24,7 +28,6 @@ import javax.inject.Inject;
 
 @AndroidEntryPoint public class LaunchActivity extends AppCompatActivity {
 
-  private static final int REQUEST_CODE = 123;
   private static final int RESULT_OK = 0;
   private static final int RESULT_USER_CANCELED = 1;
   private static final int RESULT_ERROR = 6;
@@ -38,14 +41,13 @@ import javax.inject.Inject;
 
   private static final String ENTRY_PRICE_DUEL = "1 USD";
   private static final String ENTRY_PRICE_MULTIPLAYER = "4 USD";
-  private static final String ENTRY_SANDBOX = "0 USD";
-
   private static final String PLAY_APP_VIEW_URL = "market://details?id=%s";
 
   private final String userId = "string_user_id";
-  private MatchDetails.Environment matchEnvironment;
 
   private ActivityLaunchBinding binding;
+  private ActivityResultLauncher<Intent> mLauncher;
+
 
   @Inject UserDataStorage userDataStorage;
   @Inject GetGameStatusLocallyUseCase getGameStatusLocallyUseCase;
@@ -53,6 +55,7 @@ import javax.inject.Inject;
 
   @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    createLauncher();
     binding = ActivityLaunchBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     checkFirstRun();
@@ -79,6 +82,30 @@ import javax.inject.Inject;
     Bundle bundle = new Bundle();
     bundle.putLong("current_time", System.currentTimeMillis());
     firebaseAnalytics.logEvent("app_started", bundle);
+  }
+
+  private void createLauncher() {
+    mLauncher =
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+          switch (result.getResultCode()) {
+              case RESULT_OK:
+                Intent data = result.getData();
+                if (data != null) {
+                  Intent intent =
+                      MainActivity.newIntent(this, userId, data.getStringExtra(WALLET_ADDRESS),
+                          MatchDetails.Environment.LIVE, data.getStringExtra(SESSION), null);
+                  startActivity(intent);
+                  finish();
+                } else {
+                  showCancelDialog();
+                }
+                break;
+              case RESULT_USER_CANCELED:
+              case RESULT_ERROR:
+                showCancelDialog();
+                break;
+            }
+        });
   }
 
   private void checkFirstRun() {
@@ -124,7 +151,7 @@ import javax.inject.Inject;
       userDataStorage.putString(PREFERENCES_USER_NAME, userName);
       KeyboardUtils.hideKeyboard(view);
       DeviceScreenManager.keepAwake(getWindow());
-
+      binding.createTicketLayout.findRoomButton.setEnabled(false);
       launchEskillsFlow(userName, Objects.requireNonNull(getMatchDetails()));
     });
   }
@@ -192,18 +219,28 @@ import javax.inject.Inject;
 
     Intent intent = buildTargetIntent(url);
     try {
-      startActivityForResult(intent, REQUEST_CODE);
-    } catch (Exception e) {
-      e.printStackTrace();
-      showInstallWalletDialog();
-      binding.installWalletLayout.installButton.setOnClickListener(view -> {
-        String market = String.format(PLAY_APP_VIEW_URL, BuildConfig.WALLET_PACKAGE_NAME);
-        intent.setData(Uri.parse(market));
-        intent.setPackage(null);
-        startActivity(intent);
-        showCreateTicketLayout();
-      });
+      mLauncher.launch(intent);
     }
+    catch (ActivityNotFoundException e) {
+      handleWalletNotInstalled();
+    }
+    catch (Exception e) {
+      showCancelDialog();
+      Log.e("LaunchActivity", "Error launching wallet", e);
+    }
+  }
+
+  private void handleWalletNotInstalled() {
+    showInstallWalletDialog();
+    binding.createTicketLayout.findRoomButton.setEnabled(true);
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    binding.installWalletLayout.installButton.setOnClickListener(view -> {
+      String market = String.format(PLAY_APP_VIEW_URL, BuildConfig.WALLET_PACKAGE_NAME);
+      intent.setData(Uri.parse(market));
+      intent.setPackage(null);
+      startActivity(intent);
+      showCreateTicketLayout();
+    });
   }
 
   private String buildMetaData() {
@@ -227,29 +264,6 @@ import javax.inject.Inject;
     return intent;
   }
 
-  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == REQUEST_CODE) {
-      switch (resultCode) {
-        case RESULT_OK:
-          if (data != null) {
-            Intent intent =
-                MainActivity.newIntent(this, userId, data.getStringExtra(WALLET_ADDRESS),
-                    MatchDetails.Environment.LIVE, data.getStringExtra(SESSION), null);
-            startActivity(intent);
-            finish();
-          } else {
-            showCancelDialog();
-          }
-          break;
-        case RESULT_USER_CANCELED:
-        case RESULT_ERROR:
-          showCancelDialog();
-          break;
-      }
-    }
-  }
-
   private void showCancelDialog() {
     binding.createTicketLayout.getRoot()
         .setVisibility(View.GONE);
@@ -260,6 +274,7 @@ import javax.inject.Inject;
           .setVisibility(View.GONE);
       binding.createTicketLayout.getRoot()
           .setVisibility(View.VISIBLE);
+      binding.createTicketLayout.findRoomButton.setEnabled(true);
     });
   }
 
