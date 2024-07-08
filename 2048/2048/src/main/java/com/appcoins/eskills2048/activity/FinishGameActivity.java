@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
@@ -87,7 +88,7 @@ import dagger.hilt.android.AndroidEntryPoint;
       mLauncher.launch(intent);
     } catch (Exception e) {
       launchInitialActivity();
-      e.printStackTrace();
+      Log.e("FinishGameActivity", "Error launching wallet", e);
     }
   }
 

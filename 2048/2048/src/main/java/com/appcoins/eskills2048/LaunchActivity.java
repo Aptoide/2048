@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
@@ -225,7 +226,7 @@ import javax.inject.Inject;
     }
     catch (Exception e) {
       showCancelDialog();
-      e.printStackTrace();
+      Log.e("LaunchActivity", "Error launching wallet", e);
     }
   }
 
