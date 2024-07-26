@@ -6,8 +6,6 @@
     <color name="background">#faf8ef</color>
     <color name="icon_background">#e8ba2e</color>
 
-    <color name="status_background">#bbada0</color>
-
     <!-- AppCoins Wallet colors -->
     <color name="white">#FFFFFFFF</color>
     <color name="btn_disable_color">#00000000</color>
@@ -23,7 +21,4 @@
     <color name="btn_cancel_text">#8f000000</color>
     <color name="dialog_buy_value_text">#4e4e4e</color>
     <color name="btn_disable_snd_color">#c9c9c9</color>
-    <color name="rankings_text_color">#808080</color>
-    <color name="countdown_timer_text_color">#F9753F</color>
-    <color name="ranking_grey">#C7C7C7</color>
 </resources>

@@ -11,9 +11,9 @@ android {
   }
 
   defaultConfig {
-    compileSdk 30
+    compileSdk 35
     minSdkVersion 21
-    targetSdkVersion 30
+    targetSdkVersion 35
     versionCode 37
     versionName "1.4.0"
   }
@@ -30,7 +30,7 @@ android {
   buildTypes {
     release {
       signingConfig signingConfigs.release
-      minifyEnabled false
+      minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
       buildConfigField 'String', 'BASE_HOST_SKILLS', project.BASE_HOST_SKILLS_PROD
       buildConfigField 'String', 'BASE_HOST_PAYMENT', project.BASE_HOST_PAYMENT_PROD
@@ -51,16 +51,44 @@ android {
       resValue "string", "app_name", "2048 DEV"
       resValue "string", "header", "2048 DEV"
     }
+    eskillsRelease {
+      signingConfig signingConfigs.release
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+      buildConfigField 'String', 'BASE_HOST_SKILLS', project.BASE_HOST_SKILLS_PROD
+      buildConfigField 'String', 'BASE_HOST_PAYMENT', project.ESKILLS_HOST_PAYMENT_PROD
+      buildConfigField 'String', 'WALLET_PACKAGE_NAME', project.ESKILLS_PACKAGE_NAME_PROD
+      buildConfigField 'String', 'APPSFLYER_KEY', project.APPSFLYER_KEY
+      resValue "string", "app_name", "2048 ESKL"
+      resValue "string", "header", "2048 ESKL"
+    }
+    eskillsDebug {
+      applicationIdSuffix ".dev"
+      versionNameSuffix "-eskills-dev"
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+      buildConfigField 'String', 'BASE_HOST_SKILLS', project.BASE_HOST_SKILLS_DEV
+      buildConfigField 'String', 'BASE_HOST_PAYMENT', project.ESKILLS_HOST_PAYMENT_DEV
+      buildConfigField 'String', 'WALLET_PACKAGE_NAME', project.ESKILLS_PACKAGE_NAME_DEV
+      buildConfigField 'String', 'APPSFLYER_KEY', project.APPSFLYER_KEY
+      resValue "string", "app_name", "2048 ESKL DEV"
+      resValue "string", "header", "2048 ESKL DEV"
+      signingConfig signingConfigs.debug
+    }
   }
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
   }
+  compileSdk 34
+  namespace 'com.appcoins.eskills2048'
+  buildFeatures {
+    buildConfig true
+  }
 }
 
 dependencies {
   implementation "com.appsflyer:af-android-sdk:$project.appsflyer_sdk_version"
-  implementation "com.android.support:appcompat-v7:$project.appcompat_v7_version"
   implementation "androidx.appcompat:appcompat:$project.appcompat_version"
   implementation "io.reactivex.rxjava2:rxjava:$project.rxjava_version"
   implementation "io.reactivex.rxjava2:rxandroid:$project.rxandroid_version"

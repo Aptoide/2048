@@ -8,10 +8,4 @@
     <string name="go_on">Pulsa Para Continuar</string>
     <string name="for_now">Por ahora</string>
     <string name="endless">Modo \"Infinito\"</string>
-
-    <!-- Confirmation dialog -->
-    <string name="continue_game">Cancelar</string>
-    <string name="reset">Reajustar</string>
-    <string name="reset_dialog_title">¿Reajutar el juego?</string>
-    <string name="reset_dialog_message">¿Seguro que quieres a reajustar el juego?</string>
 </resources>

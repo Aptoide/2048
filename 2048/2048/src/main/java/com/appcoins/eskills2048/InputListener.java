@@ -1,7 +1,5 @@
 package com.appcoins.eskills2048;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.view.MotionEvent;
 import android.view.View;
 

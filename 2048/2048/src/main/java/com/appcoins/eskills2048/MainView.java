@@ -208,7 +208,7 @@ public class MainView extends View {
         sYIcons + iconSize);
 
     drawDrawable(canvas,
-        ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_undo, null),
+            Objects.requireNonNull(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_undo, null)),
         sXUndo + iconPaddingSize, sYIcons + iconPaddingSize, sXUndo + iconSize - iconPaddingSize,
         sYIcons + iconSize - iconPaddingSize);
   }
@@ -247,7 +247,7 @@ public class MainView extends View {
         int sY = startingY + gridWidth + (cellSize + gridWidth) * yy;
         int eY = sY + cellSize;
 
-        drawDrawable(canvas, backgroundCell, sX, sY, eX, eY);
+        drawDrawable(canvas, Objects.requireNonNull(backgroundCell), sX, sY, eX, eY);
       }
     }
   }
@@ -421,7 +421,7 @@ public class MainView extends View {
       paint.setTextSize(tempTextSize);
       Bitmap bitmap = Bitmap.createBitmap(cellSize, cellSize, Bitmap.Config.ARGB_8888);
       Canvas canvas = new Canvas(bitmap);
-      drawDrawable(canvas, ResourcesCompat.getDrawable(getResources(), cellRectangleIds[xx], null),
+      drawDrawable(canvas, Objects.requireNonNull(ResourcesCompat.getDrawable(getResources(), cellRectangleIds[xx], null)),
           0, 0, cellSize, cellSize);
       drawCellText(canvas, value);
       bitmapCell[xx] = new BitmapDrawable(resources, bitmap);
@@ -487,10 +487,10 @@ public class MainView extends View {
     //Grid Dimensions
     double halfNumSquaresX = game.numSquaresX / 2d;
     double halfNumSquaresY = game.numSquaresY / 2d;
-    startingX = (int) (screenMiddleX - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2);
-    endingX = (int) (screenMiddleX + (cellSize + gridWidth) * halfNumSquaresX + gridWidth / 2);
-    startingY = (int) (boardMiddleY - (cellSize + gridWidth) * halfNumSquaresY - gridWidth / 2);
-    endingY = (int) (boardMiddleY + (cellSize + gridWidth) * halfNumSquaresY + gridWidth / 2);
+    startingX = (int) (screenMiddleX - (cellSize + gridWidth) * halfNumSquaresX - (double) gridWidth / 2);
+    endingX = (int) (screenMiddleX + (cellSize + gridWidth) * halfNumSquaresX + (double) gridWidth / 2);
+    startingY = (int) (boardMiddleY - (cellSize + gridWidth) * halfNumSquaresY - (double) gridWidth / 2);
+    endingY = (int) (boardMiddleY + (cellSize + gridWidth) * halfNumSquaresY + (double) gridWidth / 2);
 
     float widthWithPadding = endingX - startingX;
 

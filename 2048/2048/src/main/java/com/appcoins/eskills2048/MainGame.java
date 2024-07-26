@@ -2,11 +2,10 @@ package com.appcoins.eskills2048;
 
 import android.content.Intent;
 import android.view.View;
-import android.widget.Toast;
-import com.appcoins.eskills2048.activity.FinishGameActivity;
-import com.appcoins.eskills2048.model.MatchDetails;
+
 import com.appcoins.eskills2048.model.ScoreHandler;
 import com.appcoins.eskills2048.util.UserDataStorage;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -13,7 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint public class FinishSandboxGameActivity extends AppCompatActivity {
   private final static int PARTY_POPPER_EMOJI_UNICODE = 0x1F389;
-  private static String SCORE = "SCORE";
+  private static final String SCORE = "SCORE";
   private EndgameFragmentSkillsBinding binding;
 
   public static Intent buildIntent(Context context, long score) {

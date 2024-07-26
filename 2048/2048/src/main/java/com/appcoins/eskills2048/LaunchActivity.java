@@ -1,5 +1,6 @@
 package com.appcoins.eskills2048;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import javax.inject.Inject;
 
+@SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint public class LaunchActivity extends AppCompatActivity {
 
   private static final int RESULT_OK = 0;
@@ -126,15 +128,16 @@ import javax.inject.Inject;
     finish();
   }
 
+  @SuppressLint("MissingSuperCall")
   @Override public void onBackPressed() {
     binding.startNewGameLayout.getRoot()
-        .setVisibility(View.VISIBLE);
+            .setVisibility(View.VISIBLE);
     binding.createTicketLayout.getRoot()
-        .setVisibility(View.GONE);
+            .setVisibility(View.GONE);
     binding.canceledTicketLayout.getRoot()
-        .setVisibility(View.GONE);
+            .setVisibility(View.GONE);
     binding.installWalletLayout.getRoot()
-        .setVisibility(View.GONE);
+            .setVisibility(View.GONE);
   }
 
   private void showCreateTicket() {

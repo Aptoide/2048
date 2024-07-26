@@ -4,8 +4,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton public class ScoreHandler {
-  private long xorCode = 12345; // USE A DIFFERENT XOR VALUE THAN THIS!
-  private long scoreCheckXorCode = 56789; // USE A DIFFERENT XOR VALUE THAN THIS!
+  private final long xorCode = 12345; // USE A DIFFERENT XOR VALUE THAN THIS!
+  private final long scoreCheckXorCode = 56789; // USE A DIFFERENT XOR VALUE THAN THIS!
   private long score;
   private long scoreCheck;
 

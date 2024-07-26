@@ -1,5 +1,7 @@
 package com.appcoins.eskills2048.model;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ public class User {
     return score;
   }
 
+  @NonNull
   @Override public String toString() {
     return "User{"
         + "walletAddress='"
