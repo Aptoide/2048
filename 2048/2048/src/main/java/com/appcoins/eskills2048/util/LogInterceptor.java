@@ -29,6 +29,7 @@ public class LogInterceptor implements Interceptor {
     return url.scheme() + "://" + url.host() + (query != null ? (path + '?' + query) : path);
   }
 
+  @NonNull
   @Override public Response intercept(@NonNull Chain chain) throws IOException {
     StringBuilder logBuilder = new StringBuilder();
     Request request = chain.request();

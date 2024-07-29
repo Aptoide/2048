@@ -9,6 +9,7 @@
       android:id="@+id/app_icon"
       android:layout_width="42dp"
       android:layout_height="42dp"
+      android:importantForAccessibility="no"
       android:src="@drawable/logo_2048"
       app:layout_constraintBottom_toTopOf="@+id/fiat_price"
       app:layout_constraintEnd_toStartOf="@id/app_name"

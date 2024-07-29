@@ -11,7 +11,9 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
-import com.appcoins.eskills2048.BuildConfig;
+
+import androidx.annotation.NonNull;
+
 import com.appsflyer.AFInAppEventParameterName;
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
@@ -42,7 +44,7 @@ import retrofit2.http.Query;
 
 public class ApkOriginVerification {
   private static final String LOG_TAG = "AppsFlyerOneLinkSimApp";
-  private Context context;
+  private final Context context;
 
   public ApkOriginVerification(Context context) {
     this.context = context;
@@ -151,7 +153,7 @@ public class ApkOriginVerification {
   private void sendDataNewInstall(String deviceIdentifier, String packageName, String apkMd5sum,
       String installedFromMarket, String deviceManufacturer, List<String> deviceInstalledMarkets) {
     ApkOriginService apkOriginService = provideService();
-    Log.d("NEW INSTALL LOG",""+deviceIdentifier+packageName+apkMd5sum+
+    Log.d("NEW INSTALL LOG", deviceIdentifier+packageName+apkMd5sum+
         installedFromMarket+ deviceManufacturer+ deviceInstalledMarkets);
     //Create a Call object to call the function defined in the retrofitAPI interface.
     Call<String> call =
@@ -160,17 +162,17 @@ public class ApkOriginVerification {
 
     //Executing asynchronously the call created previously
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
-        Map<String, Object> eventValues = new HashMap<String, Object>();
+      @Override public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+        Map<String, Object> eventValues = new HashMap<>();
         //Adding extra data to the event that might be useful in the future (model phone)
         eventValues.put(AFInAppEventParameterName.REVIEW_TEXT,
             response.body() + " | Model phone: " + deviceManufacturer);
         //Sending the response given by the endpoint to the appsflyer, using an event
         AppsFlyerLib.getInstance()
-            .logEvent(context, response.body()
+            .logEvent(context, Objects.requireNonNull(response.body())
                 .split("\\s")[0], eventValues);
       }
-      @Override public void onFailure(Call<String> call, Throwable t) {
+      @Override public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
         //handle error or failure cases here
         Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT)
             .show();
@@ -199,7 +201,7 @@ public class ApkOriginVerification {
 
     //Executing asynchronously the call created previously
     call.enqueue(new Callback<List<String>>() {
-      @Override public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+      @Override public void onResponse(@NonNull Call<List<String>> call, @NonNull Response<List<String>> response) {
 
           /*The response of the previous call is all the queries needed to make intent to the device
           so we can get all the appstores that are installed in the device */
@@ -243,11 +245,11 @@ public class ApkOriginVerification {
           sendDataNewInstall(AccountData[0], AccountData[1], AccountData[2], installedFromMarket,
               deviceManufacturer, deviceInstalledMarkets);
         } catch (PackageManager.NameNotFoundException e) {
-          e.printStackTrace();
+          Log.e("APKOriginVerification", e.getMessage(),e);
         }
       }
 
-      @Override public void onFailure(Call<List<String>> call, Throwable t) {
+      @Override public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
         //handle error or failure cases here
         Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT)
             .show();

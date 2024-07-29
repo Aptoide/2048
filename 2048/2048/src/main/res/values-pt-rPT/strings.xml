@@ -8,10 +8,4 @@
     <string name="go_on">Toque para Continuar</string>
     <string name="for_now">Por agora…</string>
     <string name="endless">Modo "Sem Fim"</string>
-
-    <!-- Confirmation dialog-->
-    <string name="reset">Reiniciar</string>
-    <string name="continue_game">Cancelar</string>
-    <string name="reset_dialog_title">Reiniciar o jogo?</string>
-    <string name="reset_dialog_message">Tem a certeza que quer reiniciar o jogo?</string>
 </resources>

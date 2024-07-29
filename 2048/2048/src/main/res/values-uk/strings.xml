@@ -8,10 +8,4 @@
     <string name="go_on">Торкніться для продовження</string>
     <string name="for_now">А поки…</string>
     <string name="endless">"Нескінченний" режим</string>
-
-    <!-- Confirmation dialog-->
-    <string name="reset">Скидання</string>
-    <string name="continue_game">Відміна</string>
-    <string name="reset_dialog_title">Скинути гру?</string>
-    <string name="reset_dialog_message">Ви впевнені, що хочете почати спочатку?</string>
 </resources>

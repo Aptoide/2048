@@ -18,6 +18,8 @@ import com.appcoins.eskills2048.util.UserDataStorage;
 import com.appcoins.eskills2048.vm.MainGameViewModel;
 import com.appcoins.eskills2048.vm.MainGameViewModelData;
 
+import java.util.Objects;
+
 public class MainViewLive extends MainView {
   //Internal variables
   private int titleWidthOpponentRank;
@@ -56,9 +58,9 @@ public class MainViewLive extends MainView {
 
   @Override protected void drawScoreText(Canvas canvas) {
     super.drawScoreText(canvas);
-    int bodyWidthOpponentRank = (int) (paint.measureText("" + ((LiveGame) game).opponentRank));
-    int bodyWidthOpponentName = (int) (paint.measureText("" + ((LiveGame) game).opponentName));
-    int bodyWidthOpponentStatus = (int) (paint.measureText("" + ((LiveGame) game).opponentStatus));
+    int bodyWidthOpponentRank = (int) (paint.measureText(String.valueOf(((LiveGame) game).opponentRank)));
+    int bodyWidthOpponentName = (int) (paint.measureText(((LiveGame) game).opponentName));
+    int bodyWidthOpponentStatus = (int) (paint.measureText(((LiveGame) game).opponentStatus));
 
     int textWidthOpponentRank =
         Math.max(titleWidthOpponentRank, bodyWidthOpponentRank) + textPaddingSize;
@@ -124,7 +126,7 @@ public class MainViewLive extends MainView {
 
   private void showQuitGameDialog() {
     Dialog dialog = new Dialog(getContext());
-    dialog.getWindow()
+    Objects.requireNonNull(dialog.getWindow())
         .setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     View view = View.inflate(getContext(), R.layout.quit_confirmation_layout, null);
     dialog.setContentView(view);
@@ -142,9 +144,5 @@ public class MainViewLive extends MainView {
 
   private void handleQuitGame() {
     game.endGame(true);
-  }
-
-  public void onResume() {
-    game.resume();
   }
 }
